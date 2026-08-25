@@ -71,8 +71,9 @@ Serverless also means the PDF route and the print page are *different instances*
 between them: the route renders the resume to markup itself and injects it into an empty print shell
 that carries the stylesheets and fonts ([ADR-029](docs/DECISIONS.md)).
 
-On Vercel, set the function memory for `/api/pdf` to 1024 MB or more — Chromium will not start
-below it — and leave `maxDuration` at the 60 s the route declares.
+`vercel.json` gives `/api/pdf` 1024 MB and 60 s. Chromium will not start below 1024 MB, and that
+figure is also the Hobby plan's ceiling; on a paid plan it is worth raising, which mostly shortens
+the render of a long CV.
 
 ## Commands
 
