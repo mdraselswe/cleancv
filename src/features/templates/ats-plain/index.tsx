@@ -1,0 +1,41 @@
+import { SECTION_KEYS } from '@/constants';
+
+import { SingleColumnLayout } from '../shared/SingleColumnLayout';
+import type { TemplateMeta, TemplateProps } from '../types';
+
+import './ats-plain.css';
+
+export const meta: TemplateMeta = {
+  id: 'ats-plain',
+  name: 'ATS Plain',
+  description:
+    'One column, black on white, no graphics. The safest thing to upload to a job portal.',
+  category: 'ats',
+  atsBaseline: 100,
+  supports: {
+    // A photo is the single biggest parse hazard, so this design refuses one.
+    photo: false,
+    signature: true,
+    accentColor: false,
+    sidebar: false,
+    skillBars: false,
+    icons: false,
+    entryMarkers: false,
+    columns: 1,
+  },
+  supportedSections: SECTION_KEYS,
+  // Every design states its margin: without one, switching to it silently
+  // keeps whatever the previous template chose.
+  defaultTheme: { font: 'sans', density: 'compact', accent: '#000000', marginMm: 14 },
+};
+
+export const Template = ({ resume, print }: TemplateProps) => (
+  <SingleColumnLayout
+    resume={resume}
+    meta={meta}
+    print={print}
+    templateClass="atp"
+    headingClass="atp-heading"
+    withContactIcons={false}
+  />
+);

@@ -1,0 +1,137 @@
+/* ---------------------------------------------------------------------------
+   ATS Plain.
+
+   The reference implementation of "nothing between the text and the parser":
+   one column, no rails, no colour, no glyphs. This is also the template the
+   dual export uses to generate the ATS PDF from any design, so it must be able
+   to render every section the schema supports.
+   --------------------------------------------------------------------------- */
+
+.atp {
+  --rz-accent: #000000;
+  --rz-ink: #000000;
+  --rz-ink-muted: #333333;
+  --rz-rule: #000000;
+}
+
+.atp .atp-name {
+  font-size: 1.7em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.atp .atp-headline {
+  font-size: 1em;
+  margin-top: calc(1px * var(--rz-density));
+}
+
+.atp .rz-contact {
+  margin-top: calc(4px * var(--rz-density));
+  font-size: 0.95em;
+}
+
+/* One text run separated by pipes: no wrapping flex boxes for a parser to
+   mis-order, and no icons to leak codepoints. */
+.atp .rz-contact__item + .rz-contact__item::before {
+  content: ' | ';
+  white-space: pre;
+}
+
+.atp .atp-heading {
+  font-size: 1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--rz-rule);
+  padding-bottom: calc(2px * var(--rz-density));
+}
+
+.atp .rz-entry__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.atp .rz-entry__title {
+  font-size: 1em;
+  font-weight: 700;
+}
+
+.atp .rz-entry__org {
+  font-weight: 400;
+}
+
+.atp .rz-entry__meta {
+  font-size: 0.95em;
+  color: var(--rz-ink-muted);
+}
+
+.atp .rz-entry__note {
+  font-size: 0.95em;
+}
+
+.atp .rz-entry__body {
+  margin-top: calc(2px * var(--rz-density));
+}
+
+.atp .rz-entry__tags,
+.atp .rz-entry__links {
+  font-size: 0.95em;
+}
+
+.atp .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2px * var(--rz-density));
+}
+
+.atp .rz-skills__group {
+  display: flex;
+  gap: 0.4em;
+}
+
+.atp .rz-skills__label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.atp .rz-skills__label::after {
+  content: ':';
+}
+
+.atp .rz-skills__meter {
+  display: none;
+}
+
+/* Deliberately not a grid: multi-column blocks are the single most common cause
+   of interleaved text in extracted resumes. */
+.atp .rz-grid-2 {
+  display: flex;
+  flex-direction: column;
+  gap: calc(4px * var(--rz-density));
+}
+
+.atp .rz-details__row {
+  display: flex;
+  gap: 0.4em;
+}
+
+.atp .rz-details__label::after {
+  content: ':';
+}
+
+.atp .rz-signature {
+  margin-top: calc(16px * var(--rz-density));
+}
+
+.atp .rz-signature__image {
+  max-height: calc(42px * var(--rz-scale));
+}
+
+.atp .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--rz-rule);
+  margin-top: calc(2px * var(--rz-density));
+}

@@ -1,0 +1,308 @@
+/* ---------------------------------------------------------------------------
+   Formal Centered.
+
+   Proportions are taken from a screenshot rather than a PDF's text layer, so
+   they are ratios rather than measured points: name about 2.1x the body,
+   headings 1.35x, employer 1.3x, role 1.05x. Everything is expressed against
+   `--rz-base` so the whole design scales with the type control.
+
+   Serif headings over a sans body. The face is read from the shared font
+   variables directly rather than through `--rz-font`, because that one carries
+   the user's single choice and this design needs two.
+   --------------------------------------------------------------------------- */
+
+.resume-root.fmc {
+  /* Denser than the shared default: this design fits a long history on two
+     pages, which is most of why it reads as conservative. */
+  --rz-base: calc(9pt * var(--rz-scale));
+  --rz-lh: calc(1.38 * var(--rz-density));
+
+  --fmc-serif: var(--font-resume-serif), Georgia, 'Times New Roman', serif;
+  --fmc-ink-soft: #55606f;
+  --fmc-rule: #c8cdd4;
+}
+
+.fmc .rz-section + .rz-section {
+  margin-top: calc(14px * var(--rz-density) * var(--rz-scale));
+}
+
+/* --- Identity ------------------------------------------------------------- */
+
+.fmc .fmc-identity {
+  text-align: center;
+}
+
+.fmc .fmc-identity__photo {
+  width: calc(70px * var(--rz-scale));
+  height: calc(70px * var(--rz-scale));
+  border-radius: 999px;
+  margin: 0 auto calc(6px * var(--rz-density));
+  display: block;
+}
+
+.fmc .fmc-name {
+  font-family: var(--fmc-serif);
+  font-size: 2.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: var(--rz-ink);
+  /* Under the 0.06em ceiling above which Chrome emits one run per glyph. */
+  letter-spacing: 0.02em;
+}
+
+.fmc .fmc-headline {
+  margin-top: calc(2px * var(--rz-density));
+  font-size: 1.15em;
+  font-weight: 400;
+  color: var(--fmc-ink-soft);
+}
+
+/*
+ * One centred line. The bullet between details is a real text node, so the
+ * extracted line reads "phone • email • link" rather than running together.
+ */
+.fmc .fmc-contact {
+  margin-top: calc(5px * var(--rz-density));
+  display: block;
+  color: var(--fmc-ink-soft);
+}
+
+.fmc .rz-contact__item {
+  display: inline;
+}
+
+.fmc .rz-contact__sep {
+  color: var(--fmc-rule);
+}
+
+/* --- Section headings ----------------------------------------------------- */
+
+/*
+ * Centred, in the serif face, with a full-width hairline beneath. The rule is
+ * a pseudo-element: no node, no text, nothing for a parser to read.
+ */
+.fmc .fmc-heading {
+  margin-top: calc(16px * var(--rz-density) * var(--rz-scale));
+  font-family: var(--fmc-serif);
+  font-size: 1.35em;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  color: var(--rz-ink);
+}
+
+.fmc .fmc-heading::after {
+  content: '';
+  display: block;
+  margin-top: calc(4px * var(--rz-density));
+  border-top: 1px solid var(--fmc-rule);
+}
+
+.fmc .rz-section:first-of-type .fmc-heading {
+  margin-top: calc(12px * var(--rz-density) * var(--rz-scale));
+}
+
+/* --- Entries -------------------------------------------------------------- */
+
+/*
+ * The employer leads, the role sits under it, and the place and dates stack in
+ * the right column. A grid rather than a positioned block, so a tall margin
+ * grows its row instead of overflowing the section.
+ */
+.fmc .rz-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.2em;
+}
+
+.fmc .rz-entry > * {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.fmc .rz-entry + .rz-entry {
+  margin-top: calc(11px * var(--rz-density));
+}
+
+.fmc .rz-entry__org {
+  font-size: 1.3em;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--rz-accent);
+}
+
+.fmc .rz-entry__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+}
+
+.fmc .rz-entry__title {
+  font-size: 1.05em;
+  font-weight: 400;
+  color: var(--rz-ink);
+}
+
+.fmc .rz-entry__trailing {
+  font-size: 1em;
+  color: var(--fmc-ink-soft);
+}
+
+.fmc .rz-entry__meta {
+  grid-column: 2;
+  grid-row: 1 / span 20;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--fmc-ink-soft);
+  line-height: 1.45;
+}
+
+.fmc .rz-entry__place,
+.fmc .rz-entry__dates {
+  display: block;
+}
+
+.fmc .rz-entry__note {
+  margin-top: calc(2px * var(--rz-density));
+  font-style: normal;
+  color: var(--fmc-ink-soft);
+}
+
+.fmc .rz-entry__body {
+  margin-top: calc(3px * var(--rz-density));
+}
+
+.fmc .rz-entry__tags,
+.fmc .rz-entry__links {
+  margin-top: calc(2px * var(--rz-density));
+  color: var(--fmc-ink-soft);
+}
+
+/* --- Bullets -------------------------------------------------------------- */
+
+.fmc .rz-bullet-list {
+  gap: calc(2px * var(--rz-density));
+  padding-left: 1.1em;
+}
+
+.fmc .rz-bullet {
+  gap: 0.5em;
+}
+
+.fmc .rz-bullet__dot {
+  font-size: 0.85em;
+  color: var(--rz-ink);
+}
+
+.fmc .rz-summary {
+  color: var(--rz-ink);
+}
+
+/* --- Skills --------------------------------------------------------------- */
+
+.fmc .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: calc(3px * var(--rz-density));
+}
+
+.fmc .rz-skills__label,
+.fmc .rz-skills__items {
+  display: inline;
+}
+
+.fmc .rz-skills__label {
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.fmc .rz-skills__sep {
+  font-weight: 700;
+}
+
+.fmc .rz-skills__items {
+  color: var(--rz-ink);
+}
+
+.fmc .rz-skills__meter,
+.fmc .rz-cat-icon {
+  display: none;
+}
+
+/* --- Two-up blocks -------------------------------------------------------- */
+
+.fmc .rz-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(8px * var(--rz-density)) calc(24px * var(--rz-scale));
+}
+
+.fmc .rz-grid-2 .rz-entry,
+.fmc .rz-grid-2 .rz-entry + .rz-entry {
+  display: block;
+  margin-top: 0;
+}
+
+.fmc .rz-grid-2 .rz-entry__title {
+  font-weight: 700;
+}
+
+/* --- Details, lists, sign-off --------------------------------------------- */
+
+.fmc .rz-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(2px * var(--rz-density)) calc(24px * var(--rz-scale));
+}
+
+.fmc .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.fmc .rz-details__label {
+  min-width: 8.5em;
+  color: var(--fmc-ink-soft);
+}
+
+.fmc .rz-details__value {
+  font-weight: 600;
+}
+
+.fmc .rz-inline-list {
+  color: var(--rz-ink);
+}
+
+.fmc .rz-declaration__stamp {
+  margin-top: calc(4px * var(--rz-density));
+  color: var(--fmc-ink-soft);
+}
+
+.fmc .rz-signature {
+  margin-top: calc(18px * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(2px * var(--rz-density));
+}
+
+.fmc .rz-signature__typed {
+  font-family: var(--fmc-serif);
+  font-size: 1.5em;
+  font-style: italic;
+}
+
+.fmc .rz-signature__image {
+  max-height: calc(46px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.fmc .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--fmc-rule);
+  margin-top: calc(2px * var(--rz-density));
+}

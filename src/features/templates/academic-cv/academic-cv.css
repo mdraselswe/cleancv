@@ -1,0 +1,196 @@
+/* ---------------------------------------------------------------------------
+   Academic / Government CV.
+
+   The formal Bangladeshi and public-sector shape: a centred identity block, a
+   two-column personal-details table, and room for a declaration and signature
+   at the foot. Long by design — the page-count rule is the wrong yardstick for
+   this document, and the template says so in its description.
+   --------------------------------------------------------------------------- */
+
+.acv {
+  --acv-rule: 1px solid var(--rz-rule);
+}
+
+.acv .acv-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: calc(4px * var(--rz-density));
+  padding-bottom: calc(8px * var(--rz-density));
+  border-bottom: 2px solid var(--rz-accent);
+}
+
+.acv .acv-identity__photo {
+  border-radius: var(--rz-photo-radius);
+  width: calc(84px * var(--rz-scale));
+  height: calc(84px * var(--rz-scale));
+  border: 1px solid var(--rz-rule);
+  order: -1;
+}
+
+.acv .acv-name {
+  font-size: 1.85em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.acv .acv-headline {
+  font-size: 1em;
+  color: var(--rz-ink-muted);
+}
+
+.acv .rz-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(2px * var(--rz-density)) calc(14px * var(--rz-scale));
+  font-size: 0.92em;
+  color: var(--rz-ink-muted);
+}
+
+.acv .rz-contact__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
+.acv .acv-heading {
+  font-size: 0.98em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rz-accent);
+  background: var(--rz-accent-soft);
+  padding: calc(2px * var(--rz-density)) 0.6em;
+}
+
+.acv .rz-section {
+  margin-top: calc(12px * var(--rz-density) * var(--rz-scale));
+}
+
+.acv .rz-entry {
+  margin-top: calc(7px * var(--rz-density));
+}
+
+.acv .rz-entry__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.acv .rz-entry__title {
+  font-size: 1.02em;
+  font-weight: 700;
+}
+
+.acv .rz-entry__org {
+  font-weight: 500;
+}
+
+.acv .rz-entry__meta,
+.acv .rz-entry__trailing {
+  font-size: 0.92em;
+  color: var(--rz-ink-muted);
+}
+
+.acv .rz-entry__note {
+  font-size: 0.94em;
+  font-style: italic;
+  color: var(--rz-ink-muted);
+}
+
+.acv .rz-entry__body {
+  margin-top: calc(3px * var(--rz-density));
+}
+
+.acv .rz-skills__group {
+  display: flex;
+  gap: 0.5em;
+  margin-top: calc(2px * var(--rz-density));
+}
+
+.acv .rz-skills__label {
+  min-width: 9em;
+  font-weight: 600;
+}
+
+.acv .rz-skills__label::after {
+  content: ':';
+}
+
+.acv .rz-skills__meter {
+  display: none;
+}
+
+/* The personal-details block this template exists for. */
+.acv .rz-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(2px * var(--rz-density)) calc(24px * var(--rz-scale));
+  margin-top: calc(4px * var(--rz-density));
+}
+
+.acv .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+  padding: calc(1px * var(--rz-density)) 0;
+}
+
+.acv .rz-details__label {
+  min-width: 9em;
+  color: var(--rz-ink-muted);
+}
+
+.acv .rz-details__label::after {
+  content: ':';
+}
+
+.acv .rz-details__value {
+  font-weight: 500;
+}
+
+.acv .rz-grid-2 {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5px * var(--rz-density));
+}
+
+.acv .rz-declaration {
+  margin-top: calc(4px * var(--rz-density));
+}
+
+.acv .rz-declaration__stamp {
+  margin-top: calc(6px * var(--rz-density));
+}
+
+.acv .rz-signature {
+  margin-top: calc(24px * var(--rz-density));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(2px * var(--rz-density));
+}
+
+.acv .rz-signature__typed {
+  font-size: 1.3em;
+  font-style: italic;
+}
+
+.acv .rz-signature__image {
+  max-height: calc(48px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.acv .rz-signature__rule {
+  display: block;
+  width: calc(170px * var(--rz-scale));
+  border-top: var(--acv-rule);
+  margin-top: calc(2px * var(--rz-density));
+}
+
+.acv .rz-signature__caption {
+  font-size: 0.9em;
+}

@@ -1,0 +1,79 @@
+/**
+ * Glyphs a skill group or an achievement can carry.
+ *
+ * `auto` is the default and picks from the words the user typed, which is right
+ * almost always and free. The rest exist because "almost always" is not always:
+ * nothing in "Soft Skills" or "Military Service" tells the matcher what the
+ * group is about, and a wrong glyph is worse than a plain one.
+ *
+ * Only templates with an icon gutter draw these; the others ignore the field
+ * entirely, so choosing one never costs anything elsewhere.
+ */
+
+export const RESUME_ICON_KEYS = [
+  'auto',
+  'monitor',
+  'database',
+  'chart',
+  'brain',
+  'wrench',
+  'cloud',
+  'palette',
+  'diamond',
+  'shield',
+  'bolt',
+  'trophy',
+  'crown',
+  'heart',
+  'plug',
+  'person',
+  'star',
+  'target',
+  'rocket',
+  'book',
+  'globe',
+  'briefcase',
+  'graduation',
+  'certificate',
+  'flask',
+  'mic',
+  'handshake',
+] as const;
+
+export type ResumeIconKey = (typeof RESUME_ICON_KEYS)[number];
+
+/** Every glyph except `auto`, which resolves to one of these. */
+export type PickableIcon = Exclude<ResumeIconKey, 'auto'>;
+
+/** Kept as the literal type so a comparison against it narrows the union. */
+export const AUTO_ICON = 'auto' satisfies ResumeIconKey;
+
+export const RESUME_ICON_LABEL: Record<ResumeIconKey, string> = {
+  auto: 'Automatic',
+  monitor: 'Screen',
+  database: 'Database',
+  chart: 'Chart',
+  brain: 'AI',
+  wrench: 'Tools',
+  cloud: 'Cloud',
+  palette: 'Design',
+  diamond: 'Diamond',
+  shield: 'Security',
+  bolt: 'Speed',
+  trophy: 'Trophy',
+  crown: 'Crown',
+  heart: 'Health',
+  plug: 'Integration',
+  person: 'Person',
+  star: 'Star',
+  target: 'Target',
+  rocket: 'Launch',
+  book: 'Learning',
+  globe: 'Web',
+  briefcase: 'Work',
+  graduation: 'Study',
+  certificate: 'Certificate',
+  flask: 'Research',
+  mic: 'Speaking',
+  handshake: 'Volunteering',
+};

@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   App chrome tokens. The resume canvas has its own scale (see resume.css) and
+   deliberately does not inherit these — a document is not app UI.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --app-bg: #f6f7f9;
+  --app-surface: #ffffff;
+  --app-surface-2: #f1f3f6;
+  --app-border: #e2e5ea;
+  --app-border-strong: #cbd1da;
+  --app-fg: #14181f;
+  --app-fg-muted: #5c6573;
+  --app-fg-subtle: #8a929e;
+  --app-primary: #2563eb;
+  --app-primary-fg: #ffffff;
+  --app-primary-soft: #e8effd;
+  --app-danger: #dc2626;
+  --app-warning: #c2740a;
+  --app-success: #15803d;
+  --app-ring: #93b4fb;
+  --app-shadow: 0 1px 2px rgb(20 24 31 / 0.06), 0 8px 24px -12px rgb(20 24 31 / 0.18);
+
+  --score-excellent: #15803d;
+  --score-strong: #4d7c0f;
+  --score-fair: #c2740a;
+  --score-poor: #dc2626;
+}
+
+:root[data-theme='dark'],
+:root:not([data-theme='light']) {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --app-bg: #0e1116;
+    --app-surface: #161a21;
+    --app-surface-2: #1d222b;
+    --app-border: #262c36;
+    --app-border-strong: #39414e;
+    --app-fg: #e8ebf0;
+    --app-fg-muted: #9aa3b2;
+    --app-fg-subtle: #6e7787;
+    --app-primary: #4f83f1;
+    --app-primary-fg: #08101f;
+    --app-primary-soft: #16233c;
+    --app-danger: #f26d6d;
+    --app-warning: #e0a44a;
+    --app-success: #4ec27f;
+    --app-ring: #2f4d86;
+    --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+
+    --score-excellent: #4ec27f;
+    --score-strong: #8fbf4a;
+    --score-fair: #e0a44a;
+    --score-poor: #f26d6d;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --app-bg: #0e1116;
+  --app-surface: #161a21;
+  --app-surface-2: #1d222b;
+  --app-border: #262c36;
+  --app-border-strong: #39414e;
+  --app-fg: #e8ebf0;
+  --app-fg-muted: #9aa3b2;
+  --app-fg-subtle: #6e7787;
+  --app-primary: #4f83f1;
+  --app-primary-fg: #08101f;
+  --app-primary-soft: #16233c;
+  --app-danger: #f26d6d;
+  --app-warning: #e0a44a;
+  --app-success: #4ec27f;
+  --app-ring: #2f4d86;
+  --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+
+  --score-excellent: #4ec27f;
+  --score-strong: #8fbf4a;
+  --score-fair: #e0a44a;
+  --score-poor: #f26d6d;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--app-bg);
+  --color-surface: var(--app-surface);
+  --color-surface-2: var(--app-surface-2);
+  --color-border-base: var(--app-border);
+  --color-border-strong: var(--app-border-strong);
+  --color-fg: var(--app-fg);
+  --color-fg-muted: var(--app-fg-muted);
+  --color-fg-subtle: var(--app-fg-subtle);
+  --color-primary: var(--app-primary);
+  --color-primary-fg: var(--app-primary-fg);
+  --color-primary-soft: var(--app-primary-soft);
+  --color-danger: var(--app-danger);
+  --color-warning: var(--app-warning);
+  --color-success: var(--app-success);
+  --color-ring: var(--app-ring);
+
+  --color-score-excellent: var(--score-excellent);
+  --color-score-strong: var(--score-strong);
+  --color-score-fair: var(--score-fair);
+  --color-score-poor: var(--score-poor);
+
+  --font-sans: var(--font-app-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-app: var(--app-shadow);
+}
+
+* {
+  border-color: var(--app-border);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbars in the editor panes read as chrome, not content. */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-border-strong) transparent;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+}
+
+/*
+ * Motion is decoration everywhere in this app — nothing here conveys meaning by
+ * moving — so it can be switched off wholesale.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

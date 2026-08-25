@@ -1,0 +1,221 @@
+/* ---------------------------------------------------------------------------
+   Modern Sidebar.
+
+   A real two-column layout with a coloured rail. The rail is first in the DOM
+   as well as on the left, so the visual order and the extracted reading order
+   agree — no CSS reordering, no interleaved text.
+
+   The rail carries its own inner padding, and the theme's page margin stays
+   small but non-zero: padding on a continuous flow only applies at the very
+   start and end, so a zero page margin would leave page two's text against the
+   paper edge — which no consumer printer can reach anyway.
+   --------------------------------------------------------------------------- */
+
+.msb .msb-grid {
+  display: flex;
+  align-items: stretch;
+  min-height: 297mm;
+}
+
+.msb .msb-rail {
+  width: 33%;
+  flex: none;
+  background: var(--rz-accent);
+  color: #ffffff;
+  padding: calc(16px * var(--rz-scale)) calc(14px * var(--rz-scale));
+}
+
+.msb .msb-main {
+  flex: 1;
+  min-width: 0;
+  padding: calc(14px * var(--rz-scale)) 0 calc(14px * var(--rz-scale)) calc(14px * var(--rz-scale));
+}
+
+.msb .msb-rail__photo {
+  width: calc(88px * var(--rz-scale));
+  height: calc(88px * var(--rz-scale));
+  border-radius: var(--rz-photo-radius);
+  display: block;
+  margin: 0 auto calc(10px * var(--rz-density));
+  border: 2px solid rgb(255 255 255 / 0.5);
+}
+
+.msb .msb-name {
+  font-size: 1.55em;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
+.msb .msb-headline {
+  margin-top: calc(3px * var(--rz-density));
+  font-size: 0.95em;
+  color: rgb(255 255 255 / 0.85);
+}
+
+.msb .msb-contact {
+  margin-top: calc(10px * var(--rz-density));
+  display: flex;
+  flex-direction: column;
+  gap: calc(3px * var(--rz-density));
+  font-size: 0.88em;
+  color: rgb(255 255 255 / 0.92);
+}
+
+.msb .msb-contact .rz-contact__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45em;
+  overflow-wrap: anywhere;
+}
+
+.msb .msb-rail-heading {
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.75);
+  padding-bottom: calc(2px * var(--rz-density));
+  border-bottom: 1px solid rgb(255 255 255 / 0.3);
+}
+
+.msb .msb-heading {
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rz-accent);
+  padding-bottom: calc(3px * var(--rz-density));
+  border-bottom: 1px solid var(--rz-rule);
+}
+
+/* --- Rail content --------------------------------------------------------- */
+
+.msb .msb-rail .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--rz-density));
+}
+
+.msb .msb-rail .rz-skills__label {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: rgb(255 255 255 / 0.95);
+}
+
+/*
+ * The rail is painted in the accent, so an accent-coloured glyph on it is
+ * invisible. Inside the rail the icon takes the rail's own ink instead.
+ */
+.msb .msb-rail .rz-cat-icon {
+  color: rgb(255 255 255 / 0.9);
+}
+
+.msb .msb-rail .rz-skills__items,
+.msb .msb-rail .rz-inline-list {
+  font-size: 0.88em;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.msb .msb-rail .rz-skills__meter {
+  display: none;
+}
+
+.msb .msb-rail .rz-entry__title {
+  font-size: 0.92em;
+  font-weight: 600;
+}
+
+.msb .msb-rail .rz-entry__org,
+.msb .msb-rail .rz-entry__meta,
+.msb .msb-rail .rz-entry__note {
+  font-size: 0.86em;
+  color: rgb(255 255 255 / 0.8);
+}
+
+/* --- Main content --------------------------------------------------------- */
+
+.msb .msb-main .rz-entry__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.msb .msb-main .rz-entry__title {
+  font-size: 1.05em;
+  font-weight: 600;
+}
+
+.msb .msb-main .rz-entry__org {
+  font-weight: 500;
+  color: var(--rz-accent);
+}
+
+.msb .msb-main .rz-entry__meta,
+.msb .msb-main .rz-entry__trailing {
+  font-size: 0.9em;
+  color: var(--rz-ink-muted);
+}
+
+.msb .msb-main .rz-entry__note {
+  font-size: 0.93em;
+  font-style: italic;
+  color: var(--rz-ink-muted);
+}
+
+.msb .msb-main .rz-entry__body {
+  margin-top: calc(3px * var(--rz-density));
+}
+
+.msb .msb-main .rz-entry__tags,
+.msb .msb-main .rz-entry__links {
+  margin-top: calc(2px * var(--rz-density));
+  font-size: 0.9em;
+  color: var(--rz-ink-muted);
+}
+
+.msb .msb-main .rz-grid-2 {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5px * var(--rz-density));
+}
+
+.msb .rz-details {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2px * var(--rz-density));
+}
+
+.msb .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.msb .rz-details__label {
+  min-width: 8.5em;
+  color: var(--rz-ink-muted);
+}
+
+.msb .rz-signature {
+  margin-top: calc(18px * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.msb .rz-signature__typed {
+  font-size: 1.25em;
+  font-style: italic;
+}
+
+.msb .rz-signature__image {
+  max-height: calc(44px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.msb .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--rz-rule);
+  margin-top: calc(2px * var(--rz-density));
+}

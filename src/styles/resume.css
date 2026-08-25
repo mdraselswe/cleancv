@@ -1,0 +1,224 @@
+/* ---------------------------------------------------------------------------
+   Resume canvas.
+
+   Shared by the on-screen preview and the headless /print route, so what the
+   user sees is byte-for-byte what puppeteer renders. Templates layer their own
+   stylesheet on top of this and only ever read the --rz-* variables, which
+   useTemplateTheme writes onto .resume-root.
+   --------------------------------------------------------------------------- */
+
+.resume-root {
+  /* Written by useTemplateTheme; these are inert fallbacks. */
+  --rz-accent: #1e3a5f;
+  --rz-accent-soft: #eef2f8;
+  --rz-ink: #16181d;
+  --rz-ink-muted: #4a5160;
+  --rz-rule: #d6dae1;
+  --rz-font: ui-sans-serif, system-ui, sans-serif;
+  --rz-scale: 1;
+  --rz-density: 1;
+  --rz-margin: 14mm;
+
+  --rz-base: calc(10.2pt * var(--rz-scale));
+  --rz-lh: calc(1.42 * var(--rz-density));
+  --rz-gap-section: calc(11px * var(--rz-density) * var(--rz-scale));
+  --rz-gap-entry: calc(8px * var(--rz-density) * var(--rz-scale));
+  --rz-gap-bullet: calc(3px * var(--rz-density) * var(--rz-scale));
+
+  font-family: var(--rz-font);
+  font-size: var(--rz-base);
+  line-height: var(--rz-lh);
+  color: var(--rz-ink);
+  background: #ffffff;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: auto;
+}
+
+/*
+ * The document is a single continuous flow with no page padding of its own.
+ * Preview draws the A4 sheet and its margins around this flow; for the PDF,
+ * puppeteer sets the page margins from the same theme value. Keeping margins
+ * out of the flow is what lets page two get the same margins as page one.
+ */
+.resume-flow {
+  width: 100%;
+}
+
+.resume-root p,
+.resume-root h1,
+.resume-root h2,
+.resume-root h3,
+.resume-root ul,
+.resume-root li {
+  margin: 0;
+  padding: 0;
+}
+
+.resume-root a {
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* --- ATS-safe primitives -------------------------------------------------- */
+
+/*
+ * Bullets are a real U+2022 in a span, never list-style or ::marker: generated
+ * content is not reliably present in the extracted PDF text layer. See ADR-003.
+ */
+.rz-bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rz-gap-bullet);
+}
+
+.rz-bullet {
+  display: flex;
+  gap: 0.55em;
+  align-items: baseline;
+}
+
+.rz-bullet__dot {
+  flex: none;
+  line-height: inherit;
+}
+
+.rz-bullet__text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Inline SVG icons only. Icon fonts leak PUA codepoints into the text layer. */
+.rz-icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  display: inline-block;
+  vertical-align: -0.13em;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+ * The photo's frame.
+ *
+ * Each design's own class sits on this wrapper and keeps deciding the size, the
+ * shape and the spacing; the wrapper adds only the clipping that zoom needs,
+ * because a scaled image overflows its own box and nothing but an ancestor cuts
+ * it back. The image is never altered — `object-position` picks what the frame
+ * centres on and the scale magnifies about that same point. See ADR-025.
+ */
+.rz-photo {
+  display: inline-block;
+  overflow: hidden;
+  flex: none;
+}
+
+.rz-photo__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * The glyph beside an entry, an achievement or a skill group, for templates
+ * that declare `supports.icons`. A usable default lives here so opting in needs
+ * nothing but the flag; designs with a real gutter position it themselves.
+ *
+ * The box is exactly one line tall and the glyph is centred in it, so the icon
+ * sits on the same optical centre as the first line of text beside it. Left to
+ * an inline-flex's own baseline the box's *bottom* lands on the text baseline
+ * and the glyph rides visibly high; left to a flex row's default `stretch` it
+ * centres itself over two lines instead of one.
+ */
+.rz-cat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Fallback first for engines without `lh`; both are the same line box. */
+  height: 1.4em;
+  height: 1lh;
+  align-self: flex-start;
+  vertical-align: top;
+  margin-right: 0.4em;
+  color: var(--rz-accent);
+}
+
+.rz-cat-icon .rz-icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/*
+ * A marked entry hangs its glyph in a gutter and indents everything else to
+ * match, so several entries under one heading read as a list rather than as one
+ * block of text. A gutter rather than an inline glyph: indented continuation
+ * lines are what make the entries scannable, and an inline mark leaves the
+ * second line flush with the first. See ADR-022.
+ */
+.rz-entry--marked {
+  padding-left: 1.7em;
+}
+
+.rz-entry--marked > * > .rz-cat-icon,
+.rz-entry--marked > .rz-entry__org > .rz-cat-icon {
+  margin-left: -1.7em;
+  margin-right: 0.6em;
+}
+
+.rz-section {
+  margin-top: var(--rz-gap-section);
+  break-inside: auto;
+}
+
+.rz-section:first-child {
+  margin-top: 0;
+}
+
+.rz-entry {
+  margin-top: var(--rz-gap-entry);
+  /* Keep a role and its first bullets together across a page break. */
+  break-inside: avoid;
+}
+
+.rz-entry:first-of-type {
+  margin-top: calc(var(--rz-gap-entry) * 0.6);
+}
+
+.rz-heading {
+  break-after: avoid;
+}
+
+.rz-muted {
+  color: var(--rz-ink-muted);
+}
+
+.rz-avoid-break {
+  break-inside: avoid;
+}
+
+/* --- Print ---------------------------------------------------------------- */
+
+@page {
+  size: A4;
+}
+
+@media print {
+  .resume-root {
+    width: 100%;
+  }
+}
+
+/*
+ * Emphasis inside body text, from `**bold**` markers. Weight only: colour or a
+ * highlight would print as noise and adds nothing a recruiter scans for.
+ */
+.rz-strong {
+  font-weight: 700;
+  color: inherit;
+}

@@ -1,0 +1,454 @@
+/* ---------------------------------------------------------------------------
+   Compact Professional.
+
+   Measured from the reference document's text layer, read at US Letter
+   (612 x 792 pt) with 43 pt margins:
+
+        body 10pt          section heading 14.3pt      name 26.9pt
+        contact 10pt, right-aligned in four rows
+        entry text 48pt, bullet marker 61pt, wrapped bullet 69pt
+        references 9pt, two columns at 43pt and 312pt
+
+   Entry dates are absolutely positioned into the right margin rather than
+   reordered into the markup, so the extracted text still reads role, employer,
+   dates. See ADR-004.
+   --------------------------------------------------------------------------- */
+
+.resume-root.cpr {
+  --rz-base: calc(10pt * var(--rz-scale));
+  --rz-lh: calc(1.33 * var(--rz-density));
+
+  /* Body text is indented slightly from the heading, as in the reference. */
+  --cpr-indent: 0.6em;
+  --cpr-date-column: 12em;
+  --cpr-ink-soft: #333a45;
+  --cpr-rule: #b9c4d2;
+}
+
+.cpr .rz-section + .rz-section {
+  margin-top: calc(14.3px * var(--rz-density) * var(--rz-scale));
+}
+
+/* --- Identity ------------------------------------------------------------- */
+
+/*
+ * The one two-column part of the design: name on the left, contact opposite.
+ * `align-items: baseline` is what lines the first contact row up with the top
+ * of the name rather than with its centre.
+ */
+.cpr .cpr-identity {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(16px * var(--rz-scale));
+}
+
+.cpr .cpr-identity__name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cpr .cpr-identity__photo {
+  width: calc(66px * var(--rz-scale));
+  height: calc(66px * var(--rz-scale));
+  border-radius: var(--rz-photo-radius);
+  flex: none;
+}
+
+.cpr .cpr-name {
+  /* 26.9pt against a 10pt body. */
+  font-size: 2.69em;
+  /* Held on one line; a long name pushes the contact block narrower instead. */
+  white-space: nowrap;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  color: var(--rz-ink);
+}
+
+.cpr .cpr-headline {
+  margin-top: calc(2px * var(--rz-density));
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--rz-accent);
+}
+
+/*
+ * Right-aligned and wrapping from the right, so each row ends flush with the
+ * margin the way the reference sets it.
+ */
+.cpr .cpr-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: calc(1px * var(--rz-density)) calc(9px * var(--rz-scale));
+  flex: 0 1 auto;
+  max-width: 50%;
+  text-align: right;
+  color: var(--cpr-ink-soft);
+}
+
+.cpr .rz-contact__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.cpr .rz-contact .rz-icon {
+  width: 1em;
+  height: 1em;
+  color: var(--rz-accent);
+}
+
+/* --- Section headings ----------------------------------------------------- */
+
+/*
+ * Title case, in the accent colour, with a hairline running from the end of the
+ * word to the right margin. The rule is a pseudo-element, so it adds nothing to
+ * the text layer.
+ */
+.cpr .cpr-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  font-size: 1.43em;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--rz-accent);
+  margin-bottom: calc(1.7px * var(--rz-density));
+}
+
+.cpr .cpr-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cpr-rule);
+}
+
+/* --- Entries -------------------------------------------------------------- */
+
+/*
+ * The reference sets its first entry hard against the heading rule, the same
+ * distance as a paragraph — the shared half-gap before a first entry is space
+ * this design does not have.
+ */
+.cpr .rz-entry:first-of-type {
+  margin-top: 0;
+}
+
+/*
+ * Two grid columns rather than an absolutely positioned date block. Both put
+ * the dates in the right margin without touching markup order, but only the
+ * grid lets the row grow when the dates are taller than the entry beside them —
+ * positioned, a three-line location on a one-line education entry overflowed
+ * the section and printed across the next page's heading.
+ */
+.cpr .rz-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--cpr-date-column);
+  column-gap: 0.9em;
+  padding-left: var(--cpr-indent);
+}
+
+/*
+ * Only the head shares its row with the dates opposite it. Everything below
+ * spans both columns and runs the full width, as the reference does: the date
+ * column was reserved for the whole entry, so every bullet wrapped a hundred
+ * points early against a margin nothing was using. See ADR-027.
+ */
+.cpr .rz-entry > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.cpr .rz-entry__head {
+  grid-column: 1;
+}
+
+.cpr .rz-entry + .rz-entry {
+  margin-top: calc(9.8px * var(--rz-density));
+}
+
+/* Role and employer share one line; the separator is a real text node. */
+.cpr .rz-entry__head {
+  display: block;
+  line-height: 1.3;
+}
+
+.cpr .rz-entry__title {
+  display: inline;
+  font-size: 1em;
+  font-weight: 400;
+  color: var(--rz-ink);
+}
+
+.cpr .rz-entry__head .rz-entry__org,
+.cpr .rz-entry__sep {
+  display: inline;
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.cpr .rz-entry__trailing {
+  display: inline;
+  font-weight: 400;
+  color: var(--cpr-ink-soft);
+}
+
+/* An organisation on its own line, where a section does not inline it. */
+.cpr .rz-entry > .rz-entry__org {
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+/* Dates, opposite the head. The row grows if they run to more lines than it. */
+.cpr .rz-entry__meta {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+  color: var(--rz-ink);
+  line-height: 1.3;
+}
+
+.cpr .rz-entry__dates,
+.cpr .rz-entry__place {
+  display: inline;
+}
+
+.cpr .rz-entry__note {
+  margin-top: calc(2px * var(--rz-density));
+  font-style: italic;
+  color: var(--rz-ink);
+}
+
+.cpr .rz-entry__body {
+  margin-top: calc(2px * var(--rz-density));
+}
+
+/* --- Bullets -------------------------------------------------------------- */
+
+.cpr .rz-bullet-list {
+  gap: calc(4.4px * var(--rz-density));
+  /* The reference sets its markers 13.3pt in from the entry text, at 10pt. */
+  padding-left: 1.33em;
+}
+
+.cpr .rz-bullet {
+  /* Marker to text: the reference hangs its wrapped lines 8pt in, at 10pt. */
+  gap: 0.24em;
+}
+
+.cpr .rz-bullet__dot {
+  color: var(--cpr-ink-soft);
+}
+
+.cpr .rz-summary {
+  text-align: justify;
+  color: var(--rz-ink);
+}
+
+/* --- Skills --------------------------------------------------------------- */
+
+/*
+ * "Label: value" on one line, the label bold. No icon gutter: this design
+ * carries none, and the group name doing the work is the point.
+ */
+.cpr .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: calc(1px * var(--rz-density));
+}
+
+.cpr .rz-skills__group {
+  padding-left: var(--cpr-indent);
+}
+
+.cpr .rz-skills__label,
+.cpr .rz-skills__items {
+  display: inline;
+}
+
+.cpr .rz-skills__label {
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.cpr .rz-skills__items {
+  color: var(--rz-ink);
+}
+
+.cpr .rz-skills__level {
+  font-weight: 400;
+  color: var(--cpr-ink-soft);
+}
+
+.cpr .rz-skills__meter,
+.cpr .rz-cat-icon {
+  display: none;
+}
+
+.cpr .rz-skills__sep {
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+/* --- Links in the right margin -------------------------------------------- */
+
+/*
+ * "Repository" and "Link" sit opposite the title, where the dates would be.
+ *
+ * The links live inside the entry's body, so the body is flattened with
+ * `display: contents` to let them reach the grid's right column. Its own
+ * children are pinned back to the left column, or auto-placement would drop
+ * every second bullet into the margin.
+ */
+.cpr [data-section='projects'] .rz-entry__body,
+.cpr [data-section='certifications'] .rz-entry__body {
+  display: contents;
+}
+
+.cpr [data-section='projects'] .rz-entry__body > *,
+.cpr [data-section='certifications'] .rz-entry__body > * {
+  grid-column: 1 / -1;
+}
+
+.cpr [data-section='projects'] .rz-entry__links,
+.cpr [data-section='certifications'] .rz-entry__links {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+  color: var(--rz-accent);
+  font-weight: 600;
+}
+
+.cpr .rz-entry__links a {
+  color: var(--rz-accent);
+}
+
+.cpr .rz-entry__tags {
+  margin-top: calc(1px * var(--rz-density));
+  color: var(--cpr-ink-soft);
+}
+
+/* --- Credentials and achievements ----------------------------------------- */
+
+.cpr [data-section='certifications'] .rz-entry__title,
+.cpr [data-section='achievements'] .rz-entry__title,
+.cpr [data-section='projects'] .rz-entry__title {
+  font-weight: 700;
+}
+
+.cpr [data-section='certifications'] .rz-entry__note,
+.cpr [data-section='achievements'] .rz-entry__note,
+.cpr [data-section='certifications'] .rz-entry__meta,
+.cpr [data-section='achievements'] .rz-entry__meta {
+  font-style: italic;
+}
+
+/*
+ * Credentials carry no dates in the margin, so their meta returns to the left
+ * column under the title rather than colliding with the link opposite it.
+ */
+.cpr [data-section='certifications'] .rz-entry__meta,
+.cpr [data-section='achievements'] .rz-entry__meta {
+  grid-column: 1;
+  grid-row: auto;
+  text-align: left;
+  color: var(--cpr-ink-soft);
+}
+
+/* --- Two-up blocks and references ----------------------------------------- */
+
+/*
+ * Referees run two-up and smaller, as the reference document has them. Only
+ * referees: the same `rz-grid-2` carries achievements, and the reference sets
+ * those full width like every other entry — a two-column grid there would have
+ * halved them for no reason the document gives.
+ */
+.cpr [data-section='references'] .rz-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(7px * var(--rz-density)) calc(24px * var(--rz-scale));
+  font-size: 0.9em;
+}
+
+/* Two-up cells have no right margin of their own to fill. */
+.cpr [data-section='references'] .rz-grid-2 .rz-entry,
+.cpr [data-section='references'] .rz-grid-2 .rz-entry + .rz-entry {
+  display: block;
+  padding-left: 0;
+  margin-top: 0;
+}
+
+.cpr [data-section='references'] .rz-entry__title {
+  display: block;
+  font-weight: 700;
+}
+
+.cpr [data-section='references'] .rz-entry__meta {
+  text-align: left;
+  color: var(--cpr-ink-soft);
+}
+
+/* --- Details, lists, sign-off --------------------------------------------- */
+
+.cpr .rz-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(1px * var(--rz-density)) calc(24px * var(--rz-scale));
+  padding-left: var(--cpr-indent);
+}
+
+.cpr .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.cpr .rz-details__label {
+  min-width: 8em;
+  color: var(--cpr-ink-soft);
+}
+
+.cpr .rz-details__value {
+  font-weight: 600;
+}
+
+.cpr .rz-inline-list {
+  padding-left: var(--cpr-indent);
+}
+
+.cpr .rz-declaration {
+  padding-left: var(--cpr-indent);
+}
+
+.cpr .rz-declaration__stamp {
+  margin-top: calc(4px * var(--rz-density));
+  color: var(--cpr-ink-soft);
+}
+
+.cpr .rz-signature {
+  margin-top: calc(16px * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(2px * var(--rz-density));
+  padding-left: var(--cpr-indent);
+}
+
+.cpr .rz-signature__typed {
+  font-size: 1.5em;
+  font-style: italic;
+}
+
+.cpr .rz-signature__image {
+  max-height: calc(44px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.cpr .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--cpr-rule);
+  margin-top: calc(2px * var(--rz-density));
+}

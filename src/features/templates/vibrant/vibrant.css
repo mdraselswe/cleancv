@@ -1,0 +1,233 @@
+/* ---------------------------------------------------------------------------
+   Vibrant.
+
+   The display design: a gradient banner, a timeline rail down the experience
+   entries, and skill meters. Every one of those is background or pseudo-element
+   work carrying no text, so the PDF's text layer is as clean as any other
+   template's — the lower ATS ceiling reflects how older parsers cope with the
+   coloured furniture, not a broken reading order.
+
+   The banner carries its own padding and the page margin stays small but
+   non-zero, so page two keeps a printable edge.
+   --------------------------------------------------------------------------- */
+
+.vbr .vbr-banner {
+  display: flex;
+  align-items: center;
+  gap: calc(16px * var(--rz-scale));
+  padding: calc(16px * var(--rz-scale)) calc(16px * var(--rz-scale));
+  background: linear-gradient(120deg, var(--rz-accent), color-mix(in srgb, var(--rz-accent) 55%, #000000));
+  color: #ffffff;
+}
+
+.vbr .vbr-banner__photo {
+  width: calc(78px * var(--rz-scale));
+  height: calc(78px * var(--rz-scale));
+  border-radius: var(--rz-photo-radius);
+  flex: none;
+  border: 3px solid rgb(255 255 255 / 0.35);
+}
+
+.vbr .vbr-name {
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.vbr .vbr-headline {
+  margin-top: calc(3px * var(--rz-density));
+  font-size: 1em;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.vbr .vbr-contact {
+  margin-top: calc(8px * var(--rz-density));
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(3px * var(--rz-density)) calc(14px * var(--rz-scale));
+  font-size: 0.88em;
+  color: rgb(255 255 255 / 0.92);
+}
+
+.vbr .vbr-contact .rz-contact__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
+.vbr .vbr-body {
+  padding: calc(14px * var(--rz-scale)) calc(4px * var(--rz-scale));
+}
+
+.vbr .vbr-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rz-accent);
+}
+
+.vbr .vbr-heading__dot {
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 999px;
+  background: var(--rz-accent);
+  flex: none;
+}
+
+/* Timeline rail. Drawn with a border, so it contributes nothing to the text. */
+.vbr .rz-entry {
+  position: relative;
+  padding-left: calc(16px * var(--rz-scale));
+  border-left: 2px solid var(--rz-accent-soft);
+}
+
+.vbr .rz-entry::before {
+  content: '';
+  position: absolute;
+  left: calc(-5px);
+  top: calc(6px * var(--rz-density));
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--rz-accent);
+}
+
+.vbr .rz-entry__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+}
+
+.vbr .rz-entry__title {
+  font-size: 1.06em;
+  font-weight: 700;
+}
+
+.vbr .rz-entry__org {
+  font-weight: 600;
+  color: var(--rz-accent);
+}
+
+.vbr .rz-entry__meta,
+.vbr .rz-entry__trailing {
+  font-size: 0.9em;
+  color: var(--rz-ink-muted);
+}
+
+.vbr .rz-entry__note {
+  font-size: 0.93em;
+  font-style: italic;
+  color: var(--rz-ink-muted);
+}
+
+.vbr .rz-entry__body {
+  margin-top: calc(4px * var(--rz-density));
+}
+
+.vbr .rz-entry__tags,
+.vbr .rz-entry__links {
+  margin-top: calc(3px * var(--rz-density));
+  font-size: 0.9em;
+  color: var(--rz-ink-muted);
+}
+
+.vbr .rz-summary {
+  background: var(--rz-accent-soft);
+  padding: calc(8px * var(--rz-density)) calc(10px * var(--rz-scale));
+  border-radius: 6px;
+}
+
+/* --- Skills, with meters -------------------------------------------------- */
+
+.vbr .rz-skills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(7px * var(--rz-density)) calc(18px * var(--rz-scale));
+}
+
+.vbr .rz-skills__label {
+  font-weight: 600;
+  color: var(--rz-accent);
+  font-size: 0.92em;
+}
+
+.vbr .rz-skills__items {
+  font-size: 0.93em;
+}
+
+.vbr .rz-skills__meter {
+  display: block;
+  height: 4px;
+  margin-top: calc(3px * var(--rz-density));
+  border-radius: 999px;
+  background: var(--rz-accent-soft);
+  overflow: hidden;
+}
+
+.vbr .rz-skills__meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--rz-accent);
+}
+
+.vbr .rz-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(8px * var(--rz-density)) calc(18px * var(--rz-scale));
+}
+
+.vbr .rz-grid-2 .rz-entry {
+  border-left: none;
+  padding-left: 0;
+  margin-top: 0;
+}
+
+.vbr .rz-grid-2 .rz-entry::before {
+  display: none;
+}
+
+.vbr .rz-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(3px * var(--rz-density)) calc(18px * var(--rz-scale));
+}
+
+.vbr .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.vbr .rz-details__label {
+  min-width: 8.5em;
+  color: var(--rz-ink-muted);
+}
+
+.vbr .rz-signature {
+  margin-top: calc(18px * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.vbr .rz-signature__typed {
+  font-size: 1.3em;
+  font-style: italic;
+}
+
+.vbr .rz-signature__image {
+  max-height: calc(44px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.vbr .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--rz-rule);
+  margin-top: calc(2px * var(--rz-density));
+}

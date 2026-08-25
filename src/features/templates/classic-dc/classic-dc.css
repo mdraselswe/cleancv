@@ -1,0 +1,487 @@
+/* ---------------------------------------------------------------------------
+   Classic Double Column.
+
+   A rebuild of the reference document, measured rather than eyeballed: every
+   size and offset below comes from the text layer of the original PDF, read at
+   A4 (596 x 843 pt) with 31 pt margins.
+
+        body 7.6pt        section heading 11.4pt     name 21.6pt
+        date 8.2pt        role 9.5pt                 company 8.9pt
+        left rail 0 -> 148pt of the 534pt content box
+        timeline at 130pt, entry text from 148pt
+
+   The rail is produced by absolutely positioning `.rz-entry__meta`, never by
+   reordering markup: the DOM stays title -> organisation -> meta -> note ->
+   body so the extracted text reads the way a person would read it. See ADR-004.
+   --------------------------------------------------------------------------- */
+
+.resume-root.cdc {
+  /* The reference sets body text at 7.6pt, well below the shared default. */
+  --rz-base: calc(7.6pt * var(--rz-scale));
+  --rz-lh: calc(1.33 * var(--rz-density));
+
+  /* Fractions of the 534pt content box, so the rail holds at any page width. */
+  --cdc-rail-text: 27.7%;
+  --cdc-rail-line: 24.3%;
+  --cdc-icon-gutter: 4.7%;
+
+  --cdc-heading-gap: calc(15px * var(--rz-density) * var(--rz-scale));
+  --cdc-entry-gap: calc(13px * var(--rz-density) * var(--rz-scale));
+  --cdc-ink-soft: #3d4451;
+}
+
+.cdc .rz-section + .rz-section {
+  margin-top: var(--cdc-heading-gap);
+}
+
+/* --- Identity ------------------------------------------------------------- */
+
+.cdc .cdc-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(14px * var(--rz-scale));
+}
+
+.cdc .cdc-identity__photo {
+  width: calc(74px * var(--rz-scale));
+  height: calc(74px * var(--rz-scale));
+  border-radius: var(--rz-photo-radius);
+  flex: none;
+}
+
+.cdc .cdc-name {
+  /* 21.6pt against a 7.6pt body. */
+  font-size: 2.84em;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--rz-ink);
+  /* Well under the 0.06em ceiling above which Chrome emits one run per glyph. */
+  letter-spacing: 0.005em;
+}
+
+.cdc .cdc-headline {
+  margin-top: calc(1px * var(--rz-density));
+  font-size: 1.42em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--rz-accent);
+}
+
+.cdc .rz-contact {
+  margin-top: calc(5px * var(--rz-density));
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(2px * var(--rz-density)) calc(10px * var(--rz-scale));
+  font-size: 1em;
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-contact__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.cdc .rz-contact .rz-icon {
+  width: 1.05em;
+  height: 1.05em;
+  color: var(--rz-accent);
+}
+
+/* --- Section headings ----------------------------------------------------- */
+
+.cdc .cdc-heading {
+  /* 11.4pt, uppercase, and deliberately without a rule: the reference has none. */
+  font-size: 1.5em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--rz-ink);
+  margin-bottom: calc(5px * var(--rz-density));
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* --- Entries -------------------------------------------------------------- */
+
+.cdc .rz-entry {
+  position: relative;
+  padding-left: var(--cdc-rail-text);
+}
+
+.cdc .rz-entry + .rz-entry {
+  margin-top: var(--cdc-entry-gap);
+}
+
+.cdc .rz-entry__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+
+.cdc .rz-entry__title {
+  /* 9.5pt, and regular weight: in the reference the company is the bold line. */
+  font-size: 1.25em;
+  font-weight: 400;
+  color: var(--cdc-ink-soft);
+  line-height: 1.25;
+}
+
+.cdc .rz-entry__trailing {
+  font-size: 1.25em;
+  font-weight: 400;
+  color: var(--cdc-ink-soft);
+  white-space: nowrap;
+}
+
+/* Parenthesised in the reference: "(CGPA: 3.20)" sits beside the degree. */
+.cdc .rz-entry__trailing::before {
+  content: "(";
+}
+
+.cdc .rz-entry__trailing::after {
+  content: ")";
+}
+
+.cdc .rz-entry__org {
+  font-size: 1.17em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--rz-accent);
+}
+
+/*
+ * The left rail. Absolutely positioned so the markup order is untouched; the
+ * entry reserves the space with padding-left.
+ */
+.cdc .rz-entry__meta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--cdc-rail-line) - 2%);
+  line-height: 1.3;
+}
+
+.cdc .rz-entry__dates {
+  display: block;
+  font-size: 1.08em;
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.cdc .rz-entry__place {
+  display: block;
+  margin-top: calc(6px * var(--rz-density));
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-entry__note {
+  margin-top: calc(2px * var(--rz-density));
+  /* Upright, not italic: the reference sets this line in the body face. */
+  font-style: normal;
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-entry__body {
+  margin-top: calc(3px * var(--rz-density));
+}
+
+.cdc .rz-entry__tags,
+.cdc .rz-entry__links {
+  margin-top: calc(2px * var(--rz-density));
+  color: var(--cdc-ink-soft);
+}
+
+/* --- The timeline --------------------------------------------------------- */
+
+/*
+ * A hairline down the rail with a filled dot at each entry. Both are drawn with
+ * pseudo-elements, so they carry no text and cost nothing at extraction time.
+ * Only the dated histories get it: a rail beside a credential list would be an
+ * empty gutter, which is what the reference avoids by running those full width.
+ */
+.cdc [data-section="experience"] .rz-entry::before,
+.cdc [data-section="education"] .rz-entry::before,
+.cdc [data-section="volunteering"] .rz-entry::before,
+.cdc [data-section="extracurricular"] .rz-entry::before {
+  content: "";
+  position: absolute;
+  left: var(--cdc-rail-line);
+  top: 0.95em;
+  bottom: calc(var(--cdc-entry-gap) * -1);
+  width: 1px;
+  background: var(--rz-rule);
+}
+
+.cdc [data-section="experience"] .rz-entry:last-child::before,
+.cdc [data-section="education"] .rz-entry:last-child::before,
+.cdc [data-section="volunteering"] .rz-entry:last-child::before,
+.cdc [data-section="extracurricular"] .rz-entry:last-child::before {
+  bottom: 0;
+}
+
+.cdc [data-section="experience"] .rz-entry::after,
+.cdc [data-section="education"] .rz-entry::after,
+.cdc [data-section="volunteering"] .rz-entry::after,
+.cdc [data-section="extracurricular"] .rz-entry::after {
+  content: "";
+  position: absolute;
+  left: var(--cdc-rail-line);
+  top: 0.42em;
+  width: 0.52em;
+  height: 0.52em;
+  margin-left: -0.26em;
+  border-radius: 50%;
+  background: var(--rz-ink);
+}
+
+/* --- Bullets -------------------------------------------------------------- */
+
+.cdc .rz-bullet-list {
+  gap: calc(1px * var(--rz-density));
+}
+
+.cdc .rz-bullet {
+  gap: 0.5em;
+}
+
+.cdc .rz-bullet__dot {
+  font-size: 0.85em;
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-summary {
+  color: var(--rz-ink);
+}
+
+/* --- Skills --------------------------------------------------------------- */
+
+/*
+ * Not the rail: the reference gives skills an icon gutter, the group name on
+ * one line and its items on the next, across the full width.
+ */
+.cdc .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: calc(9px * var(--rz-density));
+}
+
+.cdc .rz-skills__group {
+  position: relative;
+  padding-left: var(--cdc-icon-gutter);
+}
+
+.cdc .rz-skills__label {
+  font-size: 1.17em;
+  font-weight: 700;
+  color: var(--rz-ink);
+  line-height: 1.25;
+}
+
+.cdc .rz-skills__level {
+  font-weight: 400;
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-skills__items {
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-skills__meter {
+  display: none;
+}
+
+.cdc .rz-cat-icon {
+  /* Positioned into a gutter, so it takes its size from the rule below. */
+  height: auto;
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  display: inline-flex;
+  color: var(--rz-accent);
+}
+
+.cdc .rz-cat-icon .rz-icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+/* --- Two-up blocks -------------------------------------------------------- */
+
+.cdc .rz-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(9px * var(--rz-density)) calc(22px * var(--rz-scale));
+}
+
+/* A fixed gutter, not a percentage: each cell is half the page wide. */
+.cdc .rz-grid-2 .rz-entry,
+.cdc .rz-grid-2 .rz-entry + .rz-entry {
+  padding-left: 2.1em;
+  margin-top: 0;
+}
+
+.cdc .rz-grid-2 .rz-entry__title {
+  font-size: 1.17em;
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.cdc .rz-grid-2 .rz-entry__body {
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-grid-2 .rz-cat-icon {
+  top: 0.15em;
+}
+
+/*
+ * Certifications run two-up, as in the reference.
+ *
+ * The grid is on the group of entries, not on the section: a grid does not
+ * collapse margins, so putting it on the section stacked the heading's bottom
+ * margin, the grid's row gap and the entry's top margin — three spacings under
+ * one heading where every other section shows one. See ADR-026.
+ */
+.cdc [data-section="certifications"] .rz-entry-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(9px * var(--rz-density)) calc(22px * var(--rz-scale));
+}
+
+.cdc [data-section="certifications"] .rz-entry,
+.cdc [data-section="certifications"] .rz-entry + .rz-entry {
+  margin-top: 0;
+}
+
+/*
+ * Everything that is not a dated history runs full width, with its dates and
+ * place back on one inline line under the title.
+ */
+.cdc [data-section="certifications"] .rz-entry,
+.cdc [data-section="projects"] .rz-entry,
+.cdc [data-section="awards"] .rz-entry,
+.cdc [data-section="training"] .rz-entry,
+.cdc [data-section="publications"] .rz-entry,
+.cdc [data-section="conferences"] .rz-entry,
+.cdc [data-section="patents"] .rz-entry,
+.cdc [data-section="memberships"] .rz-entry,
+.cdc [data-section="languages"] .rz-entry,
+.cdc [data-section="references"] .rz-entry {
+  padding-left: 0;
+}
+
+.cdc [data-section="certifications"] .rz-entry__meta,
+.cdc [data-section="projects"] .rz-entry__meta,
+.cdc [data-section="awards"] .rz-entry__meta,
+.cdc [data-section="training"] .rz-entry__meta,
+.cdc [data-section="publications"] .rz-entry__meta,
+.cdc [data-section="conferences"] .rz-entry__meta,
+.cdc [data-section="patents"] .rz-entry__meta,
+.cdc [data-section="memberships"] .rz-entry__meta,
+.cdc [data-section="languages"] .rz-entry__meta,
+.cdc [data-section="references"] .rz-entry__meta {
+  position: static;
+  width: auto;
+  margin-top: calc(1px * var(--rz-density));
+  color: var(--cdc-ink-soft);
+}
+
+.cdc [data-section="certifications"] .rz-entry__dates,
+.cdc [data-section="projects"] .rz-entry__dates,
+.cdc [data-section="awards"] .rz-entry__dates,
+.cdc [data-section="training"] .rz-entry__dates,
+.cdc [data-section="publications"] .rz-entry__dates,
+.cdc [data-section="conferences"] .rz-entry__dates,
+.cdc [data-section="patents"] .rz-entry__dates,
+.cdc [data-section="memberships"] .rz-entry__dates,
+.cdc [data-section="languages"] .rz-entry__dates,
+.cdc [data-section="references"] .rz-entry__dates,
+.cdc [data-section="certifications"] .rz-entry__place,
+.cdc [data-section="projects"] .rz-entry__place,
+.cdc [data-section="awards"] .rz-entry__place,
+.cdc [data-section="training"] .rz-entry__place,
+.cdc [data-section="publications"] .rz-entry__place,
+.cdc [data-section="conferences"] .rz-entry__place,
+.cdc [data-section="patents"] .rz-entry__place,
+.cdc [data-section="memberships"] .rz-entry__place,
+.cdc [data-section="languages"] .rz-entry__place,
+.cdc [data-section="references"] .rz-entry__place {
+  display: inline;
+  margin-top: 0;
+  font-size: 1em;
+  font-weight: 400;
+  color: var(--cdc-ink-soft);
+}
+
+.cdc [data-section="projects"] .rz-entry__title {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.cdc [data-section="certifications"] .rz-entry__title {
+  font-size: 1.17em;
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.cdc .rz-entry__links p {
+  color: var(--cdc-ink-soft);
+}
+
+/* --- Details, lists, sign-off --------------------------------------------- */
+
+.cdc .rz-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(2px * var(--rz-density)) calc(22px * var(--rz-scale));
+}
+
+.cdc .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.cdc .rz-details__label {
+  min-width: 8.5em;
+  color: var(--cdc-ink-soft);
+}
+
+.cdc .rz-details__value {
+  font-weight: 600;
+}
+
+.cdc .rz-inline-list {
+  color: var(--rz-ink);
+}
+
+.cdc .rz-declaration__stamp {
+  margin-top: calc(4px * var(--rz-density));
+}
+
+.cdc .rz-signature {
+  margin-top: calc(18px * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(2px * var(--rz-density));
+}
+
+.cdc .rz-signature__typed {
+  font-size: 1.6em;
+  font-style: italic;
+}
+
+.cdc .rz-signature__image {
+  max-height: calc(46px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.cdc .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--rz-rule);
+  margin-top: calc(2px * var(--rz-density));
+}
