@@ -1,0 +1,298 @@
+'use client';
+
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { GripVertical, Lock, X } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui';
+import type { SectionSlot } from '@/constants';
+import { getSectionHeading, useResume, useResumeActions } from '@/features/resume';
+import { getTemplate } from '@/features/templates';
+import { cn } from '@/lib/cn';
+
+import { useSectionMap, type SectionBox } from '../hooks/useSectionMap';
+
+export interface SectionMapProps {
+  onClose: () => void;
+}
+
+/** Placed by measurement, so the box on screen is the shape on the page. */
+const place = (box: SectionBox) => ({
+  left: `${box.x * 100}%`,
+  top: `${box.y * 100}%`,
+  width: `${box.width * 100}%`,
+  height: `${box.height * 100}%`,
+});
+
+const BOX_CLASS =
+  'absolute flex items-center justify-center rounded-md border px-1.5 text-center text-[11px] leading-tight';
+
+interface BoxProps {
+  box: SectionBox;
+  label: string;
+}
+
+/**
+ * The first piece of a section: the one that can be picked up.
+ *
+ * A section running over a page boundary draws a box on each page, and only
+ * this one takes the handle — the same section cannot be two different things
+ * to drop onto.
+ */
+const DraggableBox = ({ box, label }: BoxProps) => {
+  const { attributes, listeners, setNodeRef, isDragging, isOver } = useSortable({ id: box.slot });
+
+  return (
+    <div
+      ref={setNodeRef}
+      data-slot={box.slot}
+      style={place(box)}
+      className={cn(
+        BOX_CLASS,
+        'border-border-base bg-app-primary/10 text-fg cursor-grab touch-none transition-colors select-none',
+        // The one being carried stays as a hole; the overlay is what moves.
+        isDragging && 'border-dashed opacity-35',
+        isOver && !isDragging && 'border-app-primary bg-app-primary/25 ring-app-primary ring-2',
+      )}
+      {...attributes}
+      {...listeners}
+    >
+      <GripVertical size={11} className="text-fg-subtle absolute top-1 left-1" aria-hidden="true" />
+      <span className="line-clamp-3 px-2">{label}</span>
+    </div>
+  );
+};
+
+/** The rest of a section, on the pages it ran on to. */
+const ContinuedBox = ({ box, label }: BoxProps) => (
+  <div
+    style={place(box)}
+    className={cn(BOX_CLASS, 'border-border-base bg-app-primary/5 text-fg-subtle border-dashed')}
+  >
+    <span className="line-clamp-3 px-2">{label} (cont.)</span>
+  </div>
+);
+
+/**
+ * The document as pages of boxes, dragged to reorder.
+ *
+ * The list in the panel behind this one says what order the sections are in;
+ * this says what that order *does* — which page a section lands on, which
+ * column it sits in on a two-column design, and how much of the page it eats.
+ * Reordering by dragging the shape you are looking at is the whole point, so
+ * both exist rather than one replacing the other. See ADR-042.
+ */
+export const SectionMap = ({ onClose }: SectionMapProps) => {
+  const resume = useResume();
+  const actions = useResumeActions();
+  const { Template } = getTemplate(resume.meta.templateId);
+  /*
+   * Destructured here rather than kept as one object: the map carries the ref
+   * the hidden copy attaches to, and a value read off an object holding a ref
+   * reads to React's lint rules as reading the ref itself.
+   */
+  const { measureRef, flowWidth, margin, pages, headers, twoColumn } = useSectionMap();
+  const [carried, setCarried] = useState<{ label: string; width: number; height: number } | null>(
+    null,
+  );
+
+  const sensors = useSensors(
+    // A small threshold keeps a click on a box from starting a drag.
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const slots = pages.flatMap((page) =>
+    page.boxes.filter((box) => box.head).map((box) => box.slot),
+  );
+
+  const heads = pages.flatMap((page) => page.boxes.filter((box) => box.head));
+
+  const handleDragStart = ({ active }: DragStartEvent) => {
+    const box = heads.find((item) => item.slot === active.id);
+    if (!box) return;
+
+    /*
+     * Sized from the box on screen rather than from `active.rect`, which dnd-kit
+     * has not filled in yet at this point — an overlay with no size is an
+     * overlay nobody sees.
+     */
+    const node = document.querySelector<HTMLElement>(`[data-slot="${box.slot}"]`);
+    const rect = node?.getBoundingClientRect();
+
+    setCarried({
+      label: getSectionHeading(resume, box.slot),
+      width: rect?.width ?? 120,
+      height: rect?.height ?? 40,
+    });
+  };
+
+  /*
+   * Dropping on a box means "put me here", and here is a column as well as a
+   * position — which is what lets a section be dragged out of the panel and
+   * into the narrative. One action, so one drag is one thing to undo.
+   */
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    setCarried(null);
+    if (!over || active.id === over.id) return;
+
+    const slot = String(active.id) as SectionSlot;
+    const target = heads.find((item) => item.slot === over.id);
+    const index = resume.meta.sectionOrder.indexOf(String(over.id) as SectionSlot);
+    if (!target || index === -1) return;
+
+    actions.placeSection(slot, index, twoColumn ? target.column : 'main');
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Close the page map"
+        onClick={onClose}
+        className="fixed inset-0 z-40 bg-black/30"
+      />
+
+      {/*
+        Centred by flex, not by a translate. A transform on an ancestor is what
+        `position: fixed` resolves against, so the drag overlay — which dnd-kit
+        positions in viewport coordinates — came out half a screen from the
+        pointer. Nothing between the overlay and the viewport may be transformed.
+      */}
+      <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          role="dialog"
+          aria-label="Rearrange the sections"
+          aria-modal="true"
+          className="border-border-base bg-surface shadow-app pointer-events-auto flex max-h-[88vh] w-[min(620px,94vw)] flex-col rounded-2xl border"
+        >
+          <header className="border-border-base flex flex-none items-start justify-between gap-3 border-b px-4 py-3">
+            <div>
+              <h2 className="text-fg text-[15px] font-semibold">
+                Hold and drag the boxes to rearrange the sections
+              </h2>
+              <p className="text-fg-subtle mt-0.5 text-[12px]">
+                Each box is drawn where that section actually falls, at the size it actually takes.
+              </p>
+            </div>
+            <Button size="icon" variant="ghost" aria-label="Close" onClick={onClose}>
+              <X size={16} />
+            </Button>
+          </header>
+
+          <div className="scroll-slim flex-1 overflow-y-auto px-4 py-4">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={() => setCarried(null)}
+            >
+              <SortableContext items={slots} strategy={rectSortingStrategy}>
+                <div className="flex flex-col items-center gap-5">
+                  {pages.map((page, index) => (
+                    <div key={index} className="w-full max-w-[380px]">
+                      <p className="text-fg-subtle mb-1.5 text-center text-[12px]">
+                        Page {index + 1} of {pages.length}
+                      </p>
+                      <div className="border-border-base bg-surface shadow-app relative aspect-[210/297] w-full rounded-lg border">
+                        <div
+                          className="absolute"
+                          style={{
+                            left: `${margin.x * 100}%`,
+                            right: `${margin.x * 100}%`,
+                            top: `${margin.y * 100}%`,
+                            bottom: `${margin.y * 100}%`,
+                          }}
+                        >
+                          {index === 0
+                            ? headers.map((band) => (
+                                <div
+                                  key={band.x}
+                                  className={cn(
+                                    BOX_CLASS,
+                                    'border-border-base bg-app-primary/20 text-fg top-0',
+                                  )}
+                                  style={{
+                                    left: `${band.x * 100}%`,
+                                    width: `${band.width * 100}%`,
+                                    height: `${band.height * 100}%`,
+                                  }}
+                                >
+                                  <Lock
+                                    size={11}
+                                    className="text-fg-subtle absolute top-1 left-1"
+                                    aria-hidden="true"
+                                  />
+                                  <span>Header</span>
+                                </div>
+                              ))
+                            : null}
+
+                          {page.boxes.map((box) => {
+                            const label = getSectionHeading(resume, box.slot);
+
+                            return box.head ? (
+                              <DraggableBox key={box.key} box={box} label={label} />
+                            ) : (
+                              <ContinuedBox key={box.key} box={box} label={label} />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </SortableContext>
+
+              {/* Follows the pointer, so the gesture reads as carrying the box
+                rather than as the page rearranging itself underneath it. */}
+              <DragOverlay dropAnimation={null}>
+                {carried ? (
+                  <div
+                    data-drag-overlay=""
+                    style={{ width: carried.width, height: carried.height }}
+                    className="border-app-primary bg-surface shadow-app text-fg flex cursor-grabbing items-center justify-center rounded-md border px-1.5 text-center text-[11px] leading-tight"
+                  >
+                    <span className="line-clamp-3 px-2">{carried.label}</span>
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          </div>
+        </div>
+      </div>
+
+      {/*
+        The copy the map is measured from: the real template at real page width,
+        parked off screen. Not `display: none` — a box with no layout has no
+        geometry to read. See ADR-042.
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed top-0 -z-10 opacity-0"
+        style={{ left: -10_000, width: flowWidth }}
+      >
+        <div ref={measureRef}>
+          <Template resume={resume} />
+        </div>
+      </div>
+    </>
+  );
+};

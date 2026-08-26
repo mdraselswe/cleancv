@@ -21,7 +21,11 @@ interface ContactItem {
   href?: string;
 }
 
-const buildItems = (contact: Resume['contact'], fullUrls: boolean): ContactItem[] => {
+const buildItems = (
+  contact: Resume['contact'],
+  fullUrls: boolean,
+  locationLast: boolean,
+): ContactItem[] => {
   const label = (url: string) => (fullUrls ? ensureProtocol(url) : displayUrl(url));
   const items: ContactItem[] = [];
 
@@ -41,9 +45,11 @@ const buildItems = (contact: Resume['contact'], fullUrls: boolean): ContactItem[
       href: mailtoHref(contact.email),
     });
   }
-  if (!isBlank(contact.location)) {
-    items.push({ key: 'location', icon: <PinIcon />, text: contact.location });
-  }
+  const location: ContactItem | null = isBlank(contact.location)
+    ? null
+    : { key: 'location', icon: <PinIcon />, text: contact.location };
+
+  if (location && !locationLast) items.push(location);
   if (!isBlank(contact.linkedin)) {
     items.push({
       key: 'linkedin',
@@ -68,6 +74,8 @@ const buildItems = (contact: Resume['contact'], fullUrls: boolean): ContactItem[
       href: ensureProtocol(contact.portfolio),
     });
   }
+
+  if (location && locationLast) items.push(location);
 
   contact.links.forEach((link) => {
     if (isBlank(link.url)) return;
@@ -101,6 +109,14 @@ export interface ContactRowProps {
    * the email would extract fused into one token.
    */
   separator?: string;
+  /**
+   * Moves the location behind the links rather than keeping it beside the email.
+   *
+   * A content decision, so it changes the order the line is *read* in, not just
+   * the order it is drawn in — a centred one-line header ends better on a city
+   * than on a repository address. See ADR-004.
+   */
+  locationLast?: boolean;
 }
 
 /**
@@ -116,8 +132,9 @@ export const ContactRow = ({
   withIcons = true,
   fullUrls = false,
   separator,
+  locationLast = false,
 }: ContactRowProps) => {
-  const items = buildItems(contact, fullUrls);
+  const items = buildItems(contact, fullUrls, locationLast);
   if (items.length === 0) return null;
 
   return (

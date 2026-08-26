@@ -11,7 +11,7 @@ import {
   customSlot,
   isCustomSlot,
 } from '@/constants';
-import type { SectionSlot, TemplateId } from '@/constants';
+import type { SectionColumn, SectionSlot, TemplateId } from '@/constants';
 import { moveItem } from '@/lib/array';
 
 import type { CustomSection, Resume, ResumeTheme } from '../schema';
@@ -78,6 +78,12 @@ export interface ResumeActions {
   /** Turns this section's glyphs on or off. Built-in sections only. */
   setSectionIcons: (slot: SectionSlot, showIcons: boolean) => void;
   moveSection: (from: number, to: number) => void;
+  /**
+   * One gesture in the page map: a section put where it was dropped — the
+   * position in the order and, on a two-column design, the column. Both in one
+   * commit, because one drag is one thing to undo. See ADR-043.
+   */
+  placeSection: (slot: SectionSlot, index: number, column: SectionColumn) => void;
   /** Reorders the built-in sections; custom ones keep their relative order. */
   applySectionPreset: (presetId: string) => void;
   setJobDescription: (text: string) => void;
@@ -244,6 +250,15 @@ export const useResumeStore = create<ResumeStore>()((set, get) => {
     moveSection: (from, to) =>
       commit((draft) => {
         draft.meta.sectionOrder = moveItem(draft.meta.sectionOrder, from, to);
+      }),
+
+    placeSection: (slot, index, column) =>
+      commit((draft) => {
+        const from = draft.meta.sectionOrder.indexOf(slot);
+        if (from !== -1 && index !== -1) {
+          draft.meta.sectionOrder = moveItem(draft.meta.sectionOrder, from, index);
+        }
+        draft.meta.columns = { ...draft.meta.columns, [slot]: column };
       }),
 
     applySectionPreset: (presetId) =>

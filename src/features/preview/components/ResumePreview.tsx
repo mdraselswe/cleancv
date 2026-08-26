@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 
 import { PAGE_SIZE_PX, PX_PER_MM } from '@/constants';
 import type { Resume } from '@/features/resume';
-import { getTemplate } from '@/features/templates';
+import { getTemplate, resolvePageBleed } from '@/features/templates';
+import { pageBleedBackground } from '@/lib/pageBleed';
 
 import { usePreviewMetrics } from '../hooks/usePreviewMetrics';
 
@@ -51,7 +52,12 @@ export const ResumePreview = ({
 }: ResumePreviewProps) => {
   const { Template, meta } = getTemplate(resume.meta.templateId);
   const { marginMm } = resume.meta.theme;
-  const { contentRef, contentHeight, pageContentHeight, pageCount, pageOffsets, pageBreakAnchors } =
+  /*
+   * Painted on the sheet rather than inside the document: a design's band has to
+   * reach past the page margins, and nothing in the flow can. See ADR-036.
+   */
+  const bleed = resolvePageBleed(resume.meta.theme, meta);
+  const { contentRef, pageContentHeight, pageCount, pageOffsets, pageBreakAnchors } =
     usePreviewMetrics(marginMm);
 
   useEffect(() => {
@@ -95,8 +101,17 @@ export const ResumePreview = ({
         {pageOffsets.map((offset, index) => (
           <div key={offset} className="relative">
             <div
-              className="bg-white shadow-app"
-              style={{ width: sheetWidth, height: sheetHeight, padding: marginPx }}
+              className="shadow-app"
+              style={{
+                width: sheetWidth,
+                height: sheetHeight,
+                // A design with a band gets no left margin; it insets its own
+                // content, exactly as the export does. See ADR-036.
+                padding: `${marginPx}px ${marginPx}px ${marginPx}px ${bleed ? 0 : marginPx}px`,
+                // The whole sheet, margins included: the export reaches the
+                // margin strips too, through the print header. See ADR-036.
+                background: bleed ? pageBleedBackground(bleed) : '#ffffff',
+              }}
             >
               {/*
                 The window onto this page. `overflow: hidden` is what makes the
@@ -107,12 +122,23 @@ export const ResumePreview = ({
                 a full page's height. Those differ whenever an entry was moved
                 down to keep it whole, and the difference is the white space at
                 the foot of the page — which is the thing worth seeing.
+
+                The last page has no next page, so it gets a full page's height
+                rather than the height of what is left. Chrome's final page box
+                is a whole page whatever the content does, so anything the
+                design paints below its last line — a rail's bottom padding, a
+                block's background — is on the exported page. Cut to the last
+                line instead, the preview was the only one of the two that did
+                not show it.
               */}
               <div
                 style={{
                   height: Math.max(
                     0,
-                    Math.min(pageContentHeight, (pageOffsets[index + 1] ?? contentHeight) - offset),
+                    Math.min(
+                      pageContentHeight,
+                      (pageOffsets[index + 1] ?? offset + pageContentHeight) - offset,
+                    ),
                   ),
                   overflow: 'hidden',
                 }}

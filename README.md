@@ -24,10 +24,10 @@ Everything here is arranged so that cannot happen:
   above — then imports the result back and checks the content survives the round trip. A template
   that fails does not ship.
 
-Two designs are measured rebuilds of real documents rather than approximations of them — every type
+Several designs are measured rebuilds of real documents rather than approximations of them — every type
 size, column offset and margin comes from the original PDF's own text layer:
 
-- **Classic Double Column** — 28% left rail, timeline down the gutter, 11 mm margins.
+- **Classic Timeline** — 28% left rail, timeline down the gutter, 11 mm margins.
 - **Compact Professional** — name left and contact right, a rule after every heading, dates in the
   right margin, 15 mm margins. Its project and credential links print as "Repository" rather than as
   the address, matching the layout it rebuilds; that address then lives only in the href, which is
@@ -35,9 +35,13 @@ size, column offset and margin comes from the original PDF's own text layer:
 - **Formal Centered** — centred serif headings over a full-width rule, contact on one line, and each
   role led by its employer. Rebuilt from a screenshot, so its type sizes are ratios rather than
   measured points.
-- **Side Panel** — a genuine two-column page: narrative on the left at 56%, education, achievements
+- **Right Panel** — a genuine two-column page: narrative on the left at 56%, education, achievements
   and projects in a 38% panel on the right. The markup runs left column then right, which is also
   the order a person reads it.
+- **Portrait Panel** — portrait and supporting detail in a 30% left panel, narrative on the right,
+  every heading behind a rounded badge. Its colours are sampled off the reference; the mark around
+  the portrait is constructed rather than traced, because the reference's own arcs were drawn by
+  hand and a curve fitted to them wanders with them.
 
 ## Dual export
 

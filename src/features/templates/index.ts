@@ -10,7 +10,12 @@ export { ResumeDocument } from './shared/ResumeDocument';
 export { SectionBody } from './shared/SectionBody';
 export { ContactRow } from './shared/ContactRow';
 
-export { resolveTemplateStyle, shouldShowPhoto } from './utils/theme';
+export {
+  resolvePageBleed,
+  resolveSectionColumn,
+  resolveTemplateStyle,
+  shouldShowPhoto,
+} from './utils/theme';
 
 export type {
   TemplateComponent,

@@ -1,6 +1,7 @@
 import type { Browser, PDFOptions } from 'puppeteer-core';
 
 import { BREAK_ANCHOR_SELECTOR, ROUTES } from '@/constants';
+import { pageBleedBackground, type PageBleed } from '@/lib/pageBleed';
 
 /**
  * Headless Chrome rendering.
@@ -78,6 +79,8 @@ export interface RenderPdfOptions {
   marginMm: number;
   /** Indices of the elements each page after the first should start at. */
   pageBreaks?: number[];
+  /** A band down the left of the paper, for a design that declares one. */
+  pageBleed?: PageBleed;
   /** Milliseconds to wait for the shell to settle. */
   timeout?: number;
 }
@@ -86,14 +89,66 @@ export interface RenderPdfOptions {
  * Margins are applied here rather than as CSS padding on the document, so every
  * page gets them — padding on a continuous flow only indents the first and last.
  */
-const pdfOptions = (marginMm: number): PDFOptions => {
+/**
+ * The two strips of band that fall in a page's top and bottom margins.
+ *
+ * Chrome's print header is the one thing that renders *into* the margin area,
+ * and it renders on every page. A `position: fixed` box inside it is measured
+ * against the whole sheet rather than the header's own slot, which is what lets
+ * these sit exactly on the paper's top and bottom edges; the header's default
+ * padding would otherwise push them inwards. Both strips come from the header —
+ * the footer template is left blank, because a blank one is what stops Chrome
+ * printing its own page numbers.
+ *
+ * They overlap the page box by half a millimetre. The colour is the same either
+ * side of the join, so the overlap is invisible, while butting them exactly
+ * leaves a hairline of paper wherever the two edges land on different pixels.
+ *
+ * The colour is a hex string the resume schema has already constrained to one.
+ */
+const bleedHeader = ({ color, width }: PageBleed, marginMm: number): string => `
+<style>
+  html, body { margin: 0 !important; padding: 0 !important; }
+  .rz-bleed {
+    position: fixed;
+    left: 0;
+    width: ${width};
+    height: calc(${marginMm}mm + 0.5mm);
+    background: ${color};
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .rz-bleed--top { top: 0; }
+  .rz-bleed--bottom { bottom: 0; }
+</style>
+<div class="rz-bleed rz-bleed--top"></div>
+<div class="rz-bleed rz-bleed--bottom"></div>`;
+
+const pdfOptions = (marginMm: number, bleed?: PageBleed): PDFOptions => {
   const margin = `${marginMm}mm`;
 
   return {
     format: 'a4',
     printBackground: true,
-    displayHeaderFooter: false,
-    margin: { top: margin, right: margin, bottom: margin, left: margin },
+    /*
+     * A design with a band down the left gets no left margin: a page's
+     * background reaches no further than its page box, so the only way to touch
+     * the paper's left edge is for the box to start there. That design insets
+     * its own content instead, which works on every page because horizontal
+     * padding applies to every fragment.
+     *
+     * The vertical margins stay — nothing inside a continuous flow can replace
+     * them, and they are what keeps page two's first line off the paper edge.
+     * The header covers them with the band instead.
+     */
+    margin: { top: margin, right: margin, bottom: margin, left: bleed ? '0' : margin },
+    ...(bleed
+      ? {
+          displayHeaderFooter: true,
+          headerTemplate: bleedHeader(bleed, marginMm),
+          footerTemplate: '<span></span>',
+        }
+      : { displayHeaderFooter: false }),
   };
 };
 
@@ -102,6 +157,7 @@ export const renderPdf = async ({
   markup,
   marginMm,
   pageBreaks = [],
+  pageBleed,
   timeout = 30_000,
 }: RenderPdfOptions): Promise<Uint8Array> => {
   const browser = await getBrowser();
@@ -112,8 +168,19 @@ export const renderPdf = async ({
     await page.goto(`${origin}${ROUTES.print}`, { waitUntil: 'networkidle0', timeout });
 
     await page.evaluate(
-      (html: string, selector: string, breaks: number[]) => {
+      (html: string, selector: string, breaks: number[], background: string) => {
         document.body.innerHTML = html;
+        /*
+         * On the root element, whose background Chrome propagates to the page
+         * canvas — painted on every page, which is what carries the band down
+         * the last one, where the flow stops with the content. It covers the
+         * page box; the header covers the margins above and below it.
+         */
+        if (background) {
+          document.documentElement.style.background = background;
+          // Or this would paint the page box over the canvas underneath it.
+          document.body.style.background = 'transparent';
+        }
 
         /*
          * The breaks the reader was shown, reproduced rather than predicted:
@@ -127,13 +194,14 @@ export const renderPdf = async ({
       markup,
       BREAK_ANCHOR_SELECTOR,
       pageBreaks,
+      pageBleed ? pageBleedBackground(pageBleed) : '',
     );
 
     // Web fonts must be resolved before layout is measured, or metrics shift —
     // and the injected markup may be the first thing to ask for some of them.
     await page.evaluate(() => document.fonts.ready);
 
-    return await page.pdf(pdfOptions(marginMm));
+    return await page.pdf(pdfOptions(marginMm, pageBleed));
   } finally {
     await page.close();
   }

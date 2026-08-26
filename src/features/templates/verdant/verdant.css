@@ -1,0 +1,502 @@
+/* ---------------------------------------------------------------------------
+   Portrait Panel (`verdant`).
+
+   A left panel carrying the portrait, the contact details and the supporting
+   sections; the narrative on the right. Every heading sits behind a rounded
+   badge in the accent, and the headline runs in a pill of the same green.
+
+   Both columns are grid tracks and the identity is placed into the right one by
+   grid rather than by markup order — it is first in the DOM, which is where a
+   parser looks for a name. See ADR-004.
+   --------------------------------------------------------------------------- */
+
+.resume-root.vrd {
+  /* Two columns of a single page: denser than the shared default. */
+  --rz-base: calc(8.8pt * var(--rz-scale));
+  --rz-lh: calc(1.45 * var(--rz-density));
+
+  /*
+   * The reference sets everything but its headings in one neutral grey, and the
+   * headings and their glyphs in a deep green. Sampled off it: the pill and the
+   * leaf at 63% of the accent, the badge and the outline at 38%, the dot at the
+   * accent itself.
+   */
+  --rz-ink: #3e3e3e;
+
+  --vrd-panel: 30%;
+  --vrd-gap: calc(26px * var(--rz-scale));
+
+  --vrd-wash: color-mix(in srgb, var(--rz-accent) 63%, #ffffff);
+  --vrd-wash-soft: color-mix(in srgb, var(--rz-accent) 38%, #ffffff);
+  --vrd-deep: color-mix(in srgb, var(--rz-accent) 26%, #002b21);
+  --vrd-ink-soft: #575757;
+  --vrd-rule: color-mix(in srgb, var(--rz-accent) 30%, #ffffff);
+}
+
+/*
+ * The second row is flexible so the panel's height lands in it. Both rows auto,
+ * and a panel taller than the narrative spreads its excess over *both* — which
+ * pushed the first line of the summary a third of the way down the page, level
+ * with whatever the panel happened to reach.
+ */
+.vrd .vrd-grid {
+  display: grid;
+  grid-template-columns: var(--vrd-panel) 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: var(--vrd-gap);
+}
+
+/* Placed, not reordered: the DOM runs identity, panel, main. */
+.vrd .vrd-identity {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.vrd .vrd-panel {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  min-width: 0;
+}
+
+.vrd .vrd-main {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+}
+
+/* --- Identity ------------------------------------------------------------- */
+
+.vrd .vrd-name {
+  font-size: 3.3em;
+  font-weight: 400;
+  line-height: 1.03;
+  text-transform: uppercase;
+  color: var(--rz-ink);
+  /* Under the 0.06em ceiling above which Chrome emits one run per glyph. */
+  letter-spacing: 0.04em;
+}
+
+/*
+ * The headline in a pill of the wash. Padding and a radius only — the text is a
+ * normal text node, so the extracted line is the headline and nothing else.
+ */
+.vrd .vrd-headline {
+  margin-top: calc(9px * var(--rz-density) * var(--rz-scale));
+  padding: calc(6px * var(--rz-density)) calc(11px * var(--rz-scale));
+  border-radius: calc(9px * var(--rz-scale));
+  background: var(--vrd-wash);
+  font-size: 1.25em;
+  font-weight: 500;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--rz-ink);
+}
+
+/* --- Portrait ------------------------------------------------------------- */
+
+/*
+ * The ring is two arcs and a dot drawn on this wrapper, never on `.rz-photo`:
+ * that one clips to the frame so a zoomed image has something to cut against,
+ * and a ring drawn on it would be clipped away with the overflow. See ADR-025.
+ */
+/* The box is the mark's, not the photo's; the photo sits inside it. */
+.vrd .vrd-portrait {
+  position: relative;
+  width: calc(152px * var(--rz-scale));
+  height: calc(152px * var(--rz-scale));
+  margin: 0 auto calc(14px * var(--rz-density) * var(--rz-scale));
+}
+
+.vrd .vrd-portrait__mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vrd .vrd-portrait__arc {
+  fill: none;
+  stroke: var(--vrd-wash-soft);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.vrd .vrd-portrait__accent {
+  fill: none;
+  stroke: var(--vrd-wash);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+
+.vrd .vrd-portrait__dot {
+  fill: var(--rz-accent);
+}
+
+.vrd .vrd-portrait__photo {
+  position: absolute;
+  z-index: 1;
+  /* Concentric with the ring, and just inside the crescent's inner edge. */
+  left: 15%;
+  top: 15%;
+  width: 70%;
+  height: 70%;
+  border-radius: var(--rz-photo-radius);
+  display: block;
+}
+
+/* --- Section headings ----------------------------------------------------- */
+
+.vrd .rz-section {
+  margin-top: calc(19px * var(--rz-density) * var(--rz-scale));
+}
+
+.vrd .vrd-panel > .rz-section:first-of-type,
+.vrd .vrd-main > .rz-section:first-of-type {
+  margin-top: 0;
+}
+
+.vrd .vrd-main {
+  padding-top: calc(15px * var(--rz-density) * var(--rz-scale));
+}
+
+/*
+ * The badge is the design's heading mark. Inline SVG inside it, so it adds
+ * nothing to the extracted text — an icon font here would put a Private Use
+ * Area codepoint in front of every heading. See ADR-003.
+ */
+.vrd .vrd-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  font-size: 1.2em;
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vrd-deep);
+  margin-bottom: calc(11px * var(--rz-density) * var(--rz-scale));
+}
+
+.vrd .vrd-heading__badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.62em;
+  height: 1.62em;
+  border-radius: 30%;
+  background: var(--vrd-wash-soft);
+  color: var(--vrd-deep);
+}
+
+/*
+ * `align-self` as well as the rest: the shared `.rz-cat-icon` sets it to
+ * `flex-start` so a glyph beside a line of text sits on that line, and left
+ * alone it pinned the glyph to the top of the badge instead of its middle.
+ */
+.vrd .vrd-heading__badge .rz-cat-icon {
+  display: flex;
+  align-self: center;
+  height: auto;
+  margin: 0;
+  vertical-align: middle;
+  color: inherit;
+}
+
+/*
+ * Drawn, not filled, though the reference's glyphs are solid. Filling these
+ * paths works for the ones whose outline *is* the form — a person, an envelope,
+ * a certificate — and destroys the ones whose meaning is in their interior
+ * lines: a filled globe is a disc, and so is a filled target. A heavier stroke
+ * in the same deep green reads as the same mark and stays legible for all of
+ * them, and a heading glyph is chosen by section, not by hand.
+ */
+.vrd .vrd-heading__badge .rz-icon {
+  width: 1.02em;
+  height: 1.02em;
+  stroke-width: 2.1;
+}
+
+/* --- Contacts ------------------------------------------------------------- */
+
+.vrd .vrd-contact {
+  display: flex;
+  flex-direction: column;
+  gap: calc(4px * var(--rz-density));
+  font-size: 0.95em;
+  color: var(--vrd-ink-soft);
+}
+
+/*
+ * A glyph beside text is a box one line tall with the glyph centred in it, and
+ * the row aligns to the *start* — baseline alignment on an inline-flex takes
+ * its bottom edge as the baseline and the icon rides high, and `stretch` in a
+ * flex row centres it over both lines of a wrapped address. See ADR-022.
+ */
+.vrd .vrd-contact .rz-contact__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55em;
+  overflow-wrap: anywhere;
+}
+
+.vrd .vrd-contact .rz-icon {
+  color: var(--rz-accent);
+  stroke-width: 2;
+  width: 1.05em;
+  height: 1.05em;
+  /*
+   * Centred on the first line by half the difference between the line box and
+   * the glyph. Sizing the glyph itself to `1lh` would scale the drawing rather
+   * than box it — that trick needs the wrapper `.rz-cat-icon` has and a bare
+   * contact icon does not.
+   */
+  margin-top: calc((1.45em - 1.05em) / 2);
+  margin-top: calc((1lh - 1.05em) / 2);
+}
+
+/* --- Entries -------------------------------------------------------------- */
+
+.vrd .rz-entry + .rz-entry {
+  margin-top: calc(12px * var(--rz-density) * var(--rz-scale));
+}
+
+.vrd .rz-entry__org {
+  font-size: 1.05em;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--rz-ink);
+}
+
+.vrd .rz-entry__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2em 0.8em;
+}
+
+.vrd .rz-entry__title {
+  font-size: 1em;
+  font-weight: 400;
+  color: var(--rz-ink);
+}
+
+.vrd .rz-entry__trailing {
+  font-size: 0.95em;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-entry__note {
+  margin-top: calc(3px * var(--rz-density));
+  font-style: normal;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-entry__body {
+  margin-top: calc(4px * var(--rz-density));
+}
+
+.vrd .rz-entry__tags,
+.vrd .rz-entry__links {
+  margin-top: calc(3px * var(--rz-density));
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-entry__links a {
+  color: var(--rz-accent);
+  text-decoration: underline;
+}
+
+/* --- The narrative column's margin ---------------------------------------- */
+
+/*
+ * The place beside the employer, the dates beside the role. Both halves stay in
+ * the one paragraph the shell renders, so the extracted text keeps them on a
+ * line together; `subgrid` drops each onto the row it belongs beside.
+ *
+ * The margin holds the head's two rows and no more — spanning it down the entry
+ * would reserve its width from every bullet below. See ADR-027.
+ */
+.vrd .vrd-main .rz-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.1em;
+}
+
+.vrd .vrd-main .rz-entry > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.vrd .vrd-main .rz-entry__org,
+.vrd .vrd-main .rz-entry__head {
+  grid-column: 1;
+}
+
+.vrd .vrd-main .rz-entry__meta {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+  justify-items: end;
+  text-align: right;
+  max-width: 11em;
+  font-size: 0.95em;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .vrd-main .rz-entry__place,
+.vrd .vrd-main .rz-entry__dates {
+  display: block;
+  align-self: center;
+}
+
+/* --- The panel's entries -------------------------------------------------- */
+
+.vrd .vrd-panel .rz-entry__title {
+  font-weight: 700;
+}
+
+.vrd .vrd-panel .rz-entry__org {
+  font-size: 1em;
+  font-weight: 400;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .vrd-panel .rz-entry__meta {
+  font-size: 0.95em;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .vrd-panel .rz-entry + .rz-entry {
+  margin-top: calc(10px * var(--rz-density) * var(--rz-scale));
+  padding-top: calc(10px * var(--rz-density) * var(--rz-scale));
+  border-top: 1px solid var(--vrd-rule);
+}
+
+/* --- Bullets and prose ---------------------------------------------------- */
+
+.vrd .rz-bullet-list {
+  gap: calc(2px * var(--rz-density));
+  padding-left: 1.1em;
+}
+
+.vrd .rz-bullet {
+  gap: 0.5em;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-bullet__dot {
+  font-size: 0.85em;
+  color: var(--vrd-deep);
+}
+
+.vrd .rz-summary,
+.vrd .rz-inline-list {
+  color: var(--vrd-ink-soft);
+}
+
+/* --- Skills --------------------------------------------------------------- */
+
+.vrd .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5px * var(--rz-density));
+}
+
+.vrd .rz-skills__label {
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.vrd .rz-skills__items {
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-skills__meter {
+  display: none;
+}
+
+.vrd .rz-cat-icon {
+  color: var(--rz-accent);
+}
+
+/* --- Two-up blocks, details, sign-off ------------------------------------- */
+
+/* The panel is one narrow column; only the narrative side has room for two. */
+.vrd .vrd-main .rz-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(9px * var(--rz-density)) calc(18px * var(--rz-scale));
+}
+
+.vrd .vrd-panel .rz-grid-2 {
+  display: flex;
+  flex-direction: column;
+  gap: calc(9px * var(--rz-density));
+}
+
+.vrd .rz-grid-2 .rz-entry,
+.vrd .rz-grid-2 .rz-entry + .rz-entry {
+  display: block;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.vrd .rz-details {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2px * var(--rz-density));
+}
+
+.vrd .vrd-main .rz-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(2px * var(--rz-density)) calc(18px * var(--rz-scale));
+}
+
+.vrd .rz-details__row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.vrd .rz-details__label {
+  min-width: 7.5em;
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-details__value {
+  font-weight: 600;
+}
+
+.vrd .rz-declaration__stamp {
+  margin-top: calc(4px * var(--rz-density));
+  color: var(--vrd-ink-soft);
+}
+
+.vrd .rz-signature {
+  margin-top: calc(16px * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(2px * var(--rz-density));
+}
+
+.vrd .rz-signature__typed {
+  font-size: 1.4em;
+  font-style: italic;
+}
+
+.vrd .rz-signature__image {
+  max-height: calc(44px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.vrd .rz-signature__rule {
+  display: block;
+  width: calc(150px * var(--rz-scale));
+  border-top: 1px solid var(--vrd-rule);
+  margin-top: calc(2px * var(--rz-density));
+}

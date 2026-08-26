@@ -100,13 +100,19 @@ const showTemplate = async (id: string): Promise<PreviewState> => {
 
     const box = root.getBoundingClientRect();
     const scale = root.offsetWidth > 0 ? box.width / root.offsetWidth : 1;
+    /*
+     * The first one in *document* order, not the highest on the page. A page of
+     * a two-column design has two elements at its top and the PDF emits the one
+     * that comes first in the markup, whichever of them sits a line higher — so
+     * sorting by `top` compares the export against the wrong column. In one
+     * column the two orders are the same thing.
+     */
     const first = [...root.querySelectorAll<HTMLElement>(selector)]
       .map((element) => ({
         top: (element.getBoundingClientRect().top - box.top) / scale,
         text: (element.textContent ?? '').trim(),
       }))
-      .filter((item) => item.top >= offset - 1)
-      .sort((a, b) => a.top - b.top)[0];
+      .find((item) => item.top >= offset - 1);
 
     return { pages: sheets.length, startsPage2: first?.text ?? null };
   }, BREAK_ANCHOR_SELECTOR);
@@ -170,6 +176,21 @@ describe.each(getAvailableTemplates().map(({ meta }) => meta))('$name ($id)', (m
     expect(preview.pages).toBe(pages.length);
 
     if (pages.length < 2) return;
+
+    /*
+     * Where page two begins is only promised for a single column.
+     *
+     * There, the export is *sent* the preview's breaks and sets them, so the
+     * two cannot disagree (ADR-021). A two-column design is sent none, because
+     * one cut across two columns is not what Chrome does: it fills each column
+     * to the foot of the page and pushes whatever straddles into that column's
+     * next fragment, while the preview moves a single cut up to the first
+     * straddler in either column. So the two agree on how many pages there are
+     * — checked above, for every design — and can differ by an entry on which
+     * side of a break it falls. Asserting otherwise here only held for the
+     * two-column designs whose panels happen to end well short of the page.
+     */
+    if (meta.supports.columns !== 1) return;
 
     /*
      * Whatever the preview puts at the top of page two is what the PDF's page

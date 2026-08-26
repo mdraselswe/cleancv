@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Source_Serif_4, Space_Grotesk } from 'next/font/google';
+import { Inter, PT_Sans, Rubik, Source_Serif_4, Space_Grotesk, Volkhov } from 'next/font/google';
 
 import { APP_NAME, APP_TAGLINE } from '@/constants';
 import { THEME_BOOTSTRAP_SCRIPT } from '@/hooks';
@@ -24,9 +24,37 @@ const resumeSans = Inter({
   display: 'block',
 });
 
+/** The picker's humanist sans, and the body face Formal Centered defaults to. */
+const resumeHumanist = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-resume-humanist',
+  display: 'block',
+});
+
 const resumeSerif = Source_Serif_4({
   subsets: ['latin'],
   variable: '--font-resume-serif',
+  display: 'block',
+});
+
+/*
+ * Display faces: headings, not body text, and not offered in the picker — a
+ * design reaches for one by name. Formal Centered sets its name and section
+ * headings in Volkhov over a PT Sans body; Right Panel sets its titles in Rubik
+ * over an Inter body. See ADR-031.
+ */
+const displaySerif = Volkhov({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-display-serif',
+  display: 'block',
+});
+
+const displaySans = Rubik({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-display-sans',
   display: 'block',
 });
 
@@ -51,7 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${appSans.variable} ${resumeSans.variable} ${resumeSerif.variable} ${resumeGrotesk.variable}`}
+      className={`${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable}`}
       suppressHydrationWarning
     >
       <head>

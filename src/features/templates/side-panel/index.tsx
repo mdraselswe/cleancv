@@ -8,7 +8,7 @@ import { ResumeDocument } from '../shared/ResumeDocument';
 import { SectionBody } from '../shared/SectionBody';
 import { SignatureBlock } from '../shared/blocks/ClosingBlocks';
 import type { TemplateMeta, TemplateProps } from '../types';
-import { shouldShowPhoto } from '../utils/theme';
+import { resolveSectionColumn, shouldShowPhoto } from '../utils/theme';
 
 import './side-panel.css';
 
@@ -24,7 +24,7 @@ const MAIN_SECTIONS: SectionKey[] = ['summary', 'experience', 'skills', 'volunte
 
 export const meta: TemplateMeta = {
   id: 'side-panel',
-  name: 'Side Panel',
+  name: 'Right Panel',
   description:
     'Narrative on the left, education, projects and achievements in a narrower panel on the right. Each column is read through in full, so the text comes out in the order a person would read it.',
   category: 'balanced',
@@ -46,12 +46,13 @@ export const meta: TemplateMeta = {
     columns: 2,
   },
   supportedSections: SECTION_KEYS,
+  mainSections: MAIN_SECTIONS,
   // Measured off the reference: 9 mm margins and the blue it uses for links.
   defaultTheme: { accent: '#1f7ae0', font: 'sans', density: 'compact', marginMm: 9 },
 };
 
 /**
- * Side Panel.
+ * Right Panel (`side-panel`).
  *
  * The two columns are laid out with CSS Grid, and the markup runs left column
  * first then right — which is also how a person reads it. Nothing is reordered
@@ -59,7 +60,8 @@ export const meta: TemplateMeta = {
  */
 export const Template = ({ resume, print }: TemplateProps) => {
   const visible = getVisibleSections(resume);
-  const isMain = (slot: SectionSlot) => MAIN_SECTIONS.some((key) => key === slot);
+  // The design's split unless the reader has moved a section across. ADR-043.
+  const isMain = (slot: SectionSlot) => resolveSectionColumn(resume, meta, slot) === 'main';
   const main = visible.filter(isMain);
   const side = visible.filter((slot) => !isMain(slot));
   const showPhoto = shouldShowPhoto(resume.meta.theme, meta, resume.basics.photo);

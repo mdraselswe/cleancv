@@ -25,7 +25,7 @@ export const CertificationsBlock = ({
   inlineOrganization,
 }: CertificationsBlockProps) => (
   /*
-   * Wrapped, unlike the other entry lists, because Classic Double Column runs
+   * Wrapped, unlike the other entry lists, because Classic Timeline runs
    * credentials two-up. Laying that out on the section itself made the section
    * a grid, and a grid does not collapse margins: the heading's own bottom
    * margin, the grid's row gap and the entry's top margin all stacked, so the
@@ -67,6 +67,15 @@ export interface AchievementsBlockProps extends BlockProps {
   showIcons?: boolean;
 }
 
+/**
+ * Achievements read as a list of separate points, so each one carries a mark.
+ *
+ * The design's glyph where it draws glyphs; a real U+2022 in a span where it
+ * does not. Something has to say where one point ends and the next begins —
+ * four bold lines with no marks read as one paragraph with headings in it — and
+ * the fallback is a text node rather than a `::before`, because generated
+ * content does not reach the extracted text layer. See ADR-003 and ADR-032.
+ */
 export const AchievementsBlock = ({ resume, showIcons }: AchievementsBlockProps) => (
   <div className="rz-grid-2">
     {resume.achievements.map((entry) => (
@@ -75,7 +84,11 @@ export const AchievementsBlock = ({ resume, showIcons }: AchievementsBlockProps)
           <h3 className="rz-entry__title">
             {showIcons ? (
               <CategoryIcon label={entry.title} icon={entry.icon} fallback="trophy" />
-            ) : null}
+            ) : (
+              <span className="rz-entry__dot" aria-hidden="true">
+                •{' '}
+              </span>
+            )}
             {entry.title}
           </h3>
         ) : null}

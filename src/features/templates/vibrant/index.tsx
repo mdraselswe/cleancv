@@ -26,7 +26,13 @@ export const meta: TemplateMeta = {
     sidebar: false,
     skillBars: true,
     icons: true,
-    entryMarkers: true,
+    /*
+     * Off, because the timeline rail already answers the question a marker
+     * answers. Both at once put the glyph on top of the rail and its dot — and
+     * a design that has said where one entry ends does not need to say it
+     * twice. See ADR-022.
+     */
+    entryMarkers: false,
     columns: 1,
   },
   supportedSections: SECTION_KEYS,
@@ -81,10 +87,14 @@ export const Template = ({ resume, print }: TemplateProps) => {
               <span className="vbr-heading__dot" aria-hidden="true" />
               {getSectionHeading(resume, key)}
             </h2>
+            {/* The dates and the place are one paragraph separated by a single
+                space, which reads as one run on the page. Glyphs separate them
+                without touching the text a parser gets. */}
             <SectionBody
               resume={resume}
               sectionKey={key}
               showSkillBars
+              metaIcons
               showIcons={meta.supports.icons}
               entryMarkers={meta.supports.entryMarkers}
             />

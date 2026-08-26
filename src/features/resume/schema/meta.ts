@@ -10,6 +10,7 @@ import {
   FONT_SCALE,
   PAGE_MARGIN_MM,
   PHOTO_RADIUS,
+  SECTION_COLUMNS,
   SECTION_KEYS,
   SECTION_META,
   TEMPLATE_IDS,
@@ -85,6 +86,19 @@ export const themeSchema = z.object({
     .default(PHOTO_RADIUS.default),
 });
 
+/**
+ * Per-section column overrides, for the designs that have two.
+ *
+ * Sparse on purpose, unlike `sections`: a slot that is absent takes the
+ * design's own default, so switching designs re-splits the document the way
+ * that design intends rather than carrying the last one's arrangement over.
+ * Only a section the reader actually moved is stored. See ADR-043.
+ */
+export const sectionColumnsSchema = z
+  .record(z.string(), z.enum(SECTION_COLUMNS))
+  .catch({} as Record<string, never>)
+  .default({} as Record<string, never>);
+
 export const resumeMetaSchema = z.object({
   templateId: z.enum(TEMPLATE_IDS).catch(DEFAULT_TEMPLATE_ID).default(DEFAULT_TEMPLATE_ID),
   theme: themeSchema,
@@ -93,6 +107,7 @@ export const resumeMetaSchema = z.object({
     .catch([...DEFAULT_SECTION_ORDER])
     .default([...DEFAULT_SECTION_ORDER]),
   sections: sectionSettingsSchema,
+  columns: sectionColumnsSchema,
   /** Pasted job description used by the keyword-match rules. Never rendered. */
   targetJobDescription: optionalText(20000),
   /** Filename stem for exports; falls back to the person's name. */
@@ -101,6 +116,7 @@ export const resumeMetaSchema = z.object({
 
 export type SectionSetting = z.infer<typeof sectionSettingSchema>;
 export type SectionSettings = z.infer<typeof sectionSettingsSchema>;
+export type SectionColumns = z.infer<typeof sectionColumnsSchema>;
 export type ResumeTheme = z.infer<typeof themeSchema>;
 export type ResumeMeta = z.infer<typeof resumeMetaSchema>;
 

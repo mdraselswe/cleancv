@@ -8,6 +8,7 @@ import * as elegantSerif from './elegant-serif';
 import * as formalCentered from './formal-centered';
 import * as modernSidebar from './modern-sidebar';
 import * as sidePanel from './side-panel';
+import * as verdant from './verdant';
 import * as vibrant from './vibrant';
 import type { TemplateModule } from './types';
 
@@ -27,6 +28,7 @@ export const TEMPLATE_REGISTRY: Partial<Record<TemplateId, TemplateModule>> = {
   'compact-pro': compactPro,
   'formal-centered': formalCentered,
   'side-panel': sidePanel,
+  verdant,
 };
 
 export const getTemplate = (id: TemplateId): TemplateModule => {

@@ -10,6 +10,7 @@ export const TEMPLATE_IDS = [
   'compact-pro',
   'formal-centered',
   'side-panel',
+  'verdant',
 ] as const;
 
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
@@ -35,11 +36,12 @@ export const TEMPLATE_CATEGORY_HINT: Record<TemplateCategory, string> = {
 };
 
 /** Font stacks are limited to faces that embed and subset cleanly in print. */
-export const FONT_FAMILIES = ['sans', 'serif', 'grotesk'] as const;
+export const FONT_FAMILIES = ['sans', 'humanist', 'serif', 'grotesk'] as const;
 export type FontFamilyKey = (typeof FONT_FAMILIES)[number];
 
 export const FONT_FAMILY_LABEL: Record<FontFamilyKey, string> = {
   sans: 'Inter (sans)',
+  humanist: 'PT Sans (humanist)',
   serif: 'Source Serif (serif)',
   grotesk: 'Space Grotesk (grotesk)',
 };
@@ -47,6 +49,7 @@ export const FONT_FAMILY_LABEL: Record<FontFamilyKey, string> = {
 /** CSS variable each font key resolves to; set on the document root by next/font. */
 export const FONT_FAMILY_VAR: Record<FontFamilyKey, string> = {
   sans: 'var(--font-resume-sans)',
+  humanist: 'var(--font-resume-humanist)',
   serif: 'var(--font-resume-serif)',
   grotesk: 'var(--font-resume-grotesk)',
 };

@@ -164,14 +164,97 @@ Templates MUST NOT:
     rendered where it is used — a serverless deployment runs each route as its own instance. See
     ADR-029.
 39. Stored and wire identifiers (`cv-maker` in the IndexedDB name, the localStorage keys, the backup
-    `kind`, the PDF payload's `app`) never follow a rename. Changing one orphans saved data or stops
+    `kind`, the PDF payload's `app`, and every `TemplateId`) never follow a rename. A template's
+    display `name` is free to change; its `id` is in saved documents and in exported PDFs, and the
+    schema falls back to the default for one it does not know — a renamed id moves somebody's CV to
+    another design on load, without saying so. See ADR-045. Changing one orphans saved data or stops
     already-exported files importing. See ADR-030.
 40. A first-run prompt is gated on the reader's *answer*, never on the data alone. "Start blank"
     was gated on the document being empty, so choosing it re-rendered the prompt over the form and
     the only way past was to load the sample. State like that lives in `useEditorLayout`, keyed by
     document id — the pane unmounts on every phone tab switch, and an answered question should stay
     answered.
-5. **No tables, no text-in-image, no header/footer band.** Page padding comes from CSS, PDF margin is 0.
+41. A design never pins the body face in its stylesheet. A face someone could reasonably set a whole
+    CV in becomes a `FONT_FAMILIES` key and the design's `defaultTheme.font`; a display face nobody
+    should be able to pick for body text loads under its own variable and is named by the design.
+    Overriding `--rz-font` leaves the picker silently inert for that one design. See ADR-031.
+42. `text-transform` reaches the PDF's text layer, so a heading's case is a content decision, not
+    only a visual one. Both spellings parse — `isRecognisedHeading` matches case-insensitively — so
+    the design chooses; what it may not do is assume the transform is invisible. See ADR-031.
+43. Entries a reader is meant to count carry a mark, and on a design that draws no glyphs the mark
+    is a literal `•` in an `aria-hidden` span followed by a real space — never a `::before`, which
+    is on the page and not in the file. See ADR-032.
+44. A design that lifts `.rz-entry__meta` into a margin exempts `.rz-entry__meta--inline`. The
+    modifier is the block saying this particular meta belongs in the flow; keying the exemption on
+    the section name instead leaves the next block that needs it broken. See ADR-033.
+45. A selector that reaches into `EntryShell` names both places it puts the mark — under
+    `.rz-entry__org` and under `.rz-entry__head > .rz-entry__title`. A `> * >` child selector sees
+    only the first, and the bug is silent: the gutter still indents, the glyph just never moves into
+    it. See ADR-034.
+46. Nothing inside the flow can paint to the foot of the last page or into a page's margins. Colour
+    that has to reach the paper's edge is declared as `pageBleed` and painted by the page: the
+    preview's sheet, the export's root element for the page box, and Chrome's print header — the one
+    thing that renders into a margin area, on every page — for the strips above and below it. All
+    read one `resolvePageBleed`, and the band is built in `lib/`, which both sides can import. The
+    design drops the page's left margin and insets its own content, because horizontal padding
+    applies to every fragment and vertical padding does not. See ADR-035 and ADR-036.
+47. `entryMarkers` is off for a design that already says where one entry ends — a timeline rail, a
+    hairline between roles. Two marks on one entry draw over each other. And a rail that has to look
+    continuous puts the gap between entries in their `padding`, never their `margin`: a border stops
+    at a margin. See ADR-037.
+48. A two-column design keeps narrative in the narrative column. Whatever the panel holds is painted
+    first, so a supporting section that *names* an employer surfaces before the entries that
+    mention it and the extracted order reads as interleaved. Achievements name employers; skills,
+    languages and certifications do not. See ADR-038.
+49. A heading glyph comes from `SECTION_HEADING_ICON`, which covers every section;
+    `SECTION_ENTRY_ICON` is for entry markers and is partial on purpose. See ADR-038.
+50. The preview's one cut across the flow matches Chrome only in a single column. With two, Chrome
+    fills each column to the foot of the page and pushes what straddles within that column, so the
+    preview and the export agree on the page count and can differ by an entry on which side of a
+    break it falls. Do not move sections between columns to make a fixture line up. See ADR-039.
+51. A glyph beside text that has no wrapper is centred with
+    `margin-top: calc((1lh - <size>) / 2)`, not by sizing the glyph to `1lh` — an SVG given a `1lh`
+    height scales the drawing instead of boxing it. The wrapper form is `.rz-cat-icon`. See ADR-022.
+52. An arc is a stroked SVG circle with `pathLength="100"` and a `stroke-dasharray`, not three
+    coloured border sides: the border form leaves a mitred step where the fourth side begins. A
+    shape that is not a circle at all is an SVG path. See ADR-040.
+53. A design placing `.rz-cat-icon` anywhere but beside a line of text resets `align-self`. The
+    shared rule sets `flex-start` so the glyph sits on that line, and inside a centring box it pins
+    the glyph to the top instead. See ADR-040.
+54. Filling a stroke-drawn icon works only where the outline *is* the form. A filled globe is a
+    disc. A design that picks its glyph by section, not by hand, cannot fill them. See ADR-040.
+55. Geometry copied from a reference is measured, not eyeballed: classify its pixels by colour and
+    print them as a grid. Three guesses at Portrait Panel's portrait mark each read as a plausible shape
+    and none of them was the one in the picture — which is two open arcs, not a ring. And a curve is
+    *generated* from those measurements, never hand-written from them: control points picked by eye
+    off a grid are noisy, and a curve forced through noise kinks. Sample the centreline, smooth it,
+    fit it. See ADR-040. But measure a reference for its *colours and its idea*, and construct the
+    geometry: a hand-drawn source wanders, and a curve fitted to it wanders too. An even arc is a
+    `<circle>` with `pathLength="100"` and a dash pattern, not a fitted path. Decoration around a
+    frame stays clear of its edge — a shape touching it reads as laid over the picture rather than
+    as part of the mark. See ADR-044.
+56. Anything that says where a section lands measures a real rendering — a hidden copy at true page
+    width, paginated by `usePreviewMetrics` — never a guess from the section list. A two-column
+    design and a page break are both invisible to a list of names. See ADR-042.
+57. A hook returning a ref beside plain values is destructured at the call site. React's lint rules
+    read any property of an object holding a ref as reading the ref during render. See ADR-042.
+58. Which column a section takes comes from `resolveSectionColumn`, never from a list inside the
+    template: the design declares `mainSections` as its default and `meta.columns` overrides it.
+    That record is sparse — an absent entry means "the design decides", and filling it in would
+    freeze one design's arrangement onto the next one chosen. See ADR-043.
+59. Nothing between a `DragOverlay` and the viewport may be transformed. `position: fixed` resolves
+    against a transformed ancestor, and dnd-kit positions the overlay in viewport coordinates, so a
+    dialog centred with `-translate-x-1/2` puts the carried box half a screen from the pointer.
+    Centre with flex. See ADR-043.
+60. A rule that positions something absolutely is scoped to the element that provides its containing
+    block, not to the column that happens to hold it today. `.spl-side .rz-cat-icon` assumed a
+    two-up entry's gutter; once a section could be dragged into the panel it caught a skills glyph,
+    un-hid it on a specificity tie, and dropped it at the top-left of the page — over the name.
+    See ADR-046.
+5. **No tables, no text-in-image, and no repeated header/footer text** — a name or a page number
+   printed into every page's margin is chrome a parser reads as content. Page margins come from the
+   PDF's own margin box, never from padding on the flow, which only indents its first and last
+   fragment. The one thing allowed in a margin is `pageBleed`'s colour, which carries no text.
 6. **Dates** always `MM/YYYY` via `lib/date.ts`. Never free text.
 7. Fonts embedded via `next/font`, subsetting off for the print route.
 8. **`letter-spacing` never exceeds `0.06em`.** Above roughly that, Chrome emits one text run per

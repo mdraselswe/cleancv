@@ -25,7 +25,7 @@ export const meta: TemplateMeta = {
    */
   atsBaseline: 94,
   supports: {
-    photo: false,
+    photo: true,
     signature: true,
     accentColor: true,
     sidebar: false,
@@ -35,7 +35,20 @@ export const meta: TemplateMeta = {
     columns: 1,
   },
   supportedSections: SECTION_KEYS,
-  defaultTheme: { accent: '#5b7183', font: 'sans', density: 'normal', marginMm: 13 },
+  /*
+   * PT Sans against Volkhov is the pairing the reference layout uses, and the
+   * proportions below are measured for it. The font stays a picker value rather
+   * than something the stylesheet nails down, so changing it still works — this
+   * is only where the design starts.
+   */
+  defaultTheme: {
+    accent: '#5b7183',
+    font: 'humanist',
+    density: 'normal',
+    marginMm: 13,
+    // Circular, centred over the name: the reference's one ornament.
+    photoRadius: 50,
+  },
 };
 
 /**
@@ -67,11 +80,16 @@ export const Template = ({ resume, print }: TemplateProps) => {
           <p className="fmc-headline">{resume.basics.headline}</p>
         ) : null}
 
+        {/*
+          Addresses print trimmed of their protocol — the reference line reads
+          "linkedin.com/in/…", and `https://` five times over is most of a
+          centred line's width spent on nothing a reader needs.
+        */}
         <ContactRow
           contact={resume.contact}
           className="fmc-contact"
           withIcons={false}
-          fullUrls
+          locationLast
           separator=" • "
         />
       </header>

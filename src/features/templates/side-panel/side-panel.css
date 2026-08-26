@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Side Panel.
+   Right Panel (`side-panel`).
 
    Measured from the reference document's text layer, read at A4 (596 x 843 pt)
    with 25 pt margins:
@@ -19,10 +19,22 @@
   --rz-lh: calc(1.32 * var(--rz-density));
 
   --spl-main: 56%;
-  --spl-gap: 5.5%;
+  /*
+   * Half the reference's 5.5% gap sits either side of the divider, so the two
+   * text columns keep the 56% / 38.5% they were measured at and the rule lands
+   * in the middle of the space between them.
+   */
+  --spl-gap: 2.75%;
   --spl-ink-soft: #4a5260;
   --spl-rule: #1f2430;
   --spl-hair: #d5dae1;
+
+  /*
+   * Rubik for anything that titles something, Inter for everything read as
+   * prose. The body face is the picker's, so changing the font still changes
+   * the page; only the display face is named here. See ADR-031.
+   */
+  --spl-display: var(--font-display-sans), 'Segoe UI', system-ui, sans-serif;
 }
 
 /* --- Identity ------------------------------------------------------------- */
@@ -39,6 +51,7 @@
 }
 
 .spl .spl-name {
+  font-family: var(--spl-display);
   /* 19pt against a 7.6pt body. */
   font-size: 2.5em;
   font-weight: 700;
@@ -60,7 +73,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: calc(1px * var(--rz-density)) calc(10px * var(--rz-scale));
-  color: var(--spl-ink-soft);
+  font-weight: 600;
+  color: var(--rz-accent);
 }
 
 .spl .rz-contact__item {
@@ -77,16 +91,25 @@
 
 /* --- The two columns ------------------------------------------------------ */
 
+/*
+ * `align-items` is left at its default `stretch` so both tracks take the row's
+ * full height. The divider is the panel's own left border, and a `start`
+ * alignment would stop it wherever the shorter column happened to end.
+ */
 .spl .spl-columns {
   display: grid;
   grid-template-columns: var(--spl-main) 1fr;
   column-gap: var(--spl-gap);
-  align-items: start;
 }
 
 .spl .spl-main,
 .spl .spl-side {
   min-width: 0;
+}
+
+.spl .spl-side {
+  padding-left: var(--spl-gap);
+  border-left: 1px solid var(--spl-hair);
 }
 
 .spl .rz-section + .rz-section {
@@ -100,6 +123,7 @@
  * rule is a pseudo-element: no node, and nothing added to the text layer.
  */
 .spl .spl-heading {
+  font-family: var(--spl-display);
   font-size: 1.33em;
   font-weight: 700;
   text-transform: uppercase;
@@ -113,7 +137,7 @@
   content: '';
   display: block;
   margin-top: calc(2px * var(--rz-density));
-  border-top: 1.2px solid var(--spl-rule);
+  border-top: 1.6px solid var(--spl-rule);
 }
 
 /* --- Entries -------------------------------------------------------------- */
@@ -126,6 +150,7 @@
 }
 
 .spl .rz-entry__title {
+  font-family: var(--spl-display);
   font-size: 1.17em;
   font-weight: 700;
   line-height: 1.3;
@@ -239,6 +264,7 @@
 }
 
 .spl .rz-skills__label {
+  font-family: var(--spl-display);
   font-size: 1.08em;
   font-weight: 700;
   color: var(--rz-ink);
@@ -289,7 +315,19 @@
   color: var(--spl-ink-soft);
 }
 
-.spl .spl-side .rz-cat-icon {
+/*
+ * Scoped to the two-up entries, which are the only thing in the panel that has
+ * a gutter to sit in — `position: relative` and the matching `padding-left`
+ * above.
+ *
+ * `.spl-side .rz-cat-icon` was wide enough to catch any glyph the panel held,
+ * and once a section could be dragged across (ADR-043) it caught one: a skills
+ * group. That rule and the one hiding skill glyphs have the same specificity,
+ * so the later of the two won `display` and un-hid it, and `position: absolute`
+ * with no positioned ancestor put it against the top-left of the *page* —
+ * printed over the name. See ADR-046.
+ */
+.spl .spl-side .rz-grid-2 .rz-entry .rz-cat-icon {
   /* Positioned into a gutter, so it takes its size from the rule below. */
   height: auto;
   position: absolute;
@@ -299,7 +337,7 @@
   color: var(--rz-accent);
 }
 
-.spl .spl-side .rz-cat-icon .rz-icon {
+.spl .spl-side .rz-grid-2 .rz-entry .rz-cat-icon .rz-icon {
   width: 1.5em;
   height: 1.5em;
 }

@@ -47,6 +47,33 @@ export interface TemplateMeta {
   /** Sections this design can render. Anything else is dropped, and warned about. */
   supportedSections: readonly SectionKey[];
   defaultTheme: Partial<ResumeTheme>;
+  /**
+   * Sections the wide column holds when the document does not say otherwise.
+   *
+   * Two-column designs only, and everything unlisted — including a custom
+   * section — takes the panel. It is the *default* split: a reader dragging a
+   * section across in the page map stores an override against the document, and
+   * that wins. See ADR-043.
+   */
+  mainSections?: readonly SectionKey[];
+  /**
+   * A band of accent down the left of the paper, running the full height of
+   * every page.
+   *
+   * Two things make it reach the edges. The page's *left* margin is dropped, so
+   * the flow starts at the paper's edge and the design insets its own content
+   * instead — horizontal padding applies on every fragment, unlike vertical.
+   * And the band is painted by the page rather than by an element in the flow,
+   * so it covers the last page too, where the flow itself stops with the
+   * content.
+   *
+   * The top and bottom margins stay: they are the only thing keeping page two's
+   * first line off the paper edge, so the band stops a margin short there.
+   *
+   * `width` is measured from the paper's left edge and reaches the template's
+   * stylesheet as `--rz-bleed`. See ADR-036.
+   */
+  pageBleed?: { width: string };
 }
 
 export interface TemplateProps {

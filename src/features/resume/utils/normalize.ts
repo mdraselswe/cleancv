@@ -80,6 +80,31 @@ const repairSectionSettings = (value: unknown): Resume['meta']['sections'] => {
   ) as Resume['meta']['sections'];
 };
 
+/**
+ * Column overrides, dropped for anything that is no longer a slot.
+ *
+ * Sparse, unlike the settings above: absent means "let the design decide", and
+ * filling it in for every section would freeze one design's split onto every
+ * other. See ADR-043.
+ */
+const repairSectionColumns = (
+  value: unknown,
+  customIds: string[],
+): Resume['meta']['columns'] => {
+  const incoming = (value ?? {}) as Record<string, unknown>;
+  const known = new Set<string>([
+    ...SECTION_KEYS,
+    ...customIds.map((id) => customSlot(id)),
+  ]);
+
+  return Object.fromEntries(
+    Object.entries(incoming).filter(
+      ([slot, column]) =>
+        known.has(slot) && (column === 'main' || column === 'side'),
+    ),
+  ) as Resume['meta']['columns'];
+};
+
 export const normalizeResume = (input: unknown): Resume => {
   const base = createEmptyResume();
 
@@ -135,6 +160,10 @@ export const normalizeResume = (input: unknown): Resume => {
         customSections.map((section) => section.id),
       ),
       sections: repairSectionSettings((raw.meta as Record<string, unknown>)?.sections),
+      columns: repairSectionColumns(
+        (raw.meta as Record<string, unknown>)?.columns,
+        customSections.map((section) => section.id),
+      ),
     },
   };
 

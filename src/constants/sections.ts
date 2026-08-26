@@ -556,6 +556,50 @@ export const SECTION_ENTRY_ICON: Partial<Record<SectionKey, PickableIcon>> = {
 };
 
 /**
+ * Which column a section sits in on a two-column design.
+ *
+ * `main` is the wide, narrative column and `side` the panel, whichever side of
+ * the paper each design puts them on. A document that says nothing takes the
+ * design's own split; saying something is what lets a reader drag a section
+ * from one column to the other. See ADR-043.
+ */
+export const SECTION_COLUMNS = ['main', 'side'] as const;
+export type SectionColumn = (typeof SECTION_COLUMNS)[number];
+
+/**
+ * A glyph for every section, for designs that mark the heading itself.
+ *
+ * Complete where `SECTION_ENTRY_ICON` is partial: that one marks entries, and a
+ * section with no entries needs none, while a heading always has one to draw.
+ * The two agree wherever both have an opinion, so a design using both does not
+ * show a section two different shapes.
+ */
+export const SECTION_HEADING_ICON: Record<SectionKey, PickableIcon> = {
+  personal: 'person',
+  contact: 'globe',
+  summary: 'target',
+  experience: 'briefcase',
+  education: 'graduation',
+  skills: 'wrench',
+  projects: 'rocket',
+  certifications: 'certificate',
+  achievements: 'crown',
+  awards: 'trophy',
+  publications: 'flask',
+  training: 'book',
+  languages: 'mic',
+  volunteering: 'handshake',
+  extracurricular: 'star',
+  memberships: 'diamond',
+  conferences: 'mic',
+  patents: 'shield',
+  interests: 'heart',
+  references: 'person',
+  declaration: 'shield',
+  signature: 'person',
+};
+
+/**
  * Editor panels the score panel can send the reader to.
  *
  * Some fixes are not in a section's form at all: choosing a design that parses,

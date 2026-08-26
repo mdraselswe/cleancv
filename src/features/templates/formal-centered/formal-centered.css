@@ -1,14 +1,16 @@
 /* ---------------------------------------------------------------------------
    Formal Centered.
 
-   Proportions are taken from a screenshot rather than a PDF's text layer, so
-   they are ratios rather than measured points: name about 2.1x the body,
-   headings 1.35x, employer 1.3x, role 1.05x. Everything is expressed against
-   `--rz-base` so the whole design scales with the type control.
+   Measured against a reference page set in PT Sans over Volkhov: a centred
+   identity closed by a hairline, Title Case section headings in the display
+   serif over a full-width rule, and every role led by its employer with the
+   place and the dates squared off in a right margin.
 
-   Serif headings over a sans body. The face is read from the shared font
-   variables directly rather than through `--rz-font`, because that one carries
-   the user's single choice and this design needs two.
+   Sizes are ratios against `--rz-base` rather than points, so the whole design
+   scales with the type control. The body face comes from `--rz-font` — the
+   design defaults the picker to PT Sans rather than overriding it, so changing
+   the font still changes the page. Only the display serif is named here,
+   because that one is the design rather than a preference.
    --------------------------------------------------------------------------- */
 
 .resume-root.fmc {
@@ -17,44 +19,54 @@
   --rz-base: calc(9pt * var(--rz-scale));
   --rz-lh: calc(1.38 * var(--rz-density));
 
-  --fmc-serif: var(--font-resume-serif), Georgia, 'Times New Roman', serif;
+  --fmc-display: var(--font-display-serif), Georgia, 'Times New Roman', serif;
   --fmc-ink-soft: #55606f;
   --fmc-rule: #c8cdd4;
 }
 
-.fmc .rz-section + .rz-section {
-  margin-top: calc(14px * var(--rz-density) * var(--rz-scale));
+/* Uniform, including above the first section: the header's own rule closes the
+   identity, and the gap below it is the gap that separates any two sections. */
+.fmc .rz-section {
+  margin-top: calc(18px * var(--rz-density) * var(--rz-scale));
 }
 
 /* --- Identity ------------------------------------------------------------- */
 
+/*
+ * Closed by a hairline of its own rather than by the first heading's rule. The
+ * reference draws a line under the contact row and another under every heading;
+ * without the first, the header runs straight into the summary.
+ */
 .fmc .fmc-identity {
   text-align: center;
+  padding-bottom: calc(9px * var(--rz-density) * var(--rz-scale));
+  border-bottom: 1px solid var(--fmc-rule);
 }
 
 .fmc .fmc-identity__photo {
-  width: calc(70px * var(--rz-scale));
-  height: calc(70px * var(--rz-scale));
-  border-radius: 999px;
-  margin: 0 auto calc(6px * var(--rz-density));
+  width: calc(84px * var(--rz-scale));
+  height: calc(84px * var(--rz-scale));
+  border-radius: var(--rz-photo-radius);
+  margin: 0 auto calc(9px * var(--rz-density));
   display: block;
 }
 
 .fmc .fmc-name {
-  font-family: var(--fmc-serif);
-  font-size: 2.1em;
+  font-family: var(--fmc-display);
+  font-size: 1.85em;
   font-weight: 700;
   text-transform: uppercase;
-  line-height: 1.15;
+  line-height: 1.2;
   color: var(--rz-ink);
   /* Under the 0.06em ceiling above which Chrome emits one run per glyph. */
   letter-spacing: 0.02em;
 }
 
 .fmc .fmc-headline {
-  margin-top: calc(2px * var(--rz-density));
-  font-size: 1.15em;
+  margin-top: calc(3px * var(--rz-density));
+  font-size: 1.3em;
   font-weight: 400;
+  line-height: 1.3;
   color: var(--fmc-ink-soft);
 }
 
@@ -63,8 +75,9 @@
  * extracted line reads "phone • email • link" rather than running together.
  */
 .fmc .fmc-contact {
-  margin-top: calc(5px * var(--rz-density));
+  margin-top: calc(6px * var(--rz-density));
   display: block;
+  font-size: 0.95em;
   color: var(--fmc-ink-soft);
 }
 
@@ -72,45 +85,48 @@
   display: inline;
 }
 
+/* Dark enough to read as punctuation. At the rule's grey it disappears and the
+   line runs together, which is the one thing the separator exists to prevent. */
 .fmc .rz-contact__sep {
-  color: var(--fmc-rule);
+  color: var(--fmc-ink-soft);
 }
 
 /* --- Section headings ----------------------------------------------------- */
 
 /*
- * Centred, in the serif face, with a full-width hairline beneath. The rule is
- * a pseudo-element: no node, no text, nothing for a parser to read.
+ * Centred, in the display serif, with a full-width hairline beneath. The rule
+ * is a pseudo-element: no node, no text, nothing for a parser to read.
+ *
+ * Title Case, not uppercase: `text-transform` reaches the PDF's text layer, and
+ * the reference sets "Experience" rather than "EXPERIENCE". Both parse — the
+ * vocabulary check is case-insensitive — so this one is the design's call.
  */
 .fmc .fmc-heading {
-  margin-top: calc(16px * var(--rz-density) * var(--rz-scale));
-  font-family: var(--fmc-serif);
+  font-family: var(--fmc-display);
   font-size: 1.35em;
   font-weight: 700;
   text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
   line-height: 1.3;
   color: var(--rz-ink);
+  /* Collapses with the first entry's own top margin, so the gap under the rule
+     is this one value whether the section opens with a paragraph or an entry. */
+  margin-bottom: calc(11px * var(--rz-density) * var(--rz-scale));
 }
 
 .fmc .fmc-heading::after {
   content: '';
   display: block;
-  margin-top: calc(4px * var(--rz-density));
+  margin-top: calc(5px * var(--rz-density));
   border-top: 1px solid var(--fmc-rule);
-}
-
-.fmc .rz-section:first-of-type .fmc-heading {
-  margin-top: calc(12px * var(--rz-density) * var(--rz-scale));
 }
 
 /* --- Entries -------------------------------------------------------------- */
 
 /*
- * The employer leads, the role sits under it, and the place and dates stack in
- * the right column. A grid rather than a positioned block, so a tall margin
- * grows its row instead of overflowing the section.
+ * The employer leads, the role sits under it, and the place and the dates
+ * square off against them in the right margin. A grid rather than a positioned
+ * block, so a tall margin grows its row instead of overflowing the section.
  */
 .fmc .rz-entry {
   display: grid;
@@ -118,9 +134,20 @@
   column-gap: 1.2em;
 }
 
+/*
+ * Everything below the head runs the full width. The margin column holds the
+ * head's two rows and no more: spanning it down the entry would reserve its
+ * width from every bullet, and the body would wrap early against a margin
+ * nothing is using. See ADR-027.
+ */
 .fmc .rz-entry > * {
-  grid-column: 1;
+  grid-column: 1 / -1;
   min-width: 0;
+}
+
+.fmc .rz-entry__org,
+.fmc .rz-entry__head {
+  grid-column: 1;
 }
 
 .fmc .rz-entry + .rz-entry {
@@ -128,7 +155,7 @@
 }
 
 .fmc .rz-entry__org {
-  font-size: 1.3em;
+  font-size: 1.25em;
   font-weight: 400;
   line-height: 1.3;
   color: var(--rz-accent);
@@ -151,18 +178,48 @@
   color: var(--fmc-ink-soft);
 }
 
+/*
+ * The place beside the employer, the dates beside the role.
+ *
+ * Both halves stay in the one paragraph the shell renders, so the extracted
+ * text keeps them on a single line; `subgrid` then drops each onto the row it
+ * belongs beside, which no line-height guess reproduces exactly. An engine
+ * without subgrid stacks them in order, which is the same reading and close to
+ * the same picture.
+ */
 .fmc .rz-entry__meta {
   grid-column: 2;
-  grid-row: 1 / span 20;
+  grid-row: 1 / span 2;
+  display: grid;
+  grid-template-rows: subgrid;
   text-align: right;
   white-space: nowrap;
+  font-size: 0.95em;
   color: var(--fmc-ink-soft);
-  line-height: 1.45;
 }
 
 .fmc .rz-entry__place,
 .fmc .rz-entry__dates {
   display: block;
+  align-self: center;
+}
+
+/*
+ * A meta the block itself declares inline — the referee's email, phone and how
+ * they know you — belongs in the flow under their name, not squared off in a
+ * margin. Without this it inherits the right-aligned, no-wrap margin column and
+ * sits against the right edge of its cell with the width of the card empty
+ * beside it.
+ *
+ * Keyed on the modifier the block sets rather than on the section it happens to
+ * appear in: the block is the thing that knows this meta is not a margin.
+ */
+.fmc .rz-entry__meta--inline {
+  display: block;
+  grid-column: 1 / -1;
+  grid-row: auto;
+  text-align: left;
+  white-space: normal;
 }
 
 .fmc .rz-entry__note {
@@ -177,19 +234,23 @@
 
 .fmc .rz-entry__tags,
 .fmc .rz-entry__links {
-  margin-top: calc(2px * var(--rz-density));
+  margin-top: calc(3px * var(--rz-density));
   color: var(--fmc-ink-soft);
 }
 
 /* --- Bullets -------------------------------------------------------------- */
 
+/* Barely any gap: the reference sets its bullets on the body's own leading and
+   nothing more, which is what keeps four of them reading as one achievement
+   list rather than four paragraphs. */
 .fmc .rz-bullet-list {
-  gap: calc(2px * var(--rz-density));
-  padding-left: 1.1em;
+  gap: calc(1px * var(--rz-density));
+  padding-left: 1.25em;
 }
 
 .fmc .rz-bullet {
   gap: 0.5em;
+  color: var(--fmc-ink-soft);
 }
 
 .fmc .rz-bullet__dot {
@@ -198,7 +259,7 @@
 }
 
 .fmc .rz-summary {
-  color: var(--rz-ink);
+  color: var(--fmc-ink-soft);
 }
 
 /* --- Skills --------------------------------------------------------------- */
@@ -206,7 +267,7 @@
 .fmc .rz-skills {
   display: flex;
   flex-direction: column;
-  gap: calc(3px * var(--rz-density));
+  gap: calc(4px * var(--rz-density));
 }
 
 .fmc .rz-skills__label,
@@ -224,7 +285,7 @@
 }
 
 .fmc .rz-skills__items {
-  color: var(--rz-ink);
+  color: var(--fmc-ink-soft);
 }
 
 .fmc .rz-skills__meter,
@@ -250,6 +311,17 @@
   font-weight: 700;
 }
 
+/*
+ * A referee's designation, not an employer heading. Only the two-up blocks put
+ * an organisation under a name rather than over a role, and at the entry scale
+ * — 1.25em in the accent — it outranks the name it belongs to.
+ */
+.fmc .rz-grid-2 .rz-entry__org {
+  font-size: 1em;
+  line-height: inherit;
+  color: var(--fmc-ink-soft);
+}
+
 /* --- Details, lists, sign-off --------------------------------------------- */
 
 .fmc .rz-details {
@@ -273,7 +345,7 @@
 }
 
 .fmc .rz-inline-list {
-  color: var(--rz-ink);
+  color: var(--fmc-ink-soft);
 }
 
 .fmc .rz-declaration__stamp {
@@ -290,7 +362,7 @@
 }
 
 .fmc .rz-signature__typed {
-  font-family: var(--fmc-serif);
+  font-family: var(--fmc-display);
   font-size: 1.5em;
   font-style: italic;
 }

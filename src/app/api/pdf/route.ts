@@ -2,7 +2,7 @@ import { createElement } from 'react';
 
 import { ATS_EXPORT_TEMPLATE_ID, type TemplateId } from '@/constants';
 import { normalizeResume } from '@/features/resume';
-import { getTemplate } from '@/features/templates';
+import { getTemplate, resolvePageBleed } from '@/features/templates';
 import { attachResume } from '@/lib/pdf/attachResume';
 import { renderPdf } from '@/lib/pdf/renderPdf';
 import { toFileStem } from '@/lib/text';
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
    * into the print shell. Nothing is handed between routes, because on a
    * serverless deployment there is nothing to hand it through. See ADR-029.
    */
-  const { Template } = getTemplate(templateId);
+  const { Template, meta: templateMeta } = getTemplate(templateId);
   /*
    * Imported here rather than at the top: the App Router refuses a static
    * `react-dom/server` import, on the assumption that anything reaching for it
@@ -90,6 +90,8 @@ export async function POST(request: Request) {
       markup,
       marginMm: resume.meta.theme.marginMm,
       pageBreaks,
+      // The band the preview painted on its sheets. See ADR-036.
+      pageBleed: resolvePageBleed(resume.meta.theme, templateMeta),
     });
     /*
      * The document travels inside its own PDF, so importing this file back is a

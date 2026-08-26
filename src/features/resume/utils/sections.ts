@@ -1,6 +1,7 @@
 import {
   CLOSING_SECTION_KEYS,
   SECTION_ENTRY_ICON,
+  SECTION_HEADING_ICON,
   SECTION_META,
   customIdOf,
   isCustomSlot,
@@ -59,6 +60,16 @@ export const sectionShowsIcons = (resume: Resume, slot: SectionSlot): boolean =>
 /** The glyph marking each entry of a section, when it has one. */
 export const getSectionEntryIcon = (slot: SectionSlot): PickableIcon | undefined =>
   isCustomSlot(slot) ? undefined : SECTION_ENTRY_ICON[slot];
+
+/**
+ * The glyph a design draws beside a section's *heading*.
+ *
+ * Undefined for a custom section, on purpose: nothing knows what one is about
+ * except its heading, so the caller lets `CategoryIcon` guess from the words the
+ * reader typed rather than stamping every custom section with the same shape.
+ */
+export const getSectionHeadingIcon = (slot: SectionSlot): PickableIcon | undefined =>
+  isCustomSlot(slot) ? undefined : SECTION_HEADING_ICON[slot];
 
 export const isSectionEnabled = (resume: Resume, slot: SectionSlot): boolean => {
   if (isCustomSlot(slot)) return getCustomSection(resume, slot)?.enabled ?? false;

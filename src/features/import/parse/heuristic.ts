@@ -348,24 +348,36 @@ const looksLikeResult = (text: string): boolean => {
   return RESULT_WORDS.some((word) => value.includes(word));
 };
 
-const parseEducation = (section: DocumentSection, ctx: ParseContext): Resume['education'] =>
-  splitEntries(section.lines, ctx.bodySize, ctx.markers).map((entry) => {
-    const dates = entryDates(entry);
-    const texts = headTexts(entry);
-    const result = texts.find(looksLikeResult) ?? '';
+/**
+ * An entry has to name something. A design that stands the place and the dates
+ * in a right margin can wrap one over two lines, and the second of them sits on
+ * a row of its own below the head — which reads as the start of another entry
+ * and produces a degree with no degree in it. Better a detail lost than a row
+ * the reader has to delete.
+ */
+const isNamed = (entry: { degree?: string; institute?: string }): boolean =>
+  Boolean(entry.degree || entry.institute);
 
-    return {
-      ...createEducationEntry(),
-      degree: texts[0] ?? '',
-      institute: texts.find((text) => text !== texts[0] && text !== result) ?? '',
-      location: entryPlace(entry),
-      dates: dates
-        ? { start: dates.start, end: dates.end, current: dates.current }
-        : { start: '', end: '', current: false },
-      result,
-      bullets: entry.bullets,
-    };
-  });
+const parseEducation = (section: DocumentSection, ctx: ParseContext): Resume['education'] =>
+  splitEntries(section.lines, ctx.bodySize, ctx.markers)
+    .map((entry) => {
+      const dates = entryDates(entry);
+      const texts = headTexts(entry);
+      const result = texts.find(looksLikeResult) ?? '';
+
+      return {
+        ...createEducationEntry(),
+        degree: texts[0] ?? '',
+        institute: texts.find((text) => text !== texts[0] && text !== result) ?? '',
+        location: entryPlace(entry),
+        dates: dates
+          ? { start: dates.start, end: dates.end, current: dates.current }
+          : { start: '', end: '', current: false },
+        result,
+        bullets: entry.bullets,
+      };
+    })
+    .filter(isNamed);
 
 /**
  * Pulls a trailing proficiency off a group name: `Frontend — Expert`.
@@ -528,9 +540,22 @@ const parseLanguages = (section: DocumentSection): Resume['languages'] =>
       };
     });
 
-/** Name, headline and every contact detail above the first heading. */
-const parseHeader = (lines: TextLine[]): Pick<ParsedResume, 'basics' | 'contact'> => {
+/**
+ * Name, headline and every contact detail above the first heading.
+ *
+ * `rest` is everything below it, and is read only for the details the header
+ * did not give up. A one-column CV puts them all at the top and never touches
+ * it; a design that stands its contact details in a side panel under their own
+ * heading puts them below the *other* column's first heading, and the header
+ * window then holds a name and nothing else. Losing an email to that is worse
+ * than reading one from further down, which is what a real parser does anyway.
+ */
+const parseHeader = (
+  lines: TextLine[],
+  rest: TextLine[] = [],
+): Pick<ParsedResume, 'basics' | 'contact'> => {
   const joined = lines.map((line) => line.text).join(' \n ');
+  const everything = [...lines, ...rest].map((line) => line.text).join(' \n ');
   const largest = Math.max(0, ...lines.map((line) => line.size));
 
   // The name is normally the biggest text on the page; fall back to the first
@@ -551,7 +576,10 @@ const parseHeader = (lines: TextLine[]): Pick<ParsedResume, 'basics' | 'contact'
         !URL_PATTERN.test(line.text),
     );
 
-  const urls = joined.match(new RegExp(URL_PATTERN, 'gi')) ?? [];
+  const urls =
+    joined.match(new RegExp(URL_PATTERN, 'gi')) ??
+    everything.match(new RegExp(URL_PATTERN, 'gi')) ??
+    [];
   const pick = (host: string) => {
     const found = urls.find((url) => url.toLowerCase().includes(host));
 
@@ -570,8 +598,8 @@ const parseHeader = (lines: TextLine[]): Pick<ParsedResume, 'basics' | 'contact'
       headline: headline?.text.trim() ?? '',
     },
     contact: {
-      email: EMAIL_PATTERN.exec(joined)?.[0] ?? '',
-      phone: PHONE_PATTERN.exec(joined)?.[0]?.trim() ?? '',
+      email: (EMAIL_PATTERN.exec(joined) ?? EMAIL_PATTERN.exec(everything))?.[0] ?? '',
+      phone: (PHONE_PATTERN.exec(joined) ?? PHONE_PATTERN.exec(everything))?.[0]?.trim() ?? '',
       linkedin,
       github,
       portfolio: portfolio ?? '',
@@ -610,7 +638,12 @@ export const parseHeuristically = (document: ExtractedDocument): ParsedResume =>
   const { header, sections } = splitIntoSections(content);
   const ctx: ParseContext = { bodySize: bodyTextSize(content), markers };
 
-  let parsed: ParsedResume = parseHeader(header);
+  /*
+   * Everything below the header, so a contact detail the design put in a column
+   * of its own is still found. Only consulted where the header came up empty.
+   */
+  const belowHeader = sections.flatMap((section) => section.lines);
+  let parsed: ParsedResume = parseHeader(header, belowHeader);
 
   for (const section of sections) {
     const parser = SECTION_PARSERS[section.key];

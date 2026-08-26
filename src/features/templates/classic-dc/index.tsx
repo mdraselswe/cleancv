@@ -14,7 +14,7 @@ import './classic-dc.css';
 
 export const meta: TemplateMeta = {
   id: 'classic-dc',
-  name: 'Classic Double Column',
+  name: 'Classic Timeline',
   description:
     'Dates and locations in a left rail, content on the right. Two-column look, single-column reading order.',
   category: 'ats',

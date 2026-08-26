@@ -165,8 +165,18 @@
   padding-left: 1.7em;
 }
 
-.rz-entry--marked > * > .rz-cat-icon,
-.rz-entry--marked > .rz-entry__org > .rz-cat-icon {
+/*
+ * Both places `EntryShell` puts the mark, named explicitly.
+ *
+ * A `> * >` child selector reached the organisation-first case and nothing
+ * else: when the title leads, the glyph sits in `.rz-entry__head > .rz-entry__title`,
+ * one level deeper than that selector can see. The pull-back never applied on
+ * any of the three designs that draw entry markers, so every entry was indented
+ * by the gutter with its glyph inside the text column rather than beside it.
+ */
+.rz-entry--marked > .rz-entry__org > .rz-cat-icon,
+.rz-entry--marked > .rz-entry__title > .rz-cat-icon,
+.rz-entry--marked > .rz-entry__head > .rz-entry__title > .rz-cat-icon {
   margin-left: -1.7em;
   margin-right: 0.6em;
 }

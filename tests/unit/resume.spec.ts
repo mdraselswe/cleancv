@@ -24,6 +24,7 @@ import {
   sectionShowsIcons,
   serializeResume,
 } from '@/features/resume';
+import { getTemplate, resolveSectionColumn } from '@/features/templates';
 
 describe('resume schema', () => {
   it('accepts a blank resume — a half-filled document must still save', () => {
@@ -214,6 +215,54 @@ describe('declaration date', () => {
     // The typed date survives: turning the stamp back on must not lose it.
     expect(restored.declaration.showDate).toBe(false);
     expect(restored.declaration.date).toBe('01/2026');
+  });
+});
+
+describe('section columns', () => {
+  it('takes the design’s split until the document says otherwise', () => {
+    const resume = createSampleResume();
+    const verdant = getTemplate('verdant').meta;
+
+    // Verdant's own arrangement: the narrative on the right, the rest in the panel.
+    expect(resolveSectionColumn(resume, verdant, 'experience')).toBe('main');
+    expect(resolveSectionColumn(resume, verdant, 'certifications')).toBe('side');
+
+    resume.meta.columns = { certifications: 'main' };
+
+    expect(resolveSectionColumn(resume, verdant, 'certifications')).toBe('main');
+  });
+
+  it('leaves a single-column design alone', () => {
+    const resume = createSampleResume();
+    resume.meta.columns = { skills: 'side' };
+
+    expect(resolveSectionColumn(resume, getTemplate('ats-plain').meta, 'skills')).toBe('main');
+  });
+
+  /*
+   * Sparse on purpose: an override is stored only for a section the reader
+   * moved, so switching designs re-splits the document the way the new design
+   * intends rather than carrying the old one's arrangement over.
+   */
+  it('keeps an override through a save and reload, and stores nothing else', () => {
+    const resume = createEmptyResume();
+    resume.meta.columns = { projects: 'main' };
+
+    const restored = normalizeResume(JSON.parse(JSON.stringify(resume)));
+
+    expect(restored.meta.columns).toEqual({ projects: 'main' });
+  });
+
+  it('drops an override for a section that no longer exists', () => {
+    const resume = createEmptyResume() as unknown as Record<string, unknown>;
+    (resume.meta as Record<string, unknown>).columns = {
+      projects: 'main',
+      'custom:gone': 'side',
+      nonsense: 'main',
+      skills: 'middle',
+    };
+
+    expect(normalizeResume(resume).meta.columns).toEqual({ projects: 'main' });
   });
 });
 

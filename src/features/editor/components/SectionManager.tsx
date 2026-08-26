@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronUp, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, LayoutTemplate, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -30,7 +30,9 @@ import {
   useResumeActions,
   type Resume,
 } from '@/features/resume';
-import { getTemplate } from '@/features/templates';
+import { getTemplate, resolveSectionColumn } from '@/features/templates';
+
+import { SectionMap } from './SectionMap';
 
 const PRESET_HINT =
   'A preset reorders the built-in sections only — your own sections and every toggle stay put.';
@@ -120,11 +122,13 @@ export const SectionManager = () => {
    * design that draws glyphs at all. On the others it would be a control with
    * nothing to control. See ADR-022.
    */
-  const design = getTemplate(resume.meta.templateId).meta.supports;
+  const template = getTemplate(resume.meta.templateId).meta;
+  const design = template.supports;
 
   // Which preset was last applied is a hint for the reader, not resume data:
   // one drag afterwards and the order is the user's own.
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
   const activePreset = SECTION_ORDER_PRESETS.find((preset) => preset.id === activePresetId);
 
   return (
@@ -157,19 +161,34 @@ export const SectionManager = () => {
           )}
         </Field>
 
-        <Button
-          size="sm"
-          variant="ghost"
-          className="mt-1.5 -ml-2"
-          leading={<RotateCcw size={13} />}
-          onClick={() => {
-            setActivePresetId(DEFAULT_PRESET_ID);
-            actions.applySectionPreset(DEFAULT_PRESET_ID);
-          }}
-        >
-          Reset to the standard order
-        </Button>
+        <div className="mt-1.5 -ml-2 flex flex-wrap items-center gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            leading={<RotateCcw size={13} />}
+            onClick={() => {
+              setActivePresetId(DEFAULT_PRESET_ID);
+              actions.applySectionPreset(DEFAULT_PRESET_ID);
+            }}
+          >
+            Reset to the standard order
+          </Button>
+
+          {/* The list says what the order is; the map says what it does. */}
+          <Button
+            size="sm"
+            variant="ghost"
+            leading={<LayoutTemplate size={13} />}
+            onClick={() => setMapOpen(true)}
+          >
+            Rearrange on the page
+          </Button>
+        </div>
       </div>
+
+      {/* Mounted only while open: it renders a second copy of the whole
+          document to measure, which is not work to do on every keystroke. */}
+      {mapOpen ? <SectionMap onClose={() => setMapOpen(false)} /> : null}
 
       <SortableList
         ids={sectionOrder}
@@ -250,6 +269,32 @@ export const SectionManager = () => {
                           <RotateCcw size={13} />
                         </Button>
                       ) : null}
+                    </div>
+                  ) : null}
+
+                  {/*
+                    The column, for anyone not using a pointer: the page map is
+                    the fast way to move a section across, this is the one that
+                    works from the keyboard. See ADR-043.
+                  */}
+                  {row.enabled && !row.headless && design.columns === 2 ? (
+                    <div className="mt-2 flex items-center gap-1.5 pl-12">
+                      <span className="text-fg-subtle text-[12px]">Column</span>
+                      {(['main', 'side'] as const).map((column) => (
+                        <Button
+                          key={column}
+                          size="sm"
+                          variant={
+                            resolveSectionColumn(resume, template, slot) === column
+                              ? 'outline'
+                              : 'ghost'
+                          }
+                          aria-pressed={resolveSectionColumn(resume, template, slot) === column}
+                          onClick={() => actions.placeSection(slot, index, column)}
+                        >
+                          {column === 'main' ? 'Main' : 'Panel'}
+                        </Button>
+                      ))}
                     </div>
                   ) : null}
 

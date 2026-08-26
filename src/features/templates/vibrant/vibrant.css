@@ -69,6 +69,9 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--rz-accent);
+  /* Collapses with the first entry's own top spacing, so the gap under a
+     heading is this one value whatever the section opens with. */
+  margin-bottom: calc(7px * var(--rz-density) * var(--rz-scale));
 }
 
 .vbr .vbr-heading__dot {
@@ -79,29 +82,49 @@
   flex: none;
 }
 
-/* Timeline rail. Drawn with a border, so it contributes nothing to the text. */
+/*
+ * Timeline rail. Drawn with a border, so it contributes nothing to the text.
+ *
+ * The space between one role and the next is the entry's own top padding rather
+ * than a margin, so the rail runs through it: on a margin the border stopped at
+ * each entry's last line and started again at the next, and a timeline in
+ * dashes is not a timeline. `--vbr-lead` is that space, and the dot reads it
+ * too, so the dot stays on the title's line wherever the entry begins.
+ */
 .vbr .rz-entry {
+  --vbr-lead: calc(11px * var(--rz-density) * var(--rz-scale));
   position: relative;
+  margin-top: 0;
+  padding-top: var(--vbr-lead);
   padding-left: calc(16px * var(--rz-scale));
   border-left: 2px solid var(--rz-accent-soft);
+}
+
+.vbr .rz-entry:first-of-type {
+  --vbr-lead: 0px;
 }
 
 .vbr .rz-entry::before {
   content: '';
   position: absolute;
-  left: calc(-5px);
-  top: calc(6px * var(--rz-density));
+  left: -5px;
+  top: calc(var(--vbr-lead) + 0.45em);
   width: 8px;
   height: 8px;
   border-radius: 999px;
   background: var(--rz-accent);
 }
 
+/*
+ * The trailing value sits beside the title, not against the far margin. It
+ * qualifies the title — a grade, a credential number — and pushed to the other
+ * end of a full-width column it reads as an unrelated fragment.
+ */
 .vbr .rz-entry__head {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 1em;
+  flex-wrap: wrap;
+  gap: 0.2em 0.9em;
 }
 
 .vbr .rz-entry__title {
@@ -112,6 +135,31 @@
 .vbr .rz-entry__org {
   font-weight: 600;
   color: var(--rz-accent);
+}
+
+/*
+ * Dates and place on one line, each behind its own glyph. One paragraph in the
+ * markup with a single space between them, which is enough for the extracted
+ * line and not enough on the page — "12/2022 - Present Banani, Dhaka" read as
+ * one run.
+ */
+.vbr .rz-entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(1px * var(--rz-density)) 0.9em;
+  margin-top: calc(1px * var(--rz-density));
+}
+
+.vbr .rz-entry__dates,
+.vbr .rz-entry__place {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.vbr .rz-entry__meta .rz-icon {
+  width: 1em;
+  height: 1em;
 }
 
 .vbr .rz-entry__meta,
@@ -148,7 +196,7 @@
 .vbr .rz-skills {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: calc(7px * var(--rz-density)) calc(18px * var(--rz-scale));
+  gap: calc(9px * var(--rz-density)) calc(18px * var(--rz-scale));
 }
 
 .vbr .rz-skills__label {
@@ -180,12 +228,13 @@
 .vbr .rz-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: calc(8px * var(--rz-density)) calc(18px * var(--rz-scale));
+  gap: calc(11px * var(--rz-density)) calc(18px * var(--rz-scale));
 }
 
+/* Two-up cells are their own blocks; the rail belongs to the timeline. */
 .vbr .rz-grid-2 .rz-entry {
   border-left: none;
-  padding-left: 0;
+  padding: 0;
   margin-top: 0;
 }
 

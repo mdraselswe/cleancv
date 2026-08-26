@@ -11,18 +11,44 @@
    paper edge — which no consumer printer can reach anyway.
    --------------------------------------------------------------------------- */
 
+/*
+ * Rubik for anything that titles something, Inter for prose. The body face is
+ * the picker's, so changing the font still changes the page; only the display
+ * face is named here. See ADR-031.
+ */
+.resume-root.msb {
+  --msb-display: var(--font-display-sans), 'Segoe UI', system-ui, sans-serif;
+
+  /*
+   * The page paints this design's ground, band and all, so the document must
+   * not paint its own over it. The shared white would otherwise cover the band
+   * everywhere except the page margin, which is the one strip it does not
+   * reach.
+   */
+  background: transparent;
+}
+
 .msb .msb-grid {
   display: flex;
   align-items: stretch;
-  min-height: 297mm;
 }
 
+/*
+ * The rail draws no colour of its own: the band is the page's background, which
+ * is painted on every page and so covers the last one too, where the flow stops
+ * with the content. See ADR-036.
+ *
+ * What is left here is the column its text occupies — the band's full width,
+ * because the page's left margin is dropped for a design with a band and the
+ * flow starts at the paper's edge. The inset the margin used to give the text
+ * is this column's own padding, which every page fragment gets.
+ */
 .msb .msb-rail {
-  width: 33%;
+  width: var(--rz-bleed);
   flex: none;
-  background: var(--rz-accent);
   color: #ffffff;
   padding: calc(16px * var(--rz-scale)) calc(14px * var(--rz-scale));
+  padding-left: var(--rz-margin);
 }
 
 .msb .msb-main {
@@ -41,6 +67,7 @@
 }
 
 .msb .msb-name {
+  font-family: var(--msb-display);
   font-size: 1.55em;
   font-weight: 700;
   line-height: 1.15;
@@ -70,16 +97,21 @@
 }
 
 .msb .msb-rail-heading {
+  font-family: var(--msb-display);
   font-size: 0.85em;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgb(255 255 255 / 0.75);
-  padding-bottom: calc(2px * var(--rz-density));
+  padding-bottom: calc(3px * var(--rz-density));
   border-bottom: 1px solid rgb(255 255 255 / 0.3);
+  /* Collapses with the first entry's own top margin, so the gap under the rule
+     is this one value whatever the section opens with. */
+  margin-bottom: calc(6px * var(--rz-density) * var(--rz-scale));
 }
 
 .msb .msb-heading {
+  font-family: var(--msb-display);
   font-size: 0.9em;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -87,6 +119,7 @@
   color: var(--rz-accent);
   padding-bottom: calc(3px * var(--rz-density));
   border-bottom: 1px solid var(--rz-rule);
+  margin-bottom: calc(6px * var(--rz-density) * var(--rz-scale));
 }
 
 /* --- Rail content --------------------------------------------------------- */
@@ -98,6 +131,7 @@
 }
 
 .msb .msb-rail .rz-skills__label {
+  font-family: var(--msb-display);
   font-weight: 600;
   font-size: 0.9em;
   color: rgb(255 255 255 / 0.95);
@@ -122,6 +156,7 @@
 }
 
 .msb .msb-rail .rz-entry__title {
+  font-family: var(--msb-display);
   font-size: 0.92em;
   font-weight: 600;
 }
@@ -143,8 +178,34 @@
 }
 
 .msb .msb-main .rz-entry__title {
+  font-family: var(--msb-display);
   font-size: 1.05em;
   font-weight: 600;
+}
+
+/*
+ * The dates and the place are two spans in one paragraph, separated by a single
+ * text space — enough for the extracted line, not enough on the page, where
+ * "12/2022 - Present Banani, Dhaka" read as one run. A flex gap and the glyphs
+ * the design already draws elsewhere separate them without touching the text.
+ */
+.msb .msb-main .rz-entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(1px * var(--rz-density)) 1em;
+  margin-top: calc(2px * var(--rz-density));
+}
+
+.msb .rz-entry__dates,
+.msb .rz-entry__place {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.msb .rz-entry__meta .rz-icon {
+  width: 1em;
+  height: 1em;
 }
 
 .msb .msb-main .rz-entry__org {
@@ -158,7 +219,12 @@
   color: var(--rz-ink-muted);
 }
 
+.msb .msb-main .rz-entry {
+  margin-top: calc(11px * var(--rz-density) * var(--rz-scale));
+}
+
 .msb .msb-main .rz-entry__note {
+  margin-top: calc(2px * var(--rz-density));
   font-size: 0.93em;
   font-style: italic;
   color: var(--rz-ink-muted);

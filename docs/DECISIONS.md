@@ -876,3 +876,500 @@ anything. A format identifier's job is to stay the same; that is the whole of it
 
 **Consequence.** A comment sits above those constants saying so, because a later reader will
 otherwise take the mismatch for something left half-done.
+
+---
+
+## ADR-031 — A design may name a face; only the picker names a font
+
+**Context.** Formal Centered was measured against a reference page set in PT Sans over Volkhov.
+Neither face was loaded. The obvious fix — pin both in the stylesheet — would have made the font
+picker inert for that one design, which is the failure ADR-019 already names: a control that a
+subject silently ignores is worse than no control.
+
+**Decision.** The two faces enter by different doors.
+
+PT Sans became a picker value (`humanist`), sitting beside Inter, Source Serif and Space Grotesk,
+and Formal Centered's `defaultTheme` starts on it. The reader still gets a font control that works,
+and the design still opens on the pairing it was measured for.
+
+Volkhov is not offered. It is a display serif — a name and six headings a page — and a body set in
+it would be unreadable at 9pt. It loads as `--font-display-serif` and a design reaches for it by
+name, the way Formal Centered already reached for the serif it was using.
+
+The same change let the headings drop `text-transform: uppercase`. That property reaches the PDF's
+text layer, so it is a content decision as much as a visual one; both spellings pass, because the
+heading vocabulary is matched case-insensitively (ADR-011), which is what makes this the design's
+call rather than the parser's.
+
+**Consequence.** `FONT_FAMILIES` gained a key, and the Zod enum, the label map and the picker took
+it without being touched — they all read the one array. Every other design is unchanged; the new
+face is simply available to them.
+
+A design that wants a face nobody should be able to pick for their body text now has a pattern to
+follow, and one that just wants a different body font has a picker value instead of a stylesheet
+override.
+
+---
+
+## ADR-032 — A point in a list carries a mark, and the mark is text
+
+**Context.** Key Achievements renders as two-up cards: a bold title, a paragraph under it. Designs
+that draw glyphs put a trophy in front of each title, and the four points read as four points. On
+the designs that draw none — Formal Centered, ATS Plain — nothing marked where one ended and the
+next began, so four achievements read as one passage with bold phrases scattered through it.
+
+**Decision.** The block marks every achievement. The design's glyph where it draws glyphs; a literal
+U+2022 in an `aria-hidden` span, followed by a real space, where it does not.
+
+A `::before` would have been shorter and is wrong for the same reason it is always wrong here:
+generated content does not reach the extracted text layer, so the mark would exist on the page and
+not in the file. The space after the bullet is a text node for the same reason a separator is
+(ADR-015) — without it the extracted line reads "•Strategic Project Leadership".
+
+**Consequence.** `supports.icons` now decides which mark an achievement gets rather than whether it
+gets one. No design has to opt in, and none of the five that draw glyphs changed.
+
+---
+
+## ADR-033 — A meta the block calls inline is not a margin
+
+**Context.** `EntryShell` puts the dates and the place in one paragraph so the extracted text keeps
+them on a line together, and designs lift that paragraph into a right margin. The references block
+reuses the same class for something different — a referee's email, phone and how they know you,
+under their name in a two-up cell — and marks it `rz-entry__meta--inline`. Nothing read the
+modifier. Formal Centered's margin column is right-aligned and `white-space: nowrap`, so the
+referee's contact line squared itself off against the right edge of its cell with the width of the
+card empty beside it.
+
+**Decision.** Formal Centered styles the modifier back into the flow: block, full width, left
+aligned, wrapping. Keyed on the modifier the block sets, not on `[data-section='references']` — the
+block is the thing that knows this meta is not a margin, and a design that grows another inline meta
+gets the right behaviour without a second selector.
+
+**Consequence.** Two designs already patched this by section name (`classic-dc`, `compact-pro`);
+they keep working and can move to the modifier whenever they are next touched. Any design that
+lifts `.rz-entry__meta` into a margin now has one class to exempt.
+
+---
+
+## ADR-034 — The entry marker's gutter never worked
+
+**Context.** `.rz-entry--marked` indents an entry by 1.7em and pulls its glyph back into the gutter,
+so several entries under one heading read as a list (ADR-022). The pull-back was written as
+`.rz-entry--marked > * > .rz-cat-icon`, plus a second selector naming `.rz-entry__org`.
+
+`EntryShell` puts the glyph in one of two places. Leading with the organisation it is
+`article > p.rz-entry__org > span` — two levels, which the child selector reaches. Leading with the
+title, which is what every design that draws markers actually does, it is
+`article > div.rz-entry__head > h3.rz-entry__title > span` — three levels, which it does not.
+
+So on all three designs that draw entry markers, every entry was indented by the gutter with its
+glyph sitting inside the text column: entries started further right than their own heading, and the
+gutter reserved 1.7em that nothing used.
+
+**Decision.** Name both places the component puts it, explicitly, including the nested one.
+
+**Consequence.** Academic CV, Modern Sidebar and Vibrant now hang their markers where the design
+always said they were. The gutter and the pull-back are still expressed in different `em` bases —
+the entry's and the title's — which leaves about a pixel of drift; that is smaller than the hairline
+it would take to notice and not worth a second custom property.
+
+---
+
+## ADR-035 — The last preview page is a whole page
+
+**Context.** Each preview sheet is a window onto the flow, and its height was
+`min(pageHeight, nextPageOffset - offset)`. On the last page there is no next offset, so it fell
+back to the content height and the window stopped at the last line.
+
+Chrome's final page box is a whole page regardless of how much content lands on it, so anything a
+design paints below its last line — a rail's bottom padding, a block's background — is on the
+exported page and was missing from the preview.
+
+**Decision.** The last page's window is a full page. Every other page keeps the shorter of the two,
+because that difference is the white space left by an entry moved down to stay whole, which is the
+thing separate sheets exist to show.
+
+**Consequence.** Modern Sidebar's rail now ends in the preview exactly where it ends in the PDF.
+
+It does not end at the foot of the paper, and nothing in the flow can carry it there: an absolutely
+positioned extension made Chrome paginate a page further than the preview, and `position: fixed`
+repeats per page in print but resolves against the preview's zoom transform on screen. ADR-036 takes
+the colour out of the flow entirely and settles it.
+
+---
+
+## ADR-036 — A band down the page belongs to the page, not the document
+
+**Context.** Modern Sidebar's rail was a coloured flex item inside the flow, and the flow is inset by
+the page margins on all four sides. So the rail floated: white above it, white to its left, white
+below it, and on the last page it stopped with the final line of the panel.
+
+Two facts bound the problem. Nothing paints into a PDF page's margin area — not a body background,
+not the root element's, not an absolutely positioned box, which Chrome instead paginates into an
+extra page. And vertical padding on a continuous flow applies only to its first and last fragment,
+so page two's first line has nothing but the page's top margin keeping it off the paper.
+
+**Decision.** A design declares `pageBleed: { width }`, and two things follow.
+
+The page's **left** margin is dropped, so the flow starts at the paper's edge and the band can reach
+it. The design insets its own content instead — horizontal padding applies to every fragment, so
+that works on every page. The top and bottom margins stay, because those are the ones that cannot
+move inside the flow.
+
+The band is painted by the **page** rather than by an element. The preview puts it on each sheet.
+The export needs two, because no one thing covers a whole printed page: the root element's
+background, which Chrome propagates to the page canvas and which covers the page box; and Chrome's
+print **header**, which is the one thing that renders into a margin area, and renders on every page.
+The header carries two `position: fixed` strips — fixed inside a header is measured against the whole
+sheet rather than the header's own slot, which is what puts them on the paper's top and bottom edges
+instead of inside the header's default padding. Both strips come from the header; the footer template
+is a blank span, because a blank one is what stops Chrome printing page numbers.
+
+All three read one `resolvePageBleed`, and the band itself is built by `pageBleedBackground` in
+`lib/`, the layer both the preview and the PDF renderer can reach — a design that came out with two
+different bands would be a preview that lies. `--rz-bleed` carries the same width into the
+stylesheet, so the design's rail column is exactly as wide as the band it sits on.
+
+Because the page paints it, it covers the last page too, where the flow stops with the content.
+
+**Consequence.** The rail runs to all four edges of every printed page — measured on the rasterised
+export, 0 to 296.5mm of a 297mm sheet and 0 to 68.7mm of a 69mm band, the shortfalls being the
+rasteriser's rounding — and the narrative keeps its margins.
+
+`.resume-root` paints no background under a design with a band — the shared white would cover it
+everywhere except the one strip it cannot reach.
+
+The strips overlap the page box by half a millimetre. The colour is the same either side of the
+join, so the overlap is invisible, while butting them exactly leaves a hairline of paper wherever the
+two edges land on different pixels.
+
+---
+
+## ADR-037 — A design marks an entry once
+
+**Context.** Vibrant declared `entryMarkers: true` while also running a timeline rail — a border down
+the left of every entry with a dot at each role. Once ADR-034 made the marker's gutter work, the
+glyph landed on the rail and its dot, and the two drew over each other.
+
+ADR-022 had already written the rule this violated: a marker is for designs that have not otherwise
+said where one entry ends, and "the classic design runs a dated timeline rail down the left […] and
+a marker on top of those is noise, not help". Vibrant was the case the sentence describes.
+
+**Decision.** `entryMarkers: false`. `icons` stays on — the glyphs beside skill groups and
+achievements are a different thing, and the design is the one that leans on them most.
+
+The rail became continuous in the same pass. The space between one role and the next was the entry's
+top *margin*, so the border stopped at each entry's last line and began again at the next; it is now
+the entry's top *padding*, which the border runs through. `--vbr-lead` holds that space and the
+timeline dot reads the same value, so the dot stays on the title's line wherever an entry begins.
+
+**Consequence.** One mark per entry, and a timeline that is a line rather than a row of dashes.
+
+The trailing value moved off the far margin at the same time: `justify-content: space-between` on a
+full-width single column put "CGPA: 3.20" against the right edge with the width of the page between
+it and the degree it qualifies.
+
+---
+
+## ADR-038 — Verdant, and what a second column costs the parser
+
+**Context.** A tenth design: a portrait and the supporting sections in a left panel, the narrative on
+the right, every heading behind a rounded badge in a soft green, and the headline in a pill of the
+same. Two real columns, like Side Panel and Modern Sidebar.
+
+It failed two of the release gate's assertions on its first render, and both were about the *text
+layer* rather than the page.
+
+**Decision.**
+
+*The identity is first in the DOM and second in the grid.* Grid places it into the right column's
+first row; the panel spans both rows on the left. Markup order is identity, panel, main, so the
+extracted text opens with the name — a panel-first order would have buried it under the
+certifications (ADR-004).
+
+*Achievements moved to the narrative column.* In the panel they were painted first, so the extracted
+text named Grameen a page before the Shikho bullets that come before it, and "keeps each role next to
+its own bullets" failed. Achievements are narrative — they name the employers they happened at — and
+belong beside them. Modern Sidebar's rail already holds only sections that name nothing.
+
+*The heading badge reads `SECTION_HEADING_ICON`, a new and complete map.* `SECTION_ENTRY_ICON` marks
+entries and is deliberately partial — a section with no entries needs no glyph — but a heading always
+has one to draw, and every section falling through to the same star was not a design. A custom
+section still resolves to nothing and lets `CategoryIcon` guess from the reader's own words.
+
+*Two parser fixes, both general.* `parseHeader` reads the lines below the first heading for any
+contact detail the header window did not yield: a design that stands its contact list in a side panel
+under its own heading puts every one of them below the *other* column's first heading, and the window
+then holds a name and nothing else. And an education entry with neither a degree nor an institute is
+dropped — a wrapped place in a right margin leaves a line on a row of its own that reads as the start
+of another entry, and an empty row is worse than a lost detail.
+
+**Consequence.** Ten designs. The gate went from 123 checks to 136 and passes; the two parser changes
+help any two-column CV, whoever made it.
+
+The design is `atsBaseline: 78` — Side Panel's cost for two columns, plus the portrait's.
+
+---
+
+## ADR-039 — One cut across two columns is not what Chrome does
+
+**Context.** The preview paginates by finding the first *atom* — an entry, a bullet, a heading with
+its first fragment — that would straddle the foot of the page, and moving the page's start up to it
+(ADR-020). For one column that is exactly Chrome's behaviour restated: pushing the atom down and
+moving the cut up are the same thing.
+
+For two columns they are not. Chrome fills each column to the foot of the page and pushes only what
+straddles into that column's next fragment. The preview moves one cut for the whole flow, so a panel
+entry that will not fit drags the *narrative* column up with it — on Verdant's first render, 15% of
+page one went blank in both columns because one skills group in the panel overran.
+
+Side Panel and Modern Sidebar never showed it: their panels end well short of the page, so only the
+narrative column ever drives the break. Verdant's panel is dense enough to compete, and the release
+gate's "the PDF's page two opens with whatever the preview put at the top of page two" then failed.
+
+**Decision.** The gate asserts that check for single-column designs only, and asserts the page
+*count* for every design as before.
+
+This is the promise the code already makes. The export is sent the preview's breaks and sets them
+for a single column, so those two cannot disagree; for two columns it sends none, precisely because
+one cut across two columns is not a thing Chrome can be asked for (ADR-021). Asserting it anyway was
+asserting a property that held for two designs by the luck of their content.
+
+Moving sections between the columns until it passed was the other option, and it is not one: it
+tunes a design's shape to a fixture.
+
+**Consequence.** Verdant keeps the split its reference uses. The two columns can differ by an entry
+on which side of a break it falls; the page count cannot.
+
+The real fix is to paginate each column separately in the preview — a per-column offset per sheet,
+which the current single-transform sheet cannot express. That is a piece of work in its own right and
+would remove the last difference between the preview and the export for every two-column design.
+
+---
+
+## ADR-040 — Verdant, measured off the reference rather than guessed
+
+**Context.** The first pass at Verdant was built from a small screenshot and read as the right idea
+in the wrong colours and proportions. Sampling a larger one settled every open question at once.
+
+**Decision.** The values are the reference's, taken from its pixels:
+
+| | |
+|---|---|
+| pill and leaf | the accent at 63% toward white |
+| badge and outline | the accent at 38% |
+| dot | the accent itself |
+| heading text and badge glyph | a deep green, the accent at 26% over near-black |
+| everything else | one neutral `#3e3e3e`, headings excepted |
+
+The heading badge's glyph was pinned to the top of its square, which is what the reader saw as "not
+centred": `.rz-cat-icon` sets `align-self: flex-start` so a glyph beside a line of text sits on that
+line, and the badge is a centring flex container that the property overrode. Named explicitly here.
+
+The mark around the portrait is four SVG paths, traced off the reference rather than approximated:
+**two open arcs that do not meet** — a long one over the top, a shorter one under the foot, with a
+gap on the left between them — a crescent filling the space between the photo and the upper arc on
+the right, and a disc where the lower arc passes the left.
+
+Traced, because three attempts at guessing it were all wrong in the same way: a bordered circle
+leaves a mitred step wherever a side stops, a stroked circle is clean but is still a circle, and a
+single blob outline is a closed loop where the reference has two strokes.
+
+Reading the grid told me the *shape*; hand-writing Bézier control points from it did not give me the
+*curve*. Anchors picked off a coarse grid are noisy, and a curve forced through noise kinks. The
+paths in the file are generated: the reference's outline colour is sampled along a ray at every few
+degrees, the midpoint of each hit is the centreline, the radii are smoothed, and the result is
+converted to cubics through a Catmull-Rom fit — which is C1 continuous, so there is nowhere for a
+kink to be. Same for the leaf, whose two edges come out of the same scan; the disc is a centroid and
+a radius.
+
+That also settled the frame's size, which was guesswork before: the reference's photo is centred at
+57,52 of the mark's box with a radius of 38, and it has to be exactly that, because the leaf's inner
+edge *is* the photo's edge. A smaller frame leaves a band of paper between them and the leaf reads as
+floating.
+
+**Consequence.** One thing is deliberately not reproduced. The reference's badge glyphs are solid,
+and filling these paths gives exactly that for the ones whose outline *is* the form — a person, an
+envelope, a certificate — while destroying the ones whose meaning is in their interior lines: a
+filled globe is a disc, and so is a filled target. A heading glyph is chosen by section rather than
+by hand, so all of them have to survive it. They are drawn in the same deep green at a heavier
+stroke instead.
+
+The preview still cuts a panel entry across a line at the foot of a page where the export pushes it
+whole (ADR-039). Retracting the break past every straddler removes the cut and costs a page the
+export does not have — the page count is the thing that has to agree, so the cut stays.
+
+---
+
+## ADR-042 — The page map: reordering by the shape rather than by the name
+
+**Context.** Section order was a list of names with drag handles. It says what the order *is* and
+nothing about what it does: which page a section lands on, which column it sits in on a two-column
+design, how much of the page it eats, whether it runs over a break. Everything a reader actually
+wants to move a section about is invisible in a list.
+
+**Decision.** A second view of the same order — pages drawn as sheets, sections drawn as boxes where
+they actually fall, at the size they actually take, dragged to reorder. Both exist: the list is the
+one that works without a pointer and holds the toggles and headings, the map is the one that shows
+the consequence.
+
+The geometry is **measured off a real rendering**, never estimated from the section list. A hidden
+copy of the template at true page width is mounted with the dialog, `usePreviewMetrics` paginates it
+with the same model the preview uses, and each `[data-section]` is read for its rectangle. Off screen
+rather than the preview pane, because the map has to be right whether or not the preview is on
+screen, and at the preview's zoom every measurement would need dividing back out (rule 20).
+
+Mounted with the dialog, not kept alive behind it: it renders a second copy of the whole document,
+which is not work to do on every keystroke.
+
+A section crossing a page break draws a box on each page, and only the first carries the handle — the
+same section cannot be two different things to drop onto. The rest are dashed and marked "(cont.)".
+
+The band above a column's first section is drawn as a locked "Header". Per column, because a
+two-column design stands its name over the narrative and starts its panel at the very top: one band
+measured from the topmost section anywhere would have been nothing at all.
+
+**Consequence.** Reordering can be done against the picture rather than against a list of names. The
+map re-measures after every drop, so the consequence of a move is on screen before the next one.
+
+The hook returns its ref alongside plain values, and the component destructures it immediately:
+React's lint rules read *any* property of an object holding a ref as reading the ref itself.
+
+---
+
+## ADR-043 — Which column a section is in is the document's, not the design's
+
+**Context.** The page map (ADR-042) let a section be dragged anywhere, and dropping one from the
+panel onto the narrative column did nothing but reorder it. It could not do anything else: which
+column a section takes was a constant inside each two-column template — `MAIN_SECTIONS` in Verdant
+and Side Panel, `RAIL_SECTIONS` in Modern Sidebar — so the answer was the design's and the reader had
+no way to disagree with it.
+
+**Decision.** `meta.columns` — a per-section override on the document, resolved against the design's
+own split by one `resolveSectionColumn`, which both the template that lays the columns out and the
+map that draws them read. A template declares its default as `mainSections`; anything unlisted,
+including a custom section, takes the panel.
+
+**Sparse on purpose**, unlike `meta.sections`, which is rebuilt key by key so a new setting arrives
+with its default (ADR-022). Here an absent entry means "let the design decide", and filling it in for
+every section would freeze one design's arrangement onto every design the reader switches to
+afterwards. Only a section actually moved is stored.
+
+One store action, `placeSection(slot, index, column)`, does the position and the column in a single
+commit: one drag is one thing to undo.
+
+**Consequence.** A section can be dragged out of the panel and into the narrative, and it stays
+there. The Sections panel gained a Main/Panel control for the same move without a pointer — the map
+is the fast path, never the only one.
+
+Two things about the drag itself came out of the same pass. A `DragOverlay` carries the box under
+the pointer, leaving the original as a dashed hole and ringing the box under it, because without one
+nothing moved during a drag at all. And the dialog is centred by flex rather than by
+`-translate-x-1/2`: `position: fixed` resolves against a transformed ancestor, so the overlay — which
+dnd-kit positions in viewport coordinates — was landing half a screen from the pointer.
+
+---
+
+## ADR-044 — Drawn, not traced
+
+**Context.** Verdant's portrait mark went through four shapes. A bordered circle, which leaves a
+mitred step wherever a side stops. A stroked circle, clean but still a circle. A hand-written blob,
+which kinked. And finally a faithful trace of the reference — its outline colour sampled along a ray
+every few degrees, the midpoints smoothed and fitted (ADR-040).
+
+The trace was accurate and still looked wrong. The reference was drawn by hand: its arcs wander, and
+a curve fitted to them carries the wander with it. Faithfulness to a hand-drawn source and evenness
+are different goals, and the reader wanted the second one.
+
+**Decision.** The mark is constructed, not copied. A ring of radius 44 about the frame's own centre,
+drawn as two arcs of a `<circle>` with `pathLength="100"` — which makes the dash pattern read as
+percentages, so an arc is a span in degrees over 3.6 and the two are mathematically even. A shorter,
+lighter arc of radius 38.5 in the deeper green, concentric and clear of the frame on both sides. A
+disc on the lower arc.
+
+The deeper green started as a crescent filling the space between frame and ring, which is what the
+reference has. Built to touch the frame's edge at its widest it read as a blade laid across the
+picture rather than as part of the mark — the reference gets away with it because its frame is a
+cut-out with no edge to cross. Concentric and clear of both neighbours, the same colour layers
+instead.
+
+The reference still set everything it should: the three greens, the idea of two arcs with gaps rather
+than a closed ring, the crescent, the disc. What it could not give was the geometry, and that is the
+part a formula does better than a trace.
+
+**Consequence.** The frame is concentric with the ring at 70% of the mark's box, so the gap around it
+is even. Changing the design is now editing four numbers — two spans, a radius, a thickness — rather
+than a thousand characters of path data. ADR-040's rule stands for *measuring* a reference; this is
+where measuring stops and drawing starts.
+
+---
+
+## ADR-045 — Three designs renamed; no id moved
+
+**Context.** Ten designs, and three of the names were working against the list they sit in.
+
+*Classic Double Column* named the thing the design is proud of not being. Its left rail holds dates
+and locations and its whole claim — a 95 baseline — is that it reads as one column; the name promised
+the two-column layout the genuinely two-column designs have.
+
+*Side Panel* and *Modern Sidebar* are near-synonyms for different designs: a plain panel on the right
+against a coloured rail on the left. A reader scanning a dropdown cannot tell which is which.
+
+*Verdant* names a colour on a design whose accent the reader can change, and it rhymes with *Vibrant*
+two rows away.
+
+**Decision.**
+
+| id | was | is |
+|---|---|---|
+| `classic-dc` | Classic Double Column | Classic Timeline |
+| `side-panel` | Side Panel | Right Panel |
+| `verdant` | Verdant | Portrait Panel |
+
+The other seven stand. ATS Plain, Formal Centered, Elegant Serif, Academic / Govt CV, Compact
+Professional and Modern Sidebar each say what they are; Vibrant is evocative but its category does
+the explaining.
+
+**No id changed.** `meta.templateId` is stored in every saved document and inside every PDF this app
+has already exported, and the schema falls back to the default for an id it does not recognise — so
+renaming one would silently move somebody's CV to a different design, quietly, on load. Ids are wire
+identifiers and do not follow a rename (ADR-030). The folder names stay with them; each file's
+heading comment now carries both, as `Right Panel (\`side-panel\`)`.
+
+---
+
+## ADR-046 — A column-scoped rule is a rule about a structure
+
+**Context.** Right Panel put the glyph beside an achievement into a gutter, with
+
+```css
+.spl .spl-side .rz-cat-icon { position: absolute; left: 0; top: 0.1em; display: inline-flex }
+```
+
+and the gutter itself — `position: relative` and a `padding-left` — on `.spl-side .rz-grid-2
+.rz-entry`, which is what achievements render as. The selector said *the panel*; the layout it
+depended on was *the two-up entry*. While the panel's contents were fixed the two were the same
+thing.
+
+ADR-043 made them different. A section can now be dragged across, and dragging skills into the panel
+put a `.rz-cat-icon` there that is not in a two-up entry. Two consequences, both from that one rule:
+
+- It has the same specificity as `.spl .rz-skills .rz-cat-icon { display: none }` and comes later, so
+  its `display: inline-flex` won and un-hid a glyph the design had deliberately hidden.
+- `position: absolute` with no positioned ancestor resolves against the initial containing block, so
+  the glyph landed at the top-left of the *page* — printed over the person's name.
+
+**Decision.** Scope the rule to the structure it needs: `.spl .spl-side .rz-grid-2 .rz-entry
+.rz-cat-icon`. It can now only apply where the gutter it assumes actually exists.
+
+**Consequence.** Skills in the panel keeps the hidden glyph the design intended, and there is nothing
+left in the panel that can escape.
+
+The other two designs with an absolutely positioned decoration were checked: Portrait Panel's mark
+and Vibrant's timeline dot both sit inside an element that is `position: relative` in the same rule
+set, so neither can escape.
+
+Reproducing it took a scripted move rather than a screenshot — the sample resume leaves skills in the
+narrative column, so the layout that shows the bug is one the fixture never renders. Worth
+remembering: a fixture that never exercises a combination is not evidence the combination works.
