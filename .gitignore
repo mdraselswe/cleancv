@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scratch files from driving the deployed app by hand
+/live-*
+/cookies-*.txt
+/*.pdf
