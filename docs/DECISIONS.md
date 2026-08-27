@@ -1465,3 +1465,143 @@ changes, because a section reached from anywhere but the strip — a "Fix it" li
 And `navigateToFix` was calling `closeScore()`, which on a desktop closed the score's own column: the
 drawer needs dismissing because it covers the form being navigated to, a column beside it covers
 nothing. `dismissScoreOverlay` closes only the drawer.
+
+## ADR-048 — One gate, on the server, and it is the download
+
+**Status.** Accepted.
+
+**Context.** The app had no accounts at all. Everything ran in the browser, the document lived in
+IndexedDB, and the only server the app owned was the one that rendered the PDF. Adding sign-in
+raises three questions at once, and answering them separately is what turns a login into a rewrite:
+what needs an account, where the check lives, and what happens to the document.
+
+**Decision.**
+
+*What needs an account: the PDF, and nothing else.* Writing, reordering, ten designs, the theme
+controls, the ATS score, import, the JSON backup and the whole document library stay open to anyone
+who opens the page. A CV builder that asks who you are before it will let you type is a CV builder
+nobody finishes a first draft in. The download is the moment the work is worth something, and it is
+also the only thing that costs the server anything — headless Chrome for up to sixty seconds, on a
+Hobby plan's memory. So the gate is where the cost is.
+
+*Where the check lives: `/api/pdf`, not the button.* A hidden button is a suggestion. The route that
+renders the PDF is the only place that request is served, so it is the only place the check belongs;
+the `Download` control is left exactly as it was, and pressing it signed out produces a `401` whose
+body carries `code: "sign_in_required"`. The export hook keeps that apart from every other failure,
+because every other failure is a sentence to read and this one is a door to walk through — it opens
+`SignInRequiredDialog` instead of an error toast.
+
+Three answers, not two: "nobody is signed in" is `401`, "the session could not be checked" is `503`,
+and a deployment with no auth configured at all is `503` in production and open in development.
+Reporting a database outage as `sign_in_required` would send somebody who *is* signed in to a
+sign-in page that works, to come back and be refused again.
+
+*What happens to the document: nothing.* Signing in does not upload the CV, and the schema gains no
+`documents` table in this change. The library is still IndexedDB, still per-browser. Cloud sync is a
+real feature with real questions — merge on first sign-in, conflict resolution, offline queueing —
+and none of them get answered well as a side effect of adding a login.
+
+**Stack.** Better Auth 1.7 over Neon Postgres through Drizzle, with Resend for the two emails.
+Better Auth rather than Auth.js because Auth.js v5 has been `5.0.0-beta.32` for three years and the
+credentials path there is hand-written password handling. Neon over HTTP rather than a pooled TCP
+connection: every request on a serverless deployment is its own process, so a pool that cannot
+outlive one request is a pool of one that still pays for the handshake. HTTP has no transactions,
+which is why the Drizzle adapter is left on its default of running operations in sequence.
+
+**A new layer: `src/server/`.** The database handle, the auth server and the mailer. It holds a
+connection and a secret, so it is guarded twice — an ESLint boundary that names the layer in the
+error, and `server-only`, which turns an import from a client component into a build failure. Both,
+because the lint rule is the readable message and the package is the guarantee.
+
+Everything under it is built on first use rather than at import. `next build` compiles these modules
+and a build should not need a production secret to find out whether the editor type-checks.
+
+**Consequences.**
+
+- Sign-up does not sign anyone in. `requireEmailVerification` holds the session back until the
+  address is confirmed, because otherwise anyone can hold an account under somebody else's email —
+  and the reset link, the one route back into an account, goes to an inbox they do not own.
+- Rate limits live in the database, not in memory. Each serverless invocation has its own memory, so
+  an in-process counter starts at zero often enough to be no limit at all.
+- `?next=` goes through `safeRedirect` before anything navigates to it. Only an app-relative path
+  survives — `//evil.example` is protocol-relative and `/\evil.example` is what a browser normalises
+  into it, and both are checked.
+- Google is offered only where credentials exist. A provider configured with an empty string is
+  worse than an absent one: the button renders and the reader finds out at Google's error page.
+- An install with no `DATABASE_URL` still runs. The sign-in pages say accounts are not set up,
+  `/api/auth/get-session` answers `null` rather than throwing, and the download gate opens — in
+  development. In production the same condition is a `503`, because there the leniency would be a
+  hole rather than a kindness.
+
+**What the measuring caught.** `.tap-target` sets `position: relative` under `@media (pointer:
+coarse)`, and it is defined outside any cascade layer — so on an element that is also `absolute`, it
+wins. The password field's show/hide toggle left the corner of the input and came to rest underneath
+it, on a phone and nowhere else. The rule that follows is that **`tap-target` cannot go on an
+absolutely positioned element**; give that element a 44px box directly instead.
+
+The auth fields are `h-11` rather than the editor's `h-9`. The editor's fields sit in a dense form
+somebody works through with a mouse beside a live preview; these four are typed once, on a phone, by
+somebody who has been sent there by a button they pressed. After both fixes: zero controls under
+44px on all five auth pages at 390, and no horizontal overflow at 390, 768 or 1440.
+
+**Two more things the testing caught, once there was a real database to test against.**
+
+`.optional()` in Zod means *absent*, not empty. A `.env.local` copied from `.env.example` and filled
+in one line at a time holds `DATABASE_URL=""`, which is a string that fails `z.url()` — so the app
+answered 500 on every page in exactly the state a fresh checkout spends its first ten minutes in.
+Blank values are now stripped before parsing: an empty variable means "not set", because that is what
+whoever left it empty meant.
+
+And the session cookie cache is a *copy*, so it outlives what it copies. `revokeSessionsOnPasswordReset`
+does revoke the row, but a session read served from the signed cookie still says "signed in" until
+that cookie's five minutes are up — which made this repo's own terms page ("resetting your password
+signs every other browser out") true of the database and not of the door. The gate now asks the
+database directly, via `getSessionUser(headers, { fresh: true })`; everything else — the avatar, the
+toolbar — keeps the cheap cached read, because being five minutes stale about whose initials to draw
+costs nobody anything. **The check that gates work reads through the cache; the ones that decorate a
+menu read from it.**
+
+**And the gate closed on the release gate.** With a real `DATABASE_URL` in `.env.local`, the PDF
+regression suite — which posts 136 documents to `/api/pdf` — started answering `401` to all of them.
+The suite is measuring a text layer, not an authorisation rule, so it now runs against a server
+started deliberately without the auth environment: unconfigured auth in development opens the
+download, which is exactly the mode this suite wants.
+
+That moved server startup into a vitest `globalSetup`, which fixed something older on the way. Each
+of the four spec files had been starting its own `next dev`, and Next refuses a second one for the
+same project — so three of the four had always died on "Another next dev server is already running",
+and the gate was only ever green when somebody remembered to point `CV_TEST_BASE_URL` at a server
+they had started by hand. One server for the run, started and stopped by the config, and a preflight
+that says in one sentence when it is pointed at a server whose gate is shut.
+
+## ADR-049 — Two published documents, written from the code
+
+**Status.** Accepted.
+
+**Context.** Google will not let an OAuth app leave testing without a Branding page, and that page
+wants a privacy policy and terms of service at real URLs. The app had neither, and the honest reason
+to write them is not the consent screen: a tool that now holds email addresses and password hashes
+owes its readers a page saying so.
+
+**Decision.** `/privacy` and `/terms`, as static pages, indexed — unlike the sign-in pages, which
+carry `noindex`. Somebody deciding whether to hand over an email address should be able to find the
+answer by searching for it.
+
+Every claim in them is checkable against a file. The CV is in IndexedDB because `features/library`
+puts it there. The export transits the server because `/api/pdf` renders it in headless Chrome — and
+the policy says so plainly rather than hiding behind "we may process your data", because a reader
+who later watches the network tab should find nothing they were not told. The session row holds an IP
+address because Better Auth's schema has that column. The smart-import proxy forwards CV text to an
+endpoint the reader configured, and that gets its own paragraph. There is no cookie banner because
+there are no tracking cookies, and the policy says that too.
+
+The one thing the terms spend real words on is backups, because it is the one thing that will
+actually cost somebody: the document is in a browser, browsers lose data, and nothing on the server
+can bring it back.
+
+**Consequence.** Links live in the `AuthShell` footer — on every auth page, not only sign-up — and
+under the sign-up button as a sentence rather than a checkbox. A tick-box everybody ticks without
+reading records a consent nobody gave; a sentence at the moment of the act is the honest version, and
+the links are real. `LEGAL_CONTACT_EMAIL`, `LEGAL_ENTITY` and `LEGAL_UPDATED` are constants, because
+both documents print them and Google's consent screen quotes the address — three copies is two that
+go stale.

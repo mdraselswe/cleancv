@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
-import { ROUTES } from '@/constants';
+import { ROUTES, SIGN_IN_REQUIRED } from '@/constants';
 import type { Resume } from '@/features/resume';
 import { toFileStem } from '@/lib/text';
 
@@ -17,6 +17,15 @@ export interface ExportState {
   error: string;
   /** The export that failed, so the caller can offer a retry. */
   failedMode: ExportMode | null;
+  /**
+   * The server refused because nobody is signed in.
+   *
+   * Kept apart from `error` on purpose: every other failure is a sentence to
+   * read, and this one is a door to walk through. Reporting it as an error
+   * toast would tell the reader what went wrong and leave them to find the
+   * sign-in page themselves. See ADR-048.
+   */
+  signInRequired: boolean;
 }
 
 /**
@@ -27,7 +36,12 @@ export interface ExportState {
  * layer. See ADR-001.
  */
 export const useExportPdf = () => {
-  const [state, setState] = useState<ExportState>({ pending: null, error: '', failedMode: null });
+  const [state, setState] = useState<ExportState>({
+    pending: null,
+    error: '',
+    failedMode: null,
+    signInRequired: false,
+  });
 
   /**
    * `pageBreaks` are the break points the preview measured, as indices into the
@@ -38,7 +52,7 @@ export const useExportPdf = () => {
    */
   const exportPdf = useCallback(
     async (resume: Resume, mode: ExportMode = 'design', pageBreaks: number[] = []) => {
-      setState({ pending: mode, error: '', failedMode: null });
+      setState({ pending: mode, error: '', failedMode: null, signInRequired: false });
 
       try {
         const response = await fetch(ROUTES.api.pdf, {
@@ -48,7 +62,17 @@ export const useExportPdf = () => {
         });
 
         if (!response.ok) {
-          const detail = (await response.json().catch(() => null)) as { error?: string } | null;
+          const detail = (await response.json().catch(() => null)) as {
+            error?: string;
+            code?: string;
+          } | null;
+
+          if (detail?.code === SIGN_IN_REQUIRED.code) {
+            setState({ pending: null, error: '', failedMode: mode, signInRequired: true });
+
+            return;
+          }
+
           throw new Error(detail?.error ?? 'The server could not render the PDF.');
         }
 
@@ -58,7 +82,7 @@ export const useExportPdf = () => {
         const filename = filenameFromResponse(response, fallback);
 
         downloadBlob(await response.blob(), filename);
-        setState({ pending: null, error: '', failedMode: null });
+        setState({ pending: null, error: '', failedMode: null, signInRequired: false });
         /*
          * The file lands in a folder the reader is not looking at, and the
          * button it came from looks exactly as it did before. Without this
@@ -70,6 +94,7 @@ export const useExportPdf = () => {
           pending: null,
           error: error instanceof Error ? error.message : 'The PDF could not be created.',
           failedMode: mode,
+          signInRequired: false,
         });
       }
     },
@@ -81,5 +106,14 @@ export const useExportPdf = () => {
     [],
   );
 
-  return { ...state, exportPdf, clearError };
+  /**
+   * Dismisses the sign-in prompt but keeps `failedMode`, so the export the
+   * reader asked for can be repeated the moment they come back signed in.
+   */
+  const clearSignInRequired = useCallback(
+    () => setState((current) => ({ ...current, signInRequired: false })),
+    [],
+  );
+
+  return { ...state, exportPdf, clearError, clearSignInRequired };
 };

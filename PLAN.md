@@ -27,6 +27,8 @@ react-hook-form · @dnd-kit · Puppeteer · Vitest
 - [x] **M7 — ATS engine**: rules, weighted score, panel UI, click-to-field, JD matcher
 - [x] **M8 — Remaining templates**: modern-sidebar, academic-cv, elegant-serif, vibrant + theme controls + gallery
 - [x] **M9 — Polish**: dark mode, undo/redo, shortcuts, empty states, responsive pass, a11y
+- [x] **M10 — Accounts**: Better Auth + Neon/Drizzle + Resend, Google ar email/password, PDF download-e
+      server-side gate. CV local-i thake — sync kora hoy nai (ADR-048)
 
 ## Sections (data model coverage)
 

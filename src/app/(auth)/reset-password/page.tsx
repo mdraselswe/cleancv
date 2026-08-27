@@ -1,0 +1,35 @@
+import type { Metadata } from 'next';
+
+import { TOKEN_PARAM } from '@/constants';
+import { AuthShell, ResetPasswordForm, readParam, type SearchParams } from '@/features/auth';
+import { isAuthConfigured } from '@/server/env';
+
+import { AuthUnavailable } from '../unavailable';
+
+export const metadata: Metadata = { title: 'Choose a new password' };
+export const dynamic = 'force-dynamic';
+
+/**
+ * Where the emailed reset link lands.
+ *
+ * The token arrives in the query string, having been checked and re-issued by
+ * Better Auth's own callback on the way here. It is read on the server and
+ * handed down as a prop rather than pulled out of the URL by the form: a
+ * client component reading `useSearchParams` would need a Suspense boundary
+ * around it, and the value is known here for free.
+ */
+export default async function ResetPasswordPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  if (!isAuthConfigured()) return <AuthUnavailable />;
+
+  const token = readParam(await searchParams, TOKEN_PARAM);
+
+  return (
+    <AuthShell title="Choose a new password" subtitle="This signs out every other browser.">
+      <ResetPasswordForm token={token} />
+    </AuthShell>
+  );
+}

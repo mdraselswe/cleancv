@@ -61,6 +61,47 @@ npm run chrome     # one-off: downloads the Chrome build the PDF renderer drives
 npm run dev        # http://localhost:3000
 ```
 
+That is the whole setup. Accounts are optional locally: without them the editor, the designs, the
+score, import and the JSON backup all work, and the PDF download stays open in development.
+
+## Accounts
+
+Signing in buys exactly one thing — the PDF download. Writing, reordering, ten designs, the theme
+controls, the ATS score, import and the document library are open to anyone who opens the page. The
+gate is enforced in `/api/pdf` rather than on the button, because a hidden button is a suggestion
+([ADR-048](docs/DECISIONS.md)).
+
+**Signing in does not upload your CV.** The document stays in this browser's IndexedDB, as it always
+has.
+
+Copy `.env.example` to `.env.local` and fill in what you want:
+
+| Variable | Needed for | Where it comes from |
+|---|---|---|
+| `DATABASE_URL` | accounts at all | [neon.tech](https://neon.tech) → project → connection string |
+| `BETTER_AUTH_SECRET` | accounts at all | `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | a custom domain only | your own origin; derived from Vercel otherwise |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | the Google button | Google Cloud → Credentials → OAuth client ID |
+| `RESEND_API_KEY` / `EMAIL_FROM` | sending real email | [resend.com](https://resend.com) → API keys |
+
+Then create the tables:
+
+```bash
+npm run db:push
+```
+
+Google's authorised redirect URI is `<your origin>/api/auth/callback/google` — add both
+`http://localhost:3000/...` and your production origin. To publish the OAuth app rather than keep it
+in testing, Google's Branding page needs `/privacy` and `/terms`, which this app serves; do not
+upload a logo there, as that sends the app into verification review.
+
+Without `RESEND_API_KEY`, confirmation and reset links are **printed to the server log** instead of
+being sent, which is enough to work through both flows locally. In production a missing key is an
+error rather than a fallback.
+
+Without `DATABASE_URL` and `BETTER_AUTH_SECRET` the sign-in pages say accounts are not set up and
+the download gate opens — in development. In production the same condition is a `503`.
+
 ## Deploying
 
 The PDF is rendered by a real browser, which is the one thing about this app a host has to
@@ -90,9 +131,15 @@ the render of a long CV.
 | `npm run test` | Unit tests (schema, ATS rules, pure helpers) |
 | `npm run test:pdf` | **The ATS regression gate.** Renders every template, inspects the PDF text layer, and imports the result back |
 | `npm run format` | Prettier |
+| `npm run db:push` | Applies `src/server/db/schema.ts` to `DATABASE_URL`. For a dev database |
+| `npm run db:generate` / `db:migrate` | A migration file instead, for a database with real rows |
+| `npm run db:studio` | Drizzle Studio against `DATABASE_URL` |
 
-`npm run test:pdf` starts its own dev server on port 3123. Set `CV_TEST_BASE_URL=http://localhost:3000`
-to reuse a server you already have running — much faster while iterating.
+`npm run test:pdf` starts one dev server on port 3123 for the whole run and shuts it down after —
+started deliberately **without** the auth environment, because `/api/pdf` is behind a sign-in and a
+suite that inherited a configured `DATABASE_URL` would spend its run asserting against `401` bodies.
+Set `CV_TEST_BASE_URL` to reuse a server you started yourself; it must be one with no accounts
+configured, and the suite says so plainly if it is not.
 
 ## Architecture
 
@@ -109,7 +156,10 @@ src/
 │   ├── preview/    A4 sheets, measured pagination, fit-to-width zoom
 │   ├── export/     PDF and JSON download / import
 │   ├── import/     PDF / DOCX / OCR extraction, two parsers, review screen
-│   └── library/    documents, IndexedDB, workspace folder, backups
+│   ├── library/    documents, IndexedDB, workspace folder, backups
+│   ├── auth/       the browser half of sign-in: forms, hooks, UserMenu
+│   └── legal/      the privacy policy and terms, as components
+├── server/         database, auth server, mailer — server-only, holds secrets
 ├── hooks/          domain-free React hooks
 ├── lib/            pure functions — no React import, ever
 ├── constants/      no magic strings anywhere else
@@ -117,7 +167,8 @@ src/
 ```
 
 Layer boundaries are enforced by ESLint, not convention: `components/` cannot import `features/`,
-and `lib/` cannot import React. The full set of conventions lives in
+`lib/` cannot import React, and nothing outside a route handler or a server component can import
+`server/` — which is guarded twice, by that rule and by the `server-only` package. The full set of conventions lives in
 [`.claude/skills/cv-maker/SKILL.md`](.claude/skills/cv-maker/SKILL.md); the reasoning behind the
 significant choices is in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 

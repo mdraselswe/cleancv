@@ -21,6 +21,7 @@ import {
 import { Badge, Button, Menu, Select, type MenuEntry } from '@/components/ui';
 import { APP_NAME } from '@/constants';
 import type { TemplateId } from '@/constants';
+import { UserMenu } from '@/features/auth';
 import { IMPORT_INPUT_ID } from '@/features/export';
 import type { SaveState } from '@/features/library';
 import type { ThemePreference } from '@/hooks';
@@ -323,6 +324,17 @@ export const Toolbar = ({
         >
           Download
         </Button>
+
+        <span aria-hidden="true" className="bg-border-base mx-1 h-5 w-px" />
+
+        {/*
+          Last, past the divider: the account is not one of the document's
+          controls. It is still on the strip at 390px, because "am I signed
+          in?" is the question behind every refused download, and burying the
+          answer in an overflow menu is how somebody concludes the button is
+          broken.
+        */}
+        <UserMenu />
       </div>
     </div>
   );

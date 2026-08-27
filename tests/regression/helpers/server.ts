@@ -3,9 +3,13 @@ import { spawn, type ChildProcess } from 'node:child_process';
 /**
  * Boots the app for the regression suite.
  *
- * Set `CV_TEST_BASE_URL` to reuse a server you already have running — that turns
- * a 30-second cold start into an instant run while iterating. Otherwise the
- * suite starts its own `next dev` on a private port and shuts it down after.
+ * In practice the server is already there: `globalSetup` starts one for the
+ * whole run and sets `CV_TEST_BASE_URL`, so this takes the reuse path every
+ * time. The spawn below is the fallback for running a single spec file with
+ * vitest directly, outside that config.
+ *
+ * Set `CV_TEST_BASE_URL` yourself to point at a server you started — it must be
+ * one with no auth configured, or `/api/pdf` answers 401 to every request here.
  */
 
 const PORT = Number(process.env.CV_TEST_PORT ?? 3123);

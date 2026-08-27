@@ -82,6 +82,8 @@ export const ROUTES = {
   },
 } as const;
 
+/** Sign-in routes live in `constants/auth.ts`, next to the rest of the auth vocabulary. */
+
 export const LIMITS = {
   bulletsPerEntry: 12,
   entriesPerSection: 30,

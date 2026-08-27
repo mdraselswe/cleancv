@@ -282,6 +282,43 @@ Templates MUST NOT:
     lost its fade, both its arrows and its scrollbar at the same time. See ADR-047.
 70. A control that navigates the editor scrolls its own tab into view. Reaching a section from a
     "Fix it" link or the toolbar highlights a tab that may be eight names off screen. See ADR-047.
+71. `src/server/` holds the database handle, the auth server and the mailer. Every file there opens
+    with `import 'server-only'`, and nothing in `lib/`, `hooks/`, `components/` or `features/` may
+    import it — the lint rule names the layer, the package makes it a build failure. Reach it from a
+    route handler or a server component and pass the result down as a prop. See ADR-048.
+72. The only thing an account gates is the PDF download, and the check is in `/api/pdf`, never on the
+    button. A hidden control is a suggestion; the route is the only place the request is served. The
+    refusal carries `code: 'sign_in_required'`, which the export hook keeps apart from every other
+    failure because this one opens a door rather than reporting a fault. See ADR-048.
+73. Better Auth's field *keys* (`emailVerified`, `userId`, `accountId`) are its vocabulary and cannot
+    be renamed — the adapter looks them up by name. The Postgres column names underneath are free.
+    A session cookie points at a row here, so these are stored identifiers in the sense of ADR-030.
+74. Anything built from the environment — the database handle, the auth server — is built on first
+    use, never at import. `next build` compiles these modules, and a build must not need a production
+    secret to find out whether the editor type-checks. See ADR-048.
+75. A `?next=`, `callbackURL` or `redirectTo` value goes through `safeRedirect` before anything
+    navigates to it. Only an app-relative path survives; `//host` and `/\host` are both rejected,
+    because a browser normalises the second into the first. See ADR-048.
+76. `tap-target` sets `position: relative` under a coarse pointer, from an unlayered rule that beats
+    Tailwind's `absolute`. It may not go on an absolutely positioned element — give that element a
+    44px box directly. The password toggle left its field and landed under it, on phones only.
+    See ADR-048.
+77. A provider or a service is offered only where its credentials exist. A Google button rendered
+    without a client id is worse than no button: the reader finds out at Google's error page.
+    See ADR-048.
+78. `.optional()` on an env var means *absent*, not empty. Blank values are stripped before parsing,
+    because a `.env.local` filled in one line at a time is full of `KEY=""` and that is what its
+    author meant by it. See ADR-048.
+79. A check that gates work reads the session with `{ fresh: true }`; a control that only decorates
+    the interface reads the cached one. The cookie cache is a copy and outlives what it copies, so a
+    revoked session stays readable from it for minutes. See ADR-048.
+80. A published document — the privacy policy, the terms — states only what the code does, and every
+    claim in it names something checkable. Its contact address and date are constants, because both
+    documents print them and Google's consent screen quotes the address. See ADR-049.
+81. The regression gate runs against a server started **without** the auth environment, from
+    `globalSetup` — one server for the whole run, because Next refuses a second `next dev` for the
+    same project and four spec files each starting their own left three of them dead. A gate that
+    can only be run by remembering an env var is a gate that stops being run. See ADR-048.
 5. **No tables, no text-in-image, and no repeated header/footer text** — a name or a page number
    printed into every page's margin is chrome a parser reads as content. Page margins come from the
    PDF's own margin box, never from padding on the flow, which only indents its first and last
@@ -326,4 +363,26 @@ npm run build
 npm run lint
 npm run test         # vitest unit
 npm run test:pdf     # PDF regression gate (needs chrome from `npx puppeteer browsers install chrome`)
+                     # starts one server with auth switched off; see tests/regression/helpers/globalSetup.ts
+
+npm run db:push      # apply src/server/db/schema.ts to DATABASE_URL (dev)
+npm run db:generate  # write a migration instead, for a database with real rows
+npm run db:studio
 ```
+
+## 11. Accounts
+
+Auth is Better Auth over Neon Postgres through Drizzle, with Resend for the two emails it sends.
+Configuration is `.env.example`; without `DATABASE_URL` and `BETTER_AUTH_SECRET` the app still runs,
+the sign-in pages say accounts are not set up, and the download gate opens in development only.
+
+```
+src/server/db/          drizzle schema + handle     (server-only)
+src/server/auth/        betterAuth config, getSessionUser  (server-only)
+src/server/email/       Resend sender + the two templates   (server-only)
+src/features/auth/      the client half: forms, hooks, UserMenu
+src/app/(auth)/         five pages, all server components
+src/app/api/auth/[...all]/  every auth endpoint
+```
+
+The CV itself is still IndexedDB and still per-browser. Signing in does not upload it.

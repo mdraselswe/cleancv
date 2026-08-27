@@ -8,6 +8,7 @@ import { AppShell, Pane, SplitPane } from '@/components/layout';
 import { Button, Drawer, ModalHeader, Tabs, Toaster } from '@/components/ui';
 import type { AtsFixTarget } from '@/constants';
 import { AtsPanel, useAtsScore } from '@/features/ats';
+import { SignInRequiredDialog } from '@/features/auth';
 import { useKeyboardShortcuts, useTheme } from '@/hooks';
 import { IMPORT_INPUT_ID, useExportJson, useExportPdf } from '@/features/export';
 import { ImportDialog } from '@/features/import';
@@ -280,6 +281,9 @@ export const EditorScreen = () => {
       {layout.shortcutsOpen ? (
         <ShortcutsDialog onClose={() => layout.setShortcutsOpen(false)} />
       ) : null}
+
+      {/* The one thing an account buys, asked for at the moment it is wanted. */}
+      {pdf.signInRequired ? <SignInRequiredDialog onClose={pdf.clearSignInRequired} /> : null}
 
       <Toaster />
     </AppShell>

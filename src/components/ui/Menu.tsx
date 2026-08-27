@@ -32,6 +32,13 @@ export interface MenuProps {
     'aria-haspopup': 'menu';
   }) => ReactNode;
   entries: readonly MenuEntry[];
+  /**
+   * Fixed content above the items — who is signed in, which document this is.
+   * Not a `MenuItem`: a label rendered as a disabled button is announced as an
+   * action nobody may take, and the reader is told about a dead end that was
+   * never a control.
+   */
+  header?: ReactNode;
   /** Which edge of the trigger the panel lines up with. */
   align?: 'start' | 'end';
   label: string;
@@ -50,7 +57,7 @@ export interface MenuProps {
  * Presentational on purpose — it takes its actions as props and knows nothing
  * about what they do.
  */
-export const Menu = ({ trigger, entries, align = 'end', label, className }: MenuProps) => {
+export const Menu = ({ trigger, entries, header, align = 'end', label, className }: MenuProps) => {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -114,6 +121,10 @@ export const Menu = ({ trigger, entries, align = 'end', label, className }: Menu
             align === 'end' ? 'right-0' : 'left-0',
           )}
         >
+          {header ? (
+            <div className="border-border-base mb-1 border-b px-2.5 py-2">{header}</div>
+          ) : null}
+
           {entries.map((entry) =>
             isSeparator(entry) ? (
               <div key={entry.id} role="separator" className="bg-border-base my-1 h-px" />
