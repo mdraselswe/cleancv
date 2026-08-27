@@ -58,9 +58,15 @@ export const sendEmail = async (to: string, content: EmailContent): Promise<Send
 
   if (error) {
     /*
-     * Thrown rather than swallowed. Better Auth calls this while completing a
-     * sign-up, and a silent failure there leaves the reader on a page saying
-     * "check your inbox" for an email that was never sent.
+     * Thrown, but do not expect it to reach the reader: Better Auth sends the
+     * sign-up email as a background task and turns a throw here into a log
+     * line, so the request still answers 200 and the page still says "check
+     * your inbox". Verified against production, where a send to `example.com`
+     * failed exactly that way.
+     *
+     * So this is for the operator, not the user — it is what puts the reason in
+     * the runtime log instead of leaving a silent nothing. The reader's way out
+     * is the sign-in page, which offers to send the link again.
      */
     throw new Error(`Could not send the email: ${error.message}`);
   }
