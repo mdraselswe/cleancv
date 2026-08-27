@@ -1,8 +1,15 @@
 'use client';
 
-import { ChevronDown, ChevronUp, Copy, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Copy, MoreVertical, Plus, Trash2 } from 'lucide-react';
 
-import { Button, CollapsibleCard, EmptyState, SortableItem, SortableList } from '@/components/ui';
+import {
+  Button,
+  CollapsibleCard,
+  EmptyState,
+  Menu,
+  SortableItem,
+  SortableList,
+} from '@/components/ui';
 import type { EntryListKey } from '@/features/resume';
 import { isBlank } from '@/lib/text';
 
@@ -69,30 +76,55 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                   actions={
                     <>
                       {handle}
-                      <IconAction
-                        label="Move up"
-                        disabled={index === 0}
-                        onClick={() => section.move(index, index - 1)}
-                      >
-                        <ChevronUp size={14} />
-                      </IconAction>
-                      <IconAction
-                        label="Move down"
-                        disabled={index === section.entries.length - 1}
-                        onClick={() => section.move(index, index + 1)}
-                      >
-                        <ChevronDown size={14} />
-                      </IconAction>
-                      <IconAction label="Duplicate" onClick={() => section.duplicate(id)}>
-                        <Copy size={13} />
-                      </IconAction>
-                      <IconAction label="Remove" danger onClick={() => section.remove(id)}>
-                        <Trash2 size={13} />
-                      </IconAction>
+                      {/*
+                        One menu rather than four glyphs. Four of them packed
+                        a hundred and twenty pixels on a phone — under the
+                        forty-four a thumb needs, and unlabelled, so the only
+                        way to learn which was "duplicate" and which was
+                        "delete" was to press one. See ADR-047.
+                      */}
+                      <Menu
+                        label={`Actions for ${config.addLabel.replace(/^Add /, '')} ${index + 1}`}
+                        entries={[
+                          {
+                            id: 'up',
+                            label: 'Move up',
+                            icon: <ArrowUp size={15} />,
+                            disabled: index === 0,
+                            onSelect: () => section.move(index, index - 1),
+                          },
+                          {
+                            id: 'down',
+                            label: 'Move down',
+                            icon: <ArrowDown size={15} />,
+                            disabled: index === section.entries.length - 1,
+                            onSelect: () => section.move(index, index + 1),
+                          },
+                          {
+                            id: 'duplicate',
+                            label: 'Duplicate',
+                            icon: <Copy size={15} />,
+                            onSelect: () => section.duplicate(id),
+                          },
+                          { id: 'sep', separator: true },
+                          {
+                            id: 'remove',
+                            label: 'Remove',
+                            icon: <Trash2 size={15} />,
+                            danger: true,
+                            onSelect: () => section.remove(id),
+                          },
+                        ]}
+                        trigger={(props) => (
+                          <Button size="icon" variant="ghost" aria-label="Entry actions" {...props}>
+                            <MoreVertical size={16} />
+                          </Button>
+                        )}
+                      />
                     </>
                   }
                 >
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
                     {config.fields.map((field) => (
                       <FieldRenderer
                         key={field.key}
@@ -128,26 +160,3 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
     </div>
   );
 };
-
-interface IconActionProps {
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  danger?: boolean;
-  children: React.ReactNode;
-}
-
-const IconAction = ({ label, onClick, disabled, danger, children }: IconActionProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    disabled={disabled}
-    aria-label={label}
-    title={label}
-    className={`text-fg-subtle hover:bg-surface-2 rounded p-1.5 transition disabled:opacity-30 ${
-      danger ? 'hover:text-danger' : 'hover:text-fg'
-    }`}
-  >
-    {children}
-  </button>
-);

@@ -8,18 +8,23 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outl
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-primary-fg hover:brightness-110 active:brightness-95',
+  primary: 'bg-primary text-primary-fg shadow-sm hover:brightness-110 active:brightness-95',
   secondary: 'bg-surface-2 text-fg hover:bg-border-base',
   ghost: 'text-fg-muted hover:bg-surface-2 hover:text-fg',
   danger: 'bg-danger text-white hover:brightness-110',
   outline: 'border border-border-strong bg-surface text-fg hover:bg-surface-2',
 };
 
+/*
+ * Heights step by 4px and every one of them is even, so a row of mixed sizes
+ * centres on the same line. `icon` is square at the `sm` height; the thumb-sized
+ * hit area comes from `tap-target`, which grows outwards and moves nothing.
+ */
 const SIZE_CLASS: Record<ButtonSize, string> = {
-  sm: 'h-8 gap-1.5 px-2.5 text-[13px]',
-  md: 'h-9 gap-2 px-3.5 text-sm',
-  lg: 'h-11 gap-2 px-5 text-[15px]',
-  icon: 'h-8 w-8 justify-center',
+  sm: 'h-8 gap-1.5 px-2.5 text-ui',
+  md: 'h-9 gap-2 px-3.5 text-ui-md',
+  lg: 'h-11 gap-2 px-5 text-ui-lg',
+  icon: 'h-9 w-9 justify-center',
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -39,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type ?? 'button'}
       className={cn(
-        'inline-flex select-none items-center rounded-lg font-medium transition',
+        'tap-target rounded-control inline-flex items-center font-medium transition select-none',
         'disabled:pointer-events-none disabled:opacity-45',
         VARIANT_CLASS[variant],
         SIZE_CLASS[size],

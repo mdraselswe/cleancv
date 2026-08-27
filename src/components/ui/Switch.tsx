@@ -38,7 +38,7 @@ export const Switch = ({
       onClick={() => onChange(!checked)}
       className={cn(
         'relative h-5 w-9 flex-none rounded-full transition',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
         checked ? 'bg-primary' : 'bg-border-strong',
       )}
     >
@@ -52,9 +52,9 @@ export const Switch = ({
 
     {!hideLabel ? (
       <span className="min-w-0">
-        <span className="block text-sm text-fg">{label}</span>
+        <span className="text-ui-md text-fg block">{label}</span>
         {description ? (
-          <span className="block text-[12px] leading-snug text-fg-subtle">{description}</span>
+          <span className="text-ui-xs text-fg-subtle block leading-snug">{description}</span>
         ) : null}
       </span>
     ) : null}

@@ -46,8 +46,8 @@ export const BulletsEditor = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-medium text-fg-muted">{label}</span>
-        <span className="text-[11px] text-fg-subtle">
+        <span className="text-ui text-fg-muted font-medium">{label}</span>
+        <span className="text-ui-2xs text-fg-subtle">
           {value.length}/{max}
         </span>
       </div>
@@ -66,7 +66,7 @@ export const BulletsEditor = ({
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
                 aria-label="Move bullet up"
-                className="text-fg-subtle transition hover:text-fg disabled:opacity-30"
+                className="text-fg-subtle hover:text-fg transition disabled:opacity-30"
               >
                 <GripVertical size={14} />
               </button>
@@ -80,12 +80,14 @@ export const BulletsEditor = ({
                 placeholder="Start with a verb, end with a number."
                 onChange={(event) => update(index, event.target.value)}
               />
-              <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px]">
+              <div className="text-ui-2xs mt-1 flex flex-wrap items-center gap-2">
                 <span className={cn(tooLong || tooShort ? 'text-warning' : 'text-fg-subtle')}>
                   {count} words
                 </span>
                 {count > 0 && !hasMetric ? (
-                  <span className="text-warning">No number yet — what changed, and by how much?</span>
+                  <span className="text-warning">
+                    No number yet — what changed, and by how much?
+                  </span>
                 ) : null}
                 {tooLong ? <span className="text-warning">Trim to two lines.</span> : null}
               </div>
@@ -95,7 +97,7 @@ export const BulletsEditor = ({
               type="button"
               onClick={() => remove(index)}
               aria-label="Remove bullet"
-              className="mt-1.5 rounded p-1 text-fg-subtle transition hover:bg-surface-2 hover:text-danger"
+              className="tap-target text-fg-subtle hover:bg-surface-2 hover:text-danger mt-1 flex h-8 w-8 flex-none items-center justify-center rounded-lg transition"
             >
               <Trash2 size={14} />
             </button>
@@ -115,7 +117,7 @@ export const BulletsEditor = ({
         </Button>
       ) : null}
 
-      {hint ? <p className="text-[12px] text-fg-subtle">{hint}</p> : null}
+      {hint ? <p className="text-ui-xs text-fg-subtle">{hint}</p> : null}
     </div>
   );
 };

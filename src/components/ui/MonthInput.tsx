@@ -35,8 +35,8 @@ export const MonthInput = ({
     aria-invalid={invalid || undefined}
     onChange={(event) => onChange(event.target.value)}
     className={cn(
-      'h-9 w-full rounded-lg border bg-surface px-3 text-sm text-fg transition',
-      'focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50',
+      'rounded-control bg-surface text-ui-md text-fg h-9 w-full border px-3 transition',
+      'focus:ring-ring focus:ring-2 focus:outline-none disabled:opacity-50',
       invalid ? 'border-danger' : 'border-border-base',
       className,
     )}

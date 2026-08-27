@@ -39,6 +39,22 @@ export const IDB_KEYS = {
   workspace: 'workspace:handle',
 } as const;
 
+/**
+ * What the shortcut sheet lists.
+ *
+ * The single source: the sheet reads it, and so does anything that needs to
+ * print a key next to an action. A shortcut nobody can discover is a shortcut
+ * only its author has.
+ */
+export const KEYBOARD_SHORTCUTS = [
+  { keys: 'Ctrl + Z', action: 'Undo the last change' },
+  { keys: 'Ctrl + Shift + Z', action: 'Redo' },
+  { keys: 'Ctrl + S', action: 'Download the designed PDF' },
+  { keys: 'Ctrl + K', action: 'Open My CVs' },
+  { keys: '?', action: 'Show this list' },
+  { keys: 'Esc', action: 'Close a panel or dialog' },
+] as const;
+
 /** How long after the last edit the active document is written to storage. */
 export const AUTOSAVE_MS = 800;
 

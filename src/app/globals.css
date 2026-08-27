@@ -9,6 +9,9 @@
   --app-bg: #f6f7f9;
   --app-surface: #ffffff;
   --app-surface-2: #f1f3f6;
+  /* The tray the preview's sheets sit on. Darker than any panel, so a white
+     page reads as paper rather than as one more surface. */
+  --app-canvas: #e7eaf0;
   --app-border: #e2e5ea;
   --app-border-strong: #cbd1da;
   --app-fg: #14181f;
@@ -22,6 +25,8 @@
   --app-success: #15803d;
   --app-ring: #93b4fb;
   --app-shadow: 0 1px 2px rgb(20 24 31 / 0.06), 0 8px 24px -12px rgb(20 24 31 / 0.18);
+  --app-shadow-pop: 0 4px 6px -2px rgb(20 24 31 / 0.08), 0 16px 40px -12px rgb(20 24 31 / 0.28);
+  --app-shadow-sheet: 0 0 0 1px rgb(20 24 31 / 0.07), 0 12px 32px -12px rgb(20 24 31 / 0.3);
 
   --score-excellent: #15803d;
   --score-strong: #4d7c0f;
@@ -39,6 +44,7 @@
     --app-bg: #0e1116;
     --app-surface: #161a21;
     --app-surface-2: #1d222b;
+    --app-canvas: #090b0f;
     --app-border: #262c36;
     --app-border-strong: #39414e;
     --app-fg: #e8ebf0;
@@ -52,6 +58,8 @@
     --app-success: #4ec27f;
     --app-ring: #2f4d86;
     --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+    --app-shadow-pop: 0 4px 6px -2px rgb(0 0 0 / 0.5), 0 16px 40px -12px rgb(0 0 0 / 0.8);
+    --app-shadow-sheet: 0 0 0 1px rgb(255 255 255 / 0.06), 0 12px 32px -12px rgb(0 0 0 / 0.85);
 
     --score-excellent: #4ec27f;
     --score-strong: #8fbf4a;
@@ -66,6 +74,7 @@
   --app-bg: #0e1116;
   --app-surface: #161a21;
   --app-surface-2: #1d222b;
+  --app-canvas: #090b0f;
   --app-border: #262c36;
   --app-border-strong: #39414e;
   --app-fg: #e8ebf0;
@@ -79,6 +88,8 @@
   --app-success: #4ec27f;
   --app-ring: #2f4d86;
   --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.7);
+  --app-shadow-pop: 0 4px 6px -2px rgb(0 0 0 / 0.5), 0 16px 40px -12px rgb(0 0 0 / 0.8);
+  --app-shadow-sheet: 0 0 0 1px rgb(255 255 255 / 0.06), 0 12px 32px -12px rgb(0 0 0 / 0.85);
 
   --score-excellent: #4ec27f;
   --score-strong: #8fbf4a;
@@ -92,6 +103,7 @@
   --color-bg: var(--app-bg);
   --color-surface: var(--app-surface);
   --color-surface-2: var(--app-surface-2);
+  --color-canvas: var(--app-canvas);
   --color-border-base: var(--app-border);
   --color-border-strong: var(--app-border-strong);
   --color-fg: var(--app-fg);
@@ -113,7 +125,41 @@
   --font-sans: var(--font-app-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /*
+   * One type scale for app chrome, five steps wide.
+   *
+   * The sizes were eight different hard-coded pixel values reached for a case
+   * at a time — 11, 11.5, 12, 12.5, 13, 13.5, 14, 15 — which is not a scale,
+   * it is a history. Naming them is what makes a size a decision: `text-ui` is
+   * the default for controls and body copy in a panel, and every other step is
+   * a deliberate departure from it. Tuning one of these now moves the whole
+   * app rather than one component.
+   *
+   * `ui` rather than Tailwind's own `sm` / `base`: the resume canvas has its
+   * own scale in points and must never inherit one of these by accident.
+   */
+  --text-ui-2xs: 0.6875rem; /* 11px — badges, over-lines, page numbers */
+  --text-ui-2xs--line-height: 1.3;
+  --text-ui-xs: 0.75rem; /* 12px — hints, captions, secondary meta */
+  --text-ui-xs--line-height: 1.45;
+  --text-ui: 0.8125rem; /* 13px — labels, buttons, list rows */
+  --text-ui--line-height: 1.45;
+  --text-ui-md: 0.875rem; /* 14px — input values, running panel text */
+  --text-ui-md--line-height: 1.5;
+  --text-ui-lg: 0.9375rem; /* 15px — pane and dialog titles */
+  --text-ui-lg--line-height: 1.4;
+
+  /*
+   * Three radii by role, not by size. A control, the card it sits in, and the
+   * panel that holds them nest visibly rather than by coincidence.
+   */
+  --radius-control: 0.625rem; /* 10px */
+  --radius-card: 0.875rem; /* 14px */
+  --radius-panel: 1.125rem; /* 18px */
+
   --shadow-app: var(--app-shadow);
+  --shadow-pop: var(--app-shadow-pop);
+  --shadow-sheet: var(--app-shadow-sheet);
 }
 
 * {
@@ -136,6 +182,115 @@ body {
 :focus-visible {
   outline: 2px solid var(--app-primary);
   outline-offset: 2px;
+}
+
+/*
+ * A control has to be hittable with a thumb, not only with a cursor.
+ *
+ * Keyed on the pointer rather than on a width: a 1280px-wide tablet has the
+ * same thumb as a 390px-wide phone, and a desktop window narrowed to 500px
+ * still has a mouse. The visual size is left alone — the box grows into the
+ * gap around it, so nothing in the layout moves.
+ */
+@media (pointer: coarse) {
+  .tap-target {
+    position: relative;
+  }
+
+  .tap-target::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    translate: -50% -50%;
+  }
+}
+
+/* Sits above the phone's home indicator rather than under it. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/*
+ * A horizontally scrolling strip says so by fading at the end it can still
+ * scroll towards. Driven by data attributes rather than a gradient that is
+ * always on: a strip that fits has nothing to fade, and fading it anyway
+ * dims a word for no reason.
+ */
+.scroll-fade[data-overflow-start='true'] {
+  mask-image: linear-gradient(to right, transparent, black 28px);
+}
+
+.scroll-fade[data-overflow-end='true'] {
+  mask-image: linear-gradient(to left, transparent, black 28px);
+}
+
+.scroll-fade[data-overflow-start='true'][data-overflow-end='true'] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 28px,
+    black calc(100% - 28px),
+    transparent
+  );
+}
+
+/* Hides the bar without hiding the ability to scroll. */
+.scroll-none {
+  scrollbar-width: none;
+}
+
+.scroll-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Entrances. A panel that appears without moving reads as a repaint; one that
+   arrives from the edge it is anchored to reads as having been pulled in.
+   --------------------------------------------------------------------------- */
+
+@keyframes app-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes app-pop {
+  from {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 8px;
+  }
+}
+
+@keyframes app-slide-right {
+  from {
+    translate: 100% 0;
+  }
+}
+
+@keyframes app-slide-up {
+  from {
+    translate: 0 100%;
+  }
+}
+
+.animate-fade {
+  animation: app-fade 160ms ease-out;
+}
+
+.animate-pop {
+  animation: app-pop 180ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.animate-slide-right {
+  animation: app-slide-right 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.animate-slide-up {
+  animation: app-slide-up 240ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
 /* Scrollbars in the editor panes read as chrome, not content. */

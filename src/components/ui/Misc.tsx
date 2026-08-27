@@ -23,7 +23,7 @@ export interface BadgeProps {
 export const Badge = ({ tone = 'neutral', children, className }: BadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium',
+      'text-ui-2xs inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium',
       BADGE_TONE[tone],
       className,
     )}
@@ -43,14 +43,20 @@ export interface EmptyStateProps {
 export const EmptyState = ({ icon, title, description, action, className }: EmptyStateProps) => (
   <div
     className={cn(
-      'flex flex-col items-center gap-2 rounded-xl border border-dashed border-border-strong px-6 py-10 text-center',
+      'border-border-base bg-surface-2/50 rounded-card flex flex-col items-center gap-2 border border-dashed px-6 py-10 text-center',
       className,
     )}
   >
-    {icon ? <div className="text-fg-subtle">{icon}</div> : null}
-    <p className="text-sm font-medium text-fg">{title}</p>
-    {description ? <p className="max-w-sm text-[13px] text-fg-subtle">{description}</p> : null}
-    {action ? <div className="mt-2">{action}</div> : null}
+    {icon ? (
+      <div className="bg-surface text-fg-subtle border-border-base mb-1 flex h-11 w-11 items-center justify-center rounded-full border">
+        {icon}
+      </div>
+    ) : null}
+    <p className="text-fg text-ui-md font-medium">{title}</p>
+    {description ? (
+      <p className="text-fg-subtle text-ui max-w-sm leading-relaxed">{description}</p>
+    ) : null}
+    {action ? <div className="mt-3">{action}</div> : null}
   </div>
 );
 
@@ -69,10 +75,10 @@ export interface SliderProps {
 export const Slider = ({ value, onChange, min, max, step, id, label, display }: SliderProps) => (
   <div className="flex flex-col gap-1.5">
     <div className="flex items-baseline justify-between">
-      <label htmlFor={id} className="text-[13px] font-medium text-fg-muted">
+      <label htmlFor={id} className="text-ui text-fg-muted font-medium">
         {label}
       </label>
-      <span className="text-[12px] tabular-nums text-fg-subtle">{display}</span>
+      <span className="text-ui-xs text-fg-subtle tabular-nums">{display}</span>
     </div>
     <input
       id={id}
@@ -82,7 +88,7 @@ export const Slider = ({ value, onChange, min, max, step, id, label, display }: 
       step={step}
       value={value}
       onChange={(event) => onChange(Number(event.target.value))}
-      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border-base accent-[var(--app-primary)]"
+      className="bg-border-base h-1.5 w-full cursor-pointer appearance-none rounded-full accent-[var(--app-primary)]"
     />
   </div>
 );
@@ -95,7 +101,7 @@ export interface SectionLabelProps {
 export const SectionLabel = ({ children, className }: SectionLabelProps) => (
   <p
     className={cn(
-      'text-[11px] font-semibold uppercase tracking-[0.08em] text-fg-subtle',
+      'text-ui-2xs text-fg-subtle font-semibold tracking-[0.08em] uppercase',
       className,
     )}
   >

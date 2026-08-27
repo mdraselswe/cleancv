@@ -35,8 +35,8 @@ export const Tabs = <T extends string>({
     aria-label={ariaLabel}
     className={cn(
       variant === 'segmented'
-        ? 'inline-flex gap-0.5 rounded-lg bg-surface-2 p-0.5'
-        : 'grid w-full grid-flow-col border-t border-border-base bg-surface',
+        ? 'bg-surface-2 rounded-control inline-flex gap-0.5 p-0.5'
+        : 'border-border-base bg-surface grid w-full grid-flow-col border-t',
       className,
     )}
   >
@@ -51,15 +51,17 @@ export const Tabs = <T extends string>({
           aria-selected={active}
           onClick={() => onChange(item.value)}
           className={cn(
-            'inline-flex items-center justify-center gap-1.5 font-medium transition',
+            'inline-flex items-center justify-center gap-1.5 font-medium transition select-none',
             variant === 'segmented'
               ? cn(
-                  'h-7 rounded-md px-3 text-[13px]',
+                  'text-ui h-7 rounded-lg px-3',
                   active ? 'bg-surface text-fg shadow-sm' : 'text-fg-muted hover:text-fg',
                 )
               : cn(
-                  'flex-col gap-0.5 py-2.5 text-[11px]',
-                  active ? 'text-primary' : 'text-fg-subtle',
+                  // A thumb-sized row, and the label under the glyph rather
+                  // than beside it so three of them fit a 320px phone.
+                  'text-ui-2xs min-h-12 flex-col gap-1 py-2',
+                  active ? 'text-primary' : 'text-fg-subtle hover:text-fg-muted',
                 ),
           )}
         >

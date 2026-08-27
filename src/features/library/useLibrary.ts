@@ -39,6 +39,17 @@ import {
 
 export type LibraryStatus = 'loading' | 'ready' | 'unavailable';
 
+/**
+ * What the autosave is doing, for the one line of the toolbar that says so.
+ *
+ * `pending` exists because the save is debounced: between the keystroke and
+ * the write there is a second where the document on screen is not the document
+ * in storage, and a reader who closes the tab in that second loses it. Saying
+ * "Saving…" through that window is the difference between a promise the app
+ * keeps and one it appears to.
+ */
+export type SaveState = 'idle' | 'pending' | 'saving' | 'saved' | 'failed';
+
 export interface WorkspaceState {
   supported: boolean;
   /** Folder name to show; empty when none is connected. */
@@ -53,6 +64,9 @@ interface LibraryState {
   documents: DocumentMeta[];
   activeId: string;
   workspace: WorkspaceState;
+  saveState: SaveState;
+  /** When the last successful write landed; 0 before the first one. */
+  savedAt: number;
   /** Set when storage itself failed, e.g. a private window with no IndexedDB. */
   error: string;
 }
@@ -61,6 +75,8 @@ export interface LibraryActions {
   /** Loads the index, migrates any pre-library resume, and opens a document. */
   boot: () => Promise<void>;
   save: (resume: Resume) => Promise<void>;
+  /** The editor changed and a save is scheduled but has not run yet. */
+  markDirty: () => void;
 
   createNew: (name?: string) => Promise<void>;
   open: (id: string) => Promise<void>;
@@ -164,7 +180,9 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       }
 
       const all = documents.length === 0 ? [first] : documents;
-      const activeId = all.some((entry) => entry.id === index.activeId) ? index.activeId : all[0].id;
+      const activeId = all.some((entry) => entry.id === index.activeId)
+        ? index.activeId
+        : all[0].id;
 
       set({ status: 'ready', documents: sortByRecent(all), activeId, error: '' });
 
@@ -204,6 +222,11 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       return bootRun;
     },
 
+    markDirty: () => {
+      if (get().status !== 'ready') return;
+      set({ saveState: 'pending' });
+    },
+
     save: async (resume) => {
       const { status, activeId, documents } = get();
       if (status !== 'ready' || !activeId) return;
@@ -214,11 +237,22 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       const meta = touchMeta(existing, resume);
       const document: CvDocument = { meta, resume };
 
-      await writeDocument(document);
+      set({ saveState: 'saving' });
+
+      try {
+        await writeDocument(document);
+      } catch {
+        // Storage can fail after boot — a quota hit, or a private window that
+        // only refuses on write. Saying so is the whole point of the state.
+        set({ saveState: 'failed' });
+
+        return;
+      }
+
       set({
-        documents: sortByRecent(
-          documents.map((entry) => (entry.id === activeId ? meta : entry)),
-        ),
+        documents: sortByRecent(documents.map((entry) => (entry.id === activeId ? meta : entry))),
+        saveState: 'saved',
+        savedAt: Date.now(),
       });
       await persistIndex();
       await mirror(document);
@@ -380,6 +414,8 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
 
   return {
     status: 'loading',
+    saveState: 'idle',
+    savedAt: 0,
     documents: [],
     activeId: '',
     workspace: IDLE_WORKSPACE,
@@ -388,11 +424,12 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
   };
 });
 
-export const useLibraryActions = (): LibraryActions =>
-  useLibraryStore((state) => state.actions);
+export const useLibraryActions = (): LibraryActions => useLibraryStore((state) => state.actions);
 
 export const useLibraryDocuments = (): DocumentMeta[] =>
   useLibraryStore((state) => state.documents);
 
 export const useActiveDocument = (): DocumentMeta | undefined =>
   useLibraryStore((state) => state.documents.find((entry) => entry.id === state.activeId));
+
+export const useSaveState = (): SaveState => useLibraryStore((state) => state.saveState);

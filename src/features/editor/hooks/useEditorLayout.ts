@@ -3,14 +3,27 @@
 import { useCallback, useState } from 'react';
 
 import { ZOOM } from '@/constants';
-import { useIsDesktop } from '@/hooks';
+import { useIsDesktop, useIsSplit } from '@/hooks';
 
 export type EditorTab = 'edit' | 'preview' | 'score';
 
 export type ZoomMode = 'fit' | 'manual';
 
+/**
+ * How much of the editor fits on screen at once.
+ *
+ * Three shapes rather than two. The middle one is the tablet, which used to be
+ * given the phone's layout the moment the window dropped below 1024px and so
+ * lost the preview to a tab despite having room for it. What changes between
+ * them is only where the score panel lives — beside the work, behind a drawer,
+ * or on a tab of its own.
+ */
+export type LayoutMode = 'compact' | 'split' | 'full';
+
 export interface EditorLayout {
-  isDesktop: boolean;
+  mode: LayoutMode;
+  /** True in `split` and `full`: the form and the page are both on screen. */
+  isSplit: boolean;
   tab: EditorTab;
   setTab: (tab: EditorTab) => void;
   /** Meaningful only in manual mode; in fit mode the pane decides. */
@@ -20,8 +33,29 @@ export interface EditorLayout {
   zoomIn: () => void;
   zoomOut: () => void;
   resetZoom: () => void;
-  scorePanelOpen: boolean;
-  setScorePanelOpen: (open: boolean) => void;
+  /**
+   * Whether the score is showing, on whichever surface this mode gives it.
+   *
+   * One flag over two surfaces would have to be both open by default (so the
+   * desktop column is there on load) and closed by default (so a tablet does
+   * not open a drawer over the work nobody asked to cover). They are two
+   * pieces of state; this is the answer to the one question a caller has.
+   */
+  scoreOpen: boolean;
+  toggleScore: () => void;
+  closeScore: () => void;
+  /**
+   * Closes the score only where it is covering something.
+   *
+   * Following a "Fix it" link has to get the drawer off the form it is sending
+   * the reader to. On a desktop the score has a column of its own and is
+   * covering nothing, so closing it there takes away a panel the reader put
+   * on screen and did not ask to lose.
+   */
+  dismissScoreOverlay: () => void;
+  /** The keyboard shortcut sheet. */
+  shortcutsOpen: boolean;
+  setShortcutsOpen: (open: boolean) => void;
   /**
    * The reader answered the first-run prompt by choosing to fill the form in
    * themselves.
@@ -43,10 +77,14 @@ const clampZoom = (value: number) => Math.min(ZOOM.max, Math.max(ZOOM.min, value
  */
 export const useEditorLayout = (documentId?: string): EditorLayout => {
   const isDesktop = useIsDesktop();
+  const isSplit = useIsSplit();
   const [tab, setTab] = useState<EditorTab>('edit');
   const [zoom, setZoomValue] = useState<number>(ZOOM.default);
   const [zoomMode, setZoomMode] = useState<ZoomMode>('fit');
-  const [scorePanelOpen, setScorePanelOpen] = useState(true);
+  // The desktop column is there on arrival; the tablet's drawer is not.
+  const [columnOpen, setColumnOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   /*
    * Which document the reader answered the prompt for, rather than a boolean
    * reset by an effect. Opening another one makes the comparison false on its
@@ -60,7 +98,8 @@ export const useEditorLayout = (documentId?: string): EditorLayout => {
   }, []);
 
   return {
-    isDesktop,
+    mode: isDesktop ? 'full' : isSplit ? 'split' : 'compact',
+    isSplit,
     tab,
     setTab,
     zoom,
@@ -76,8 +115,18 @@ export const useEditorLayout = (documentId?: string): EditorLayout => {
     }, []),
     // Reset means "fit the pane again", not "go back to 75%".
     resetZoom: useCallback(() => setZoomMode('fit'), []),
-    scorePanelOpen,
-    setScorePanelOpen,
+    scoreOpen: isDesktop ? columnOpen : drawerOpen,
+    toggleScore: useCallback(
+      () => (isDesktop ? setColumnOpen((open) => !open) : setDrawerOpen((open) => !open)),
+      [isDesktop],
+    ),
+    closeScore: useCallback(
+      () => (isDesktop ? setColumnOpen(false) : setDrawerOpen(false)),
+      [isDesktop],
+    ),
+    dismissScoreOverlay: useCallback(() => setDrawerOpen(false), []),
+    shortcutsOpen,
+    setShortcutsOpen,
     startedBlank: blankStartedFor !== null && blankStartedFor === (documentId ?? ''),
     startBlank: useCallback(() => setBlankStartedFor(documentId ?? ''), [documentId]),
   };

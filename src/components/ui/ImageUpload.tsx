@@ -58,13 +58,13 @@ export const ImageUpload = ({
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <p className="text-[13px] font-medium text-fg-muted">{label}</p>
+      <p className="text-ui text-fg-muted font-medium">{label}</p>
 
       <div className="flex items-center gap-3">
         <div
           className={cn(
-            'flex flex-none items-center justify-center overflow-hidden border border-border-base bg-surface-2',
-            shape === 'avatar' ? 'h-16 w-16 rounded-full' : 'h-12 w-32 rounded-lg',
+            'border-border-base bg-surface-2 flex flex-none items-center justify-center overflow-hidden border',
+            shape === 'avatar' ? 'h-16 w-16 rounded-full' : 'rounded-control h-12 w-32',
           )}
         >
           {value ? (
@@ -93,9 +93,9 @@ export const ImageUpload = ({
             ) : null}
           </div>
           {error ? (
-            <p className="text-[12px] text-danger">{error}</p>
+            <p className="text-ui-xs text-danger">{error}</p>
           ) : hint ? (
-            <p className="text-[12px] text-fg-subtle">{hint}</p>
+            <p className="text-ui-xs text-fg-subtle">{hint}</p>
           ) : null}
         </div>
       </div>

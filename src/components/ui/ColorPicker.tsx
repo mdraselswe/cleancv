@@ -23,7 +23,7 @@ export const ColorPicker = ({ value, onChange, swatches, label, className }: Col
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <p className="text-[13px] font-medium text-fg-muted">{label}</p>
+      <p className="text-ui text-fg-muted font-medium">{label}</p>
 
       <div className="flex flex-wrap items-center gap-1.5">
         {swatches.map((swatch) => {
@@ -39,8 +39,8 @@ export const ColorPicker = ({ value, onChange, swatches, label, className }: Col
               aria-pressed={selected}
               className={cn(
                 'flex h-7 w-7 items-center justify-center rounded-full transition',
-                'ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                selected && 'ring-2 ring-fg-subtle',
+                'focus-visible:ring-ring ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2 focus-visible:outline-none',
+                selected && 'ring-fg-subtle ring-2',
               )}
               style={{ backgroundColor: swatch.value }}
             >
@@ -50,11 +50,11 @@ export const ColorPicker = ({ value, onChange, swatches, label, className }: Col
         })}
 
         <label
-          className="flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-border-strong px-2.5 text-[12px] text-fg-muted transition hover:border-primary hover:text-primary"
+          className="border-border-strong text-ui-xs text-fg-muted hover:border-primary hover:text-primary flex h-7 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 transition"
           title="Custom colour"
         >
           <span
-            className="h-3 w-3 rounded-full border border-border-base"
+            className="border-border-base h-3 w-3 rounded-full border"
             style={{ backgroundColor: value }}
           />
           Custom

@@ -33,7 +33,7 @@ const asArray = (value: unknown): string[] => (Array.isArray(value) ? (value as 
  */
 export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererProps) => {
   const span = field.span ?? 1;
-  const className = cn(span === 2 && 'col-span-2');
+  const className = cn(span === 2 && 'col-span-full');
 
   switch (field.kind) {
     case 'text':
@@ -60,7 +60,7 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
         <Field
           label={field.label}
           hint={field.hint}
-          className={cn('col-span-2', className)}
+          className={cn('col-span-full', className)}
           adornment={field.max ? `${value.length}/${field.max}` : undefined}
         >
           {({ id, describedBy }) => (
@@ -108,7 +108,7 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
 
     case 'tags':
       return (
-        <Field label={field.label} hint={field.hint} className={cn('col-span-2', className)}>
+        <Field label={field.label} hint={field.hint} className={cn('col-span-full', className)}>
           {({ id, describedBy }) => (
             <TagInput
               id={id}
@@ -134,7 +134,7 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
 
     case 'bullets':
       return (
-        <div className="col-span-2">
+        <div className="col-span-full">
           <BulletsEditor
             label={field.label}
             hint={field.hint}
@@ -147,7 +147,11 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
 
     case 'icon':
       return (
-        <Field label={field.label} hint={hint ?? field.hint} className={cn('col-span-2', className)}>
+        <Field
+          label={field.label}
+          hint={hint ?? field.hint}
+          className={cn('col-span-full', className)}
+        >
           {() => (
             <IconPicker
               value={(entry[field.key] as ResumeIconKey) ?? 'auto'}

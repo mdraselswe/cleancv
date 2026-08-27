@@ -1,11 +1,16 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type TextareaHTMLAttributes,
+} from 'react';
 
 import { cn } from '@/lib/cn';
 
 const CONTROL_BASE =
-  'w-full rounded-lg border bg-surface px-3 text-sm text-fg transition placeholder:text-fg-subtle ' +
+  'w-full rounded-control border bg-surface px-3 text-ui-md text-fg transition placeholder:text-fg-subtle ' +
   'focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
@@ -39,7 +44,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <div className="flex">
       <span
         className={cn(
-          'inline-flex h-9 items-center rounded-l-lg border border-r-0 bg-surface-2 px-2.5 text-sm text-fg-subtle',
+          'rounded-l-control bg-surface-2 text-ui-md text-fg-subtle inline-flex h-9 items-center border border-r-0 px-2.5',
           invalid ? 'border-danger' : 'border-border-base',
         )}
       >

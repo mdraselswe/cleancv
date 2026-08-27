@@ -34,7 +34,7 @@ export const CollapsibleCard = ({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-xl border border-border-base bg-surface transition',
+        'rounded-card border-border-base bg-surface overflow-hidden border transition',
         open && 'shadow-app',
         className,
       )}
@@ -45,16 +45,16 @@ export const CollapsibleCard = ({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => onOpenChange(!open)}
-          className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1 text-left transition hover:bg-surface-2"
+          className="tap-target hover:bg-surface-2 rounded-control flex min-w-0 flex-1 items-center gap-2 px-1.5 py-1.5 text-left transition"
         >
           <ChevronDown
             size={16}
-            className={cn('flex-none text-fg-subtle transition-transform', !open && '-rotate-90')}
+            className={cn('text-fg-subtle flex-none transition-transform', !open && '-rotate-90')}
           />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium text-fg">{title}</span>
+            <span className="text-ui-md text-fg block truncate font-medium">{title}</span>
             {subtitle ? (
-              <span className="block truncate text-[12px] text-fg-subtle">{subtitle}</span>
+              <span className="text-ui-xs text-fg-subtle block truncate">{subtitle}</span>
             ) : null}
           </span>
         </button>
@@ -63,7 +63,7 @@ export const CollapsibleCard = ({
       </div>
 
       {open ? (
-        <div id={panelId} className="border-t border-border-base px-3.5 py-4">
+        <div id={panelId} className="border-border-base border-t px-3.5 py-4">
           {children}
         </div>
       ) : null}

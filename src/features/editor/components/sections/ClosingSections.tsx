@@ -2,7 +2,16 @@
 
 import { Plus, Trash2 } from 'lucide-react';
 
-import { Button, Field, ImageUpload, Input, Switch, TagInput, Tabs, Textarea } from '@/components/ui';
+import {
+  Button,
+  Field,
+  ImageUpload,
+  Input,
+  Switch,
+  TagInput,
+  Tabs,
+  Textarea,
+} from '@/components/ui';
 import {
   DEFAULT_DECLARATION_TEXT,
   LIMITS,
@@ -69,14 +78,14 @@ export const ReferencesSection = () => {
       />
 
       {references.mode === 'on-request' ? (
-        <p className="rounded-lg bg-surface-2 px-3 py-2 text-[13px] text-fg-muted">
+        <p className="rounded-control bg-surface-2 text-ui text-fg-muted px-3 py-2">
           Your resume will print: “{ON_REQUEST_TEXT}” — the usual choice unless the employer asked
           for referees up front.
         </p>
       ) : (
         <>
           {references.entries.map((entry) => (
-            <div key={entry.id} className="rounded-xl border border-border-base p-3">
+            <div key={entry.id} className="rounded-card border-border-base border p-3">
               <div className="mb-2 flex justify-end">
                 <button
                   type="button"
@@ -88,13 +97,13 @@ export const ReferencesSection = () => {
                       );
                     })
                   }
-                  className="rounded p-1 text-fg-subtle transition hover:bg-surface-2 hover:text-danger"
+                  className="tap-target text-fg-subtle hover:bg-surface-2 hover:text-danger flex h-8 w-8 flex-none items-center justify-center rounded-lg transition"
                 >
                   <Trash2 size={14} />
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
                 <Field label="Name">
                   {({ id }) => (
                     <Input
@@ -113,7 +122,7 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="Organisation" className="col-span-2">
+                <Field label="Organisation" className="col-span-full">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -142,7 +151,7 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="How they know you" className="col-span-2">
+                <Field label="How they know you" className="col-span-full">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -180,8 +189,8 @@ export const DeclarationSection = () => {
   const { patch } = useResumeEdit();
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <Field label="Statement" className="col-span-2">
+    <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
+      <Field label="Statement" className="col-span-full">
         {({ id }) => (
           <Textarea
             id={id}
@@ -219,7 +228,7 @@ export const DeclarationSection = () => {
         </Field>
       ) : null}
 
-      <div className="col-span-2">
+      <div className="col-span-full">
         <Switch
           label="Print a date"
           description="Off leaves the declaration undated, so the same PDF keeps working months from now."
@@ -251,7 +260,10 @@ export const SignatureSection = () => {
       />
 
       {signature.mode === 'typed' ? (
-        <Field label="Signature name" hint={`Blank uses your full name (${basics.fullName || '—'}).`}>
+        <Field
+          label="Signature name"
+          hint={`Blank uses your full name (${basics.fullName || '—'}).`}
+        >
           {({ id, describedBy }) => (
             <Input
               id={id}
@@ -314,7 +326,6 @@ export const DocumentNameSection = () => {
           />
         )}
       </Field>
-
     </div>
   );
 };

@@ -7,19 +7,28 @@ import { cn } from '@/lib/cn';
 export interface AppShellProps {
   toolbar: ReactNode;
   children: ReactNode;
-  /** Fixed to the bottom on small screens; typically the tab bar. */
+  /**
+   * Pinned under the body. The caller decides when there is one — which
+   * layouts need a way to swap panes is the caller's question, not the
+   * frame's, and a `lg:hidden` here quietly answered it twice.
+   */
   bottomBar?: ReactNode;
   className?: string;
 }
 
 /** Full-height frame: a fixed toolbar, a scrolling body, an optional bottom bar. */
 export const AppShell = ({ toolbar, children, bottomBar, className }: AppShellProps) => (
-  <div className={cn('flex h-dvh flex-col overflow-hidden bg-bg', className)}>
-    <header className="z-20 flex-none border-b border-border-base bg-surface">{toolbar}</header>
+  <div className={cn('bg-bg flex h-dvh flex-col overflow-hidden', className)}>
+    <header className="border-border-base bg-surface z-20 flex-none border-b">{toolbar}</header>
 
     <main className="min-h-0 flex-1">{children}</main>
 
-    {bottomBar ? <div className="z-20 flex-none lg:hidden">{bottomBar}</div> : null}
+    {/*
+      `pb-safe` keeps the row above the phone's home indicator. Without it the
+      bar sits under the gesture area, where the bottom third of every label is
+      covered and a tap lands on the system rather than on the app.
+    */}
+    {bottomBar ? <div className="pb-safe bg-surface z-20 flex-none">{bottomBar}</div> : null}
   </div>
 );
 
@@ -33,10 +42,24 @@ export interface PaneProps {
   scroll?: boolean;
 }
 
-export const Pane = ({ header, children, className, contentClassName, scroll = true }: PaneProps) => (
-  <section className={cn('flex min-h-0 min-w-0 flex-col', className)}>
+export const Pane = ({
+  header,
+  children,
+  className,
+  contentClassName,
+  scroll = true,
+}: PaneProps) => (
+  /*
+   * `flex-1` so the pane fills whatever axis its parent runs along. Without it
+   * the one-pane phone layout — a block container, not a flex row — left the
+   * section only as tall as its content, and the page background showed
+   * through under a short form as if the panel had ended early.
+   */
+  <section className={cn('flex min-h-0 min-w-0 flex-1 flex-col', className)}>
     {header ? (
-      <div className="flex-none border-b border-border-base bg-surface/85 backdrop-blur">{header}</div>
+      <div className="border-border-base bg-surface/85 flex-none border-b backdrop-blur">
+        {header}
+      </div>
     ) : null}
     <div
       className={cn(

@@ -43,18 +43,18 @@ export const RuleRow = ({ rule, onNavigate }: RuleRowProps) => {
       <Icon size={15} className={cn('mt-0.5 flex-none', STATUS_CLASS[rule.status])} />
 
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-medium text-fg">{rule.label}</p>
-        <p className="text-[12.5px] leading-snug text-fg-muted">{rule.message}</p>
+        <p className="text-ui text-fg font-medium">{rule.label}</p>
+        <p className="text-ui-xs text-fg-muted leading-snug">{rule.message}</p>
 
         {rule.fixHint ? (
-          <p className="mt-1 text-[12px] leading-snug text-fg-subtle">{rule.fixHint}</p>
+          <p className="text-ui-xs text-fg-subtle mt-1 leading-snug">{rule.fixHint}</p>
         ) : null}
 
         {target && onNavigate ? (
           <button
             type="button"
             onClick={() => onNavigate(target)}
-            className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium text-primary transition hover:gap-1.5"
+            className="text-ui-xs text-primary mt-1.5 inline-flex items-center gap-1 font-medium transition hover:gap-1.5"
           >
             Fix it
             <ArrowRight size={12} />

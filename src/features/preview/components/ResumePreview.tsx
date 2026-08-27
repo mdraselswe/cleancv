@@ -90,7 +90,7 @@ export const ResumePreview = ({
       style={{ width: sheetWidth * zoom, height: stackHeight * zoom }}
     >
       <div
-        className="absolute left-0 top-0 flex flex-col"
+        className="absolute top-0 left-0 flex flex-col"
         style={{
           width: sheetWidth,
           gap: SHEET_GAP,
@@ -101,7 +101,7 @@ export const ResumePreview = ({
         {pageOffsets.map((offset, index) => (
           <div key={offset} className="relative">
             <div
-              className="shadow-app"
+              className="shadow-sheet"
               style={{
                 width: sheetWidth,
                 height: sheetHeight,
@@ -155,7 +155,7 @@ export const ResumePreview = ({
             {showPageNumbers ? (
               <span
                 aria-hidden="true"
-                className="text-fg-subtle absolute -bottom-5 right-0 text-[11px] tabular-nums"
+                className="text-fg-subtle text-ui-2xs absolute right-0 -bottom-5 tabular-nums"
               >
                 Page {index + 1} of {pageCount}
               </span>

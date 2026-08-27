@@ -251,6 +251,37 @@ Templates MUST NOT:
     two-up entry's gutter; once a section could be dragged into the panel it caught a skills glyph,
     un-hid it on a specificity tie, and dropped it at the top-left of the page — over the name.
     See ADR-046.
+61. App chrome takes its type from the five `text-ui-*` steps and its corners from `rounded-control`
+    / `rounded-card` / `rounded-panel`. A hard-coded `text-[12.5px]` is a review failure. The resume
+    canvas never uses them: it has its own scale in points. See ADR-047.
+62. Anything a finger can press carries `tap-target`, which grows the hit area to 44px under
+    `@media (pointer: coarse)` without moving the layout. Keyed on the pointer, never on a width —
+    a 1280px tablet has the same thumb as a 390px phone. See ADR-047.
+63. A control that does not fit a narrow window goes into an overflow `Menu`; it does not get a
+    `hidden md:block`. A breakpoint may take away the shortcut, never the action — the template
+    picker, undo and the document name were each unreachable on a phone this way. See ADR-047.
+64. The editor has three layouts, from `useEditorLayout().mode`: `compact` (<768) one pane and a tab
+    bar, `split` (768–1023) both panes with the score as a drawer, `full` (≥1024) both panes and the
+    score in a column. A control tied to one of them is checked against all three — the score's
+    toggle appeared at 1024 while the tab bar stopped at 768, leaving a band with no way in.
+    See ADR-047.
+65. `col-span-2` on a grid that can collapse to one column *creates* a second column rather than
+    spanning. Use `col-span-full`. See ADR-047.
+66. Field pairs answer to the pane, not the window: `@container` on the form column and `@sm:` on
+    the grid. The same 350px form column exists at 768px and at 1440px, and a viewport breakpoint
+    cannot tell them apart. See ADR-047.
+67. An action whose result happens somewhere the reader is not looking — a file in the downloads
+    folder, a write to storage — says so. Exports and backups toast; the autosave reports through
+    `SaveState`, whose `pending` step is set before the debounce, not after it. See ADR-047.
+68. The template picker draws real pages through `TemplatePreview`, under each design's own
+    `defaultTheme`. Never a hand-drawn impression of a design: it is a second thing to keep in step
+    and is wrong the first time either changes. See ADR-047.
+69. An effect that reads `ref.current` and returns early when it is null is keyed on the *node*, via
+    a callback ref — never on a `useCallback` that never changes. Keyed on the callback it runs once,
+    on a mount where the element may not exist yet, and never again. That is how the section strip
+    lost its fade, both its arrows and its scrollbar at the same time. See ADR-047.
+70. A control that navigates the editor scrolls its own tab into view. Reaching a section from a
+    "Fix it" link or the toolbar highlights a tab that may be eight names off screen. See ADR-047.
 5. **No tables, no text-in-image, and no repeated header/footer text** — a name or a page number
    printed into every page's margin is chrome a parser reads as content. Page margins come from the
    PDF's own margin box, never from padding on the flow, which only indents its first and last

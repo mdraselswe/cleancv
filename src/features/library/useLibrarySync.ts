@@ -29,6 +29,10 @@ export const useLibrarySync = (): void => {
       // Opening a document is not an edit.
       if (wasJustLoaded(state.resume)) return;
 
+      // Said before the debounce, not after it: the gap between the keystroke
+      // and the write is exactly the window the reader needs told about.
+      useLibraryStore.getState().actions.markDirty();
+
       clearTimeout(timer);
       timer = setTimeout(() => {
         void useLibraryStore.getState().actions.save(useResumeStore.getState().resume);

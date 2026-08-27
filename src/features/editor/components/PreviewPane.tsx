@@ -39,7 +39,7 @@ export const PreviewPane = ({
   const effectiveZoom = zoomMode === 'fit' ? fitZoom : zoom;
 
   return (
-    <div ref={containerRef} className="relative min-h-full bg-surface-2 px-4 py-6 sm:px-8">
+    <div ref={containerRef} className="bg-canvas relative min-h-full px-4 py-6 sm:px-8">
       <ResumePreview
         resume={resume}
         zoom={effectiveZoom}
@@ -47,17 +47,24 @@ export const PreviewPane = ({
         onPageBreaksChange={onPageBreaksChange}
       />
 
-      <div className="sticky bottom-4 mt-6 flex justify-center">
-        <div className="inline-flex items-center gap-0.5 rounded-full border border-border-base bg-surface p-1 shadow-app">
+      {/*
+        The controls ride the foot of the pane rather than the foot of the
+        document: a three-page CV would otherwise put them three pages down
+        from the reader who wants to zoom out to see it. The row itself takes
+        no pointer events, so the page behind the pill stays scrollable.
+      */}
+      <div className="pointer-events-none sticky bottom-3 z-10 mt-6 flex justify-center">
+        <div className="border-border-base bg-surface/95 shadow-pop pointer-events-auto inline-flex items-center gap-0.5 rounded-full border p-1 backdrop-blur">
           <Button size="icon" variant="ghost" onClick={onZoomOut} aria-label="Zoom out">
             <Minus size={15} />
           </Button>
-          <span className="min-w-12 text-center text-[12px] tabular-nums text-fg-muted">
+          <span className="text-fg-muted text-ui-xs min-w-12 text-center tabular-nums">
             {Math.round(effectiveZoom * 100)}%
           </span>
           <Button size="icon" variant="ghost" onClick={onZoomIn} aria-label="Zoom in">
             <Plus size={15} />
           </Button>
+          <span aria-hidden="true" className="bg-border-base mx-0.5 h-5 w-px" />
           <Button
             size="icon"
             variant="ghost"

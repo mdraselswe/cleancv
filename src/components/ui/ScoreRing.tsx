@@ -32,15 +32,31 @@ export const ScoreRing = ({ score, tone, label, size = 116, className }: ScoreRi
   const dash = (clamped / 100) * circumference;
 
   return (
-    <div className={cn('relative inline-flex flex-none', className)} style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`ATS score ${clamped} out of 100`}>
+    <div
+      className={cn('relative inline-flex flex-none', className)}
+      style={{ width: size, height: size }}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        role="img"
+        aria-label={`ATS score ${clamped} out of 100`}
+      >
+        {/*
+          The track is drawn thinner than the arc that covers it. At the same
+          weight the sliver still showing at a high score reads as a stray grey
+          dot floating at the top of the ring rather than as the little that is
+          left to earn — the round caps close over it from both sides and only
+          its middle survives.
+        */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
           stroke="var(--app-border)"
-          strokeWidth={stroke}
+          strokeWidth={stroke * 0.55}
         />
         <circle
           cx={size / 2}
@@ -58,13 +74,13 @@ export const ScoreRing = ({ score, tone, label, size = 116, className }: ScoreRi
 
       <span className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="text-[1.75rem] font-semibold leading-none tabular-nums"
-          style={{ color: TONE_VAR[tone] }}
+          className="font-semibold tabular-nums"
+          style={{ color: TONE_VAR[tone], fontSize: size * 0.26, lineHeight: 1 }}
         >
           {clamped}
         </span>
         {label ? (
-          <span className="mt-1 text-[11px] font-medium uppercase tracking-wide text-fg-subtle">
+          <span className="text-fg-subtle text-ui-2xs mt-1 font-medium tracking-[0.08em] uppercase">
             {label}
           </span>
         ) : null}

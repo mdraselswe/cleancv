@@ -73,6 +73,16 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  /*
+   * Lets the page draw under the notch and the home indicator, which is what
+   * makes `env(safe-area-inset-*)` report anything but zero. The bottom bar
+   * pads itself back out of the way; without this it had nothing to pad by.
+   */
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#161a21' },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

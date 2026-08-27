@@ -19,11 +19,22 @@ import {
 } from '@/constants';
 import type { Density, FontFamilyKey } from '@/constants';
 import { useResume, useResumeActions } from '@/features/resume';
-import { getTemplate, getTemplatesByCategory } from '@/features/templates';
+import { TemplatePreview, getTemplate, getTemplatesByCategory } from '@/features/templates';
 import { cn } from '@/lib/cn';
 
 const FONT_OPTIONS = FONT_FAMILIES.map((value) => ({ value, label: FONT_FAMILY_LABEL[value] }));
 const DENSITY_OPTIONS = DENSITIES.map((value) => ({ value, label: DENSITY_LABEL[value] }));
+
+/**
+ * Rendered width of a thumbnail, in pixels.
+ *
+ * Small enough that two sit side by side in the narrowest pane the editor has,
+ * large enough that a rail, a panel and a centred head are all obviously
+ * different things. Fixed rather than fluid: the page is scaled by this number
+ * and a value that changes with the container re-renders ten resumes on every
+ * drag of the pane divider.
+ */
+const THUMBNAIL_WIDTH = 150;
 
 /**
  * Template choice and document theme.
@@ -48,9 +59,9 @@ export const DesignSection = () => {
             <div className="mb-1 flex items-center gap-2">
               <SectionLabel>{TEMPLATE_CATEGORY_LABEL[category]}</SectionLabel>
             </div>
-            <p className="mb-2.5 text-[12px] text-fg-subtle">{TEMPLATE_CATEGORY_HINT[category]}</p>
+            <p className="text-ui-xs text-fg-subtle mb-2.5">{TEMPLATE_CATEGORY_HINT[category]}</p>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               {templates.map(({ meta }) => {
                 const selected = meta.id === templateId;
 
@@ -60,23 +71,44 @@ export const DesignSection = () => {
                     type="button"
                     onClick={() => actions.setTemplate(meta.id, meta.defaultTheme)}
                     aria-pressed={selected}
+                    title={meta.description}
                     className={cn(
-                      'flex flex-col gap-1 rounded-xl border p-3 text-left transition',
+                      'group rounded-card flex flex-col overflow-hidden border text-left transition',
                       selected
-                        ? 'border-primary bg-primary-soft'
+                        ? 'border-primary ring-primary/30 ring-2'
                         : 'border-border-base hover:border-border-strong',
                     )}
                   >
-                    <span className="flex items-center gap-1.5">
-                      <span className="text-[13px] font-medium text-fg">{meta.name}</span>
-                      {selected ? <Check size={13} className="text-primary" /> : null}
+                    <span className="bg-canvas relative flex justify-center overflow-hidden p-2">
+                      <span className="shadow-sheet block overflow-hidden rounded-[2px]">
+                        <TemplatePreview
+                          templateId={meta.id}
+                          resume={resume}
+                          width={THUMBNAIL_WIDTH}
+                        />
+                      </span>
+
+                      {selected ? (
+                        <span className="bg-primary text-primary-fg absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full">
+                          <Check size={13} strokeWidth={3} />
+                        </span>
+                      ) : null}
                     </span>
-                    <span className="text-[12px] leading-snug text-fg-subtle">
-                      {meta.description}
+
+                    <span
+                      className={cn(
+                        'flex flex-1 flex-col gap-1 border-t px-2.5 py-2 transition',
+                        selected ? 'border-primary/40 bg-primary-soft' : 'border-border-base',
+                      )}
+                    >
+                      <span className="text-fg text-ui font-medium">{meta.name}</span>
+                      <Badge
+                        tone={meta.atsBaseline >= 90 ? 'success' : 'warning'}
+                        className="self-start"
+                      >
+                        ATS ceiling {meta.atsBaseline}
+                      </Badge>
                     </span>
-                    <Badge tone={meta.atsBaseline >= 90 ? 'success' : 'warning'} className="mt-1 self-start">
-                      ATS ceiling {meta.atsBaseline}
-                    </Badge>
                   </button>
                 );
               })}
@@ -85,12 +117,12 @@ export const DesignSection = () => {
         );
       })}
 
-      <div className="flex flex-col gap-4 border-t border-border-base pt-5">
+      <div className="border-border-base flex flex-col gap-4 border-t pt-5">
         <SectionLabel>Typography and spacing</SectionLabel>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
           <label className="flex flex-col gap-1.5">
-            <span className="text-[13px] font-medium text-fg-muted">Font</span>
+            <span className="text-ui text-fg-muted font-medium">Font</span>
             <Select
               options={FONT_OPTIONS}
               value={theme.font}
@@ -99,7 +131,7 @@ export const DesignSection = () => {
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className="text-[13px] font-medium text-fg-muted">Density</span>
+            <span className="text-ui text-fg-muted font-medium">Density</span>
             <Select
               options={DENSITY_OPTIONS}
               value={theme.density}
@@ -136,9 +168,9 @@ export const DesignSection = () => {
             onChange={(accent) => actions.setTheme({ accent })}
           />
         ) : (
-          <p className="text-[12px] text-fg-subtle">
-            {active.meta.name} prints in black for maximum parse reliability, so the accent colour is
-            not used.
+          <p className="text-ui-xs text-fg-subtle">
+            {active.meta.name} prints in black for maximum parse reliability, so the accent colour
+            is not used.
           </p>
         )}
 
@@ -166,7 +198,7 @@ export const DesignSection = () => {
                       aria-pressed={theme.photoRadius === shape.radius}
                       onClick={() => actions.setTheme({ photoRadius: shape.radius })}
                       className={cn(
-                        'flex flex-1 flex-col items-center gap-1.5 rounded-xl border px-2 py-2.5 transition',
+                        'rounded-card flex flex-1 flex-col items-center gap-1.5 border px-2 py-2.5 transition',
                         theme.photoRadius === shape.radius
                           ? 'border-primary bg-primary-soft'
                           : 'border-border-base hover:border-border-strong',
@@ -177,7 +209,7 @@ export const DesignSection = () => {
                         className="border-fg-subtle h-6 w-6 border-2"
                         style={{ borderRadius: `${shape.radius}%` }}
                       />
-                      <span className="text-fg text-[12px]">{shape.label}</span>
+                      <span className="text-fg text-ui-xs">{shape.label}</span>
                     </button>
                   ))}
                 </div>
@@ -195,7 +227,7 @@ export const DesignSection = () => {
             ) : null}
           </>
         ) : (
-          <p className="text-[12px] text-fg-subtle">
+          <p className="text-ui-xs text-fg-subtle">
             {active.meta.name} does not print a photo — the single biggest parse hazard.
           </p>
         )}

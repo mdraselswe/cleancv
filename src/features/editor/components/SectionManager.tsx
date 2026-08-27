@@ -134,15 +134,12 @@ export const SectionManager = () => {
   return (
     <div className="flex flex-col gap-2">
       <SectionLabel className="mb-1">Sections</SectionLabel>
-      <p className="text-fg-subtle mb-1 text-[12px]">
+      <p className="text-fg-subtle text-ui-xs mb-1">
         Order here is the order on the page. A section with no content is hidden automatically.
       </p>
 
-      <div className="border-border-base mb-2 rounded-xl border p-3">
-        <Field
-          label="Start from an arrangement"
-          hint={activePreset?.description ?? PRESET_HINT}
-        >
+      <div className="border-border-base rounded-card mb-2 border p-3">
+        <Field label="Start from an arrangement" hint={activePreset?.description ?? PRESET_HINT}>
           {({ id, describedBy }) => (
             <Select
               id={id}
@@ -202,7 +199,7 @@ export const SectionManager = () => {
           return (
             <SortableItem key={slot} id={slot}>
               {(handle) => (
-                <div className="border-border-base rounded-xl border px-3 py-2.5">
+                <div className="border-border-base rounded-card border px-3 py-2.5">
                   <div className="flex items-start gap-2">
                     <span className="pt-0.5">{handle}</span>
                     <div className="min-w-0 flex-1">
@@ -233,7 +230,7 @@ export const SectionManager = () => {
                         aria-label={`Move ${row.label} up`}
                         disabled={index === 0}
                         onClick={() => actions.moveSection(index, index - 1)}
-                        className="text-fg-subtle hover:text-fg rounded p-0.5 transition disabled:opacity-25"
+                        className="tap-target text-fg-subtle hover:text-fg hover:bg-surface-2 flex h-7 w-7 items-center justify-center rounded-lg transition disabled:opacity-25"
                       >
                         <ChevronUp size={15} />
                       </button>
@@ -242,7 +239,7 @@ export const SectionManager = () => {
                         aria-label={`Move ${row.label} down`}
                         disabled={index === sectionOrder.length - 1}
                         onClick={() => actions.moveSection(index, index + 1)}
-                        className="text-fg-subtle hover:text-fg rounded p-0.5 transition disabled:opacity-25"
+                        className="tap-target text-fg-subtle hover:text-fg hover:bg-surface-2 flex h-7 w-7 items-center justify-center rounded-lg transition disabled:opacity-25"
                       >
                         <ChevronDown size={15} />
                       </button>
@@ -255,7 +252,7 @@ export const SectionManager = () => {
                         value={row.heading}
                         placeholder={row.customId ? UNTITLED_CUSTOM_HEADING : row.label}
                         aria-label={`Heading for ${row.label}`}
-                        className="h-8 text-[13px]"
+                        className="text-ui h-8"
                         onChange={(event) => actions.setSectionHeading(slot, event.target.value)}
                       />
                       {row.heading && !row.customId ? (
@@ -279,7 +276,7 @@ export const SectionManager = () => {
                   */}
                   {row.enabled && !row.headless && design.columns === 2 ? (
                     <div className="mt-2 flex items-center gap-1.5 pl-12">
-                      <span className="text-fg-subtle text-[12px]">Column</span>
+                      <span className="text-fg-subtle text-ui-xs">Column</span>
                       {(['main', 'side'] as const).map((column) => (
                         <Button
                           key={column}
@@ -305,13 +302,16 @@ export const SectionManager = () => {
                         onChange={(value) => actions.setSectionIcons(slot, value)}
                         label="Icons"
                         description="The marker in front of each entry, and the glyphs on groups."
-                        className="text-[13px]"
+                        className="text-ui"
                       />
                     </div>
                   ) : null}
 
-                  {row.enabled && row.canonicalHeading && row.heading && row.heading !== row.label ? (
-                    <p className="text-warning mt-1 pl-12 text-[11px]">
+                  {row.enabled &&
+                  row.canonicalHeading &&
+                  row.heading &&
+                  row.heading !== row.label ? (
+                    <p className="text-warning text-ui-2xs mt-1 pl-12">
                       Parsers look for “{row.canonicalHeading}”. A custom name can cost you this
                       section.
                     </p>
@@ -332,7 +332,7 @@ export const SectionManager = () => {
         >
           Add a custom section
         </Button>
-        <p className="text-fg-subtle mt-1.5 text-[11.5px]">
+        <p className="text-fg-subtle text-ui-2xs mt-1.5">
           {atLimit
             ? `You have reached the limit of ${MAX_CUSTOM_SECTIONS} custom sections.`
             : 'For anything the list above does not cover. Give it a heading a recruiter would recognise.'}

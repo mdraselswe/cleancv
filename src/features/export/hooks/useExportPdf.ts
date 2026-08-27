@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 import { ROUTES } from '@/constants';
 import type { Resume } from '@/features/resume';
@@ -54,8 +55,16 @@ export const useExportPdf = () => {
         const stem = toFileStem(resume.meta.documentName || resume.basics.fullName || 'resume');
         const fallback = mode === 'ats' ? `${stem}-ATS.pdf` : `${stem}.pdf`;
 
-        downloadBlob(await response.blob(), filenameFromResponse(response, fallback));
+        const filename = filenameFromResponse(response, fallback);
+
+        downloadBlob(await response.blob(), filename);
         setState({ pending: null, error: '', failedMode: null });
+        /*
+         * The file lands in a folder the reader is not looking at, and the
+         * button it came from looks exactly as it did before. Without this
+         * line a successful export and a silent failure are the same event.
+         */
+        toast.success('PDF downloaded', { description: filename });
       } catch (error) {
         setState({
           pending: null,

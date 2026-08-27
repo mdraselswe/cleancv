@@ -52,8 +52,8 @@ export const AtsPanel = ({
         <ScoreRing score={score.total} tone={score.tone} label={score.band} />
 
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-fg">ATS score</p>
-          <p className="mt-0.5 text-[12.5px] leading-snug text-fg-subtle">
+          <p className="text-ui-md text-fg font-semibold">ATS score</p>
+          <p className="text-ui-xs text-fg-subtle mt-0.5 leading-snug">
             {score.issues.length === 0
               ? 'Every check passes. Send it.'
               : `${score.issues.length} check${score.issues.length === 1 ? '' : 's'} to look at, worst first.`}
@@ -73,14 +73,20 @@ export const AtsPanel = ({
         ))}
       </div>
 
-      <div className="flex gap-0.5 rounded-lg bg-surface-2 p-0.5">
+      {/*
+        `whitespace-nowrap` because the panel is 360px and "Needs work" broke
+        over two lines inside it, which made one of three equal tabs taller
+        than the others and the whole control look misassembled.
+      */}
+      <div className="bg-surface-2 rounded-control flex gap-0.5 p-0.5">
         {VIEWS.map((item) => (
           <button
             key={item.value}
             type="button"
+            aria-pressed={view === item.value}
             onClick={() => setView(item.value)}
             className={cn(
-              'flex-1 rounded-md px-2 py-1.5 text-[12.5px] font-medium transition',
+              'tap-target text-ui-xs flex-1 rounded-lg px-1.5 py-1.5 font-medium whitespace-nowrap transition',
               view === item.value ? 'bg-surface text-fg shadow-sm' : 'text-fg-muted hover:text-fg',
             )}
           >
@@ -91,11 +97,11 @@ export const AtsPanel = ({
 
       {view === 'issues' ? (
         score.issues.length === 0 ? (
-          <p className="rounded-lg bg-success/10 px-3 py-2.5 text-[13px] text-success">
+          <p className="rounded-control bg-success/10 text-ui text-success px-3 py-2.5">
             Nothing outstanding. Download both PDFs and apply.
           </p>
         ) : (
-          <ul className="divide-y divide-border-base">
+          <ul className="divide-border-base divide-y">
             {score.issues.map((rule) => (
               <RuleRow key={rule.id} rule={rule} onNavigate={onNavigate} />
             ))}
@@ -107,10 +113,10 @@ export const AtsPanel = ({
         ? score.categories.map((category) => (
             <div key={category.category}>
               <SectionLabel className="mb-1">{ATS_CATEGORY_LABEL[category.category]}</SectionLabel>
-              <p className="mb-1 text-[12px] text-fg-subtle">
+              <p className="text-ui-xs text-fg-subtle mb-1">
                 {ATS_CATEGORY_DESCRIPTION[category.category]}
               </p>
-              <ul className="divide-y divide-border-base">
+              <ul className="divide-border-base divide-y">
                 {category.rules.map((rule) => (
                   <RuleRow key={rule.id} rule={rule} onNavigate={onNavigate} />
                 ))}
@@ -122,7 +128,7 @@ export const AtsPanel = ({
       {view === 'target' ? (
         <div className="flex flex-col gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-[13px] font-medium text-fg-muted">Job description</span>
+            <span className="text-ui text-fg-muted font-medium">Job description</span>
             <Textarea
               rows={8}
               value={jobDescription}
@@ -134,12 +140,10 @@ export const AtsPanel = ({
           {keywords.matched.length + keywords.missing.length > 0 ? (
             <>
               <div>
-                <SectionLabel className="mb-1.5">
-                  Missing ({keywords.missing.length})
-                </SectionLabel>
+                <SectionLabel className="mb-1.5">Missing ({keywords.missing.length})</SectionLabel>
                 <div className="flex flex-wrap gap-1.5">
                   {keywords.missing.length === 0 ? (
-                    <p className="text-[12.5px] text-fg-subtle">Nothing missing.</p>
+                    <p className="text-ui-xs text-fg-subtle">Nothing missing.</p>
                   ) : (
                     keywords.missing.map((word) => (
                       <Badge key={word} tone="warning">
@@ -148,9 +152,10 @@ export const AtsPanel = ({
                     ))
                   )}
                 </div>
-                <p className="mt-2 text-[12px] leading-snug text-fg-subtle">
+                <p className="text-ui-xs text-fg-subtle mt-2 leading-snug">
                   Add only what is honestly true of you, in the posting&apos;s own spelling. Padding
-                  a resume with terms you cannot defend fails at the interview instead of the filter.
+                  a resume with terms you cannot defend fails at the interview instead of the
+                  filter.
                 </p>
               </div>
 
@@ -181,13 +186,13 @@ interface CategoryBarProps {
 
 const CategoryBar = ({ category, percent, points, maxPoints }: CategoryBarProps) => (
   <div>
-    <div className="mb-1 flex items-baseline justify-between text-[12.5px]">
+    <div className="text-ui-xs mb-1 flex items-baseline justify-between">
       <span className="text-fg-muted">{ATS_CATEGORY_LABEL[category]}</span>
-      <span className="tabular-nums text-fg-subtle">
+      <span className="text-fg-subtle tabular-nums">
         {Math.round(points)}/{maxPoints}
       </span>
     </div>
-    <div className="h-1.5 overflow-hidden rounded-full bg-surface-2">
+    <div className="bg-surface-2 h-1.5 overflow-hidden rounded-full">
       <div
         className={cn(
           'h-full rounded-full transition-[width] duration-500',

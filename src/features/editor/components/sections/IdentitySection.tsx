@@ -37,8 +37,8 @@ export const IdentitySection = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Full name" className="col-span-2">
+      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
+        <Field label="Full name" className="col-span-full">
           {({ id }) => (
             <Input
               id={id}
@@ -52,7 +52,7 @@ export const IdentitySection = () => {
 
         <Field
           label="Professional headline"
-          className="col-span-2"
+          className="col-span-full"
           hint="The role you are applying for, not the one you hold."
         >
           {({ id, describedBy }) => (
@@ -93,7 +93,7 @@ export const IdentitySection = () => {
 
       <div>
         <SectionLabel className="mb-2.5">Contact</SectionLabel>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
           <Field label="Phone">
             {({ id }) => (
               <Input
@@ -117,7 +117,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Email" className="col-span-2">
+          <Field label="Email" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -129,7 +129,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Location" className="col-span-2" hint="City and country is enough.">
+          <Field label="Location" className="col-span-full" hint="City and country is enough.">
             {({ id, describedBy }) => (
               <Input
                 id={id}
@@ -165,7 +165,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Portfolio" className="col-span-2">
+          <Field label="Portfolio" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -177,7 +177,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Present address" className="col-span-2">
+          <Field label="Present address" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -187,7 +187,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Permanent address" className="col-span-2">
+          <Field label="Permanent address" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -224,7 +224,7 @@ export const IdentitySection = () => {
                     draft.contact.links = draft.contact.links.filter((item) => item.id !== link.id);
                   })
                 }
-                className="text-fg-subtle hover:bg-surface-2 hover:text-danger rounded p-2 transition"
+                className="text-fg-subtle hover:bg-surface-2 hover:text-danger rounded-lg p-2 transition"
               >
                 <Trash2 size={14} />
               </button>

@@ -38,22 +38,22 @@ export const Field = ({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-[13px] font-medium text-fg-muted">
+        <label htmlFor={id} className="text-ui text-fg-muted font-medium">
           {label}
-          {required ? <span className="ml-0.5 text-danger">*</span> : null}
+          {required ? <span className="text-danger ml-0.5">*</span> : null}
         </label>
-        {adornment ? <span className="text-[11px] text-fg-subtle">{adornment}</span> : null}
+        {adornment ? <span className="text-ui-2xs text-fg-subtle">{adornment}</span> : null}
       </div>
 
       {children({ id, describedBy, invalid: Boolean(error) })}
 
       {error ? (
-        <p id={errorId} className="text-[12px] text-danger">
+        <p id={errorId} className="text-ui-xs text-danger">
           {error}
         </p>
       ) : null}
       {hint && !error ? (
-        <p id={hintId} className="text-[12px] text-fg-subtle">
+        <p id={hintId} className="text-ui-xs text-fg-subtle">
           {hint}
         </p>
       ) : null}

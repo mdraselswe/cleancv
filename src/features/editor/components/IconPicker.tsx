@@ -30,7 +30,7 @@ export const IconPicker = ({ value, label, onChange }: IconPickerProps) => {
     <div
       role="radiogroup"
       aria-label="Icon"
-      className="border-border-base flex flex-wrap gap-1 rounded-lg border p-1.5"
+      className="border-border-base rounded-control flex flex-wrap gap-1 border p-1.5"
     >
       {RESUME_ICON_KEYS.map((key) => {
         const selected = key === value;
@@ -47,16 +47,16 @@ export const IconPicker = ({ value, label, onChange }: IconPickerProps) => {
             title={key === 'auto' ? 'Automatic — from the name you typed' : RESUME_ICON_LABEL[key]}
             onClick={() => onChange(key)}
             className={cn(
-              'flex h-8 items-center justify-center rounded-md border transition',
+              'tap-target flex h-9 items-center justify-center rounded-lg border transition',
               key === 'auto' ? 'gap-1 px-2' : 'w-8',
               selected
                 ? 'border-primary bg-primary-soft text-primary'
-                : 'border-transparent text-fg-muted hover:bg-surface-2 hover:text-fg',
+                : 'text-fg-muted hover:bg-surface-2 hover:text-fg border-transparent',
             )}
           >
             {key === 'auto' ? (
               <>
-                <span className="text-[11.5px] font-medium">Auto</span>
+                <span className="text-ui-2xs font-medium">Auto</span>
                 {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
               </>
             ) : (

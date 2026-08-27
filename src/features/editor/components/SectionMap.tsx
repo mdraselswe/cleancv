@@ -17,10 +17,10 @@ import {
   sortableKeyboardCoordinates,
   useSortable,
 } from '@dnd-kit/sortable';
-import { GripVertical, Lock, X } from 'lucide-react';
+import { GripVertical, Lock } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui';
+import { Modal, ModalHeader } from '@/components/ui';
 import type { SectionSlot } from '@/constants';
 import { getSectionHeading, useResume, useResumeActions } from '@/features/resume';
 import { getTemplate } from '@/features/templates';
@@ -41,7 +41,7 @@ const place = (box: SectionBox) => ({
 });
 
 const BOX_CLASS =
-  'absolute flex items-center justify-center rounded-md border px-1.5 text-center text-[11px] leading-tight';
+  'absolute flex items-center justify-center rounded-lg border px-1.5 text-center text-ui-2xs leading-tight';
 
 interface BoxProps {
   box: SectionBox;
@@ -162,122 +162,100 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
 
   return (
     <>
-      <button
-        type="button"
-        aria-label="Close the page map"
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/30"
-      />
-
       {/*
-        Centred by flex, not by a translate. A transform on an ancestor is what
-        `position: fixed` resolves against, so the drag overlay — which dnd-kit
-        positions in viewport coordinates — came out half a screen from the
-        pointer. Nothing between the overlay and the viewport may be transformed.
+        `Modal` centres by flex rather than by a translate, which is what lets
+        the drag overlay work inside it: a transform on an ancestor is what
+        `position: fixed` resolves against, and dnd-kit positions the carried
+        box in viewport coordinates. See ADR-043.
       */}
-      <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          role="dialog"
-          aria-label="Rearrange the sections"
-          aria-modal="true"
-          className="border-border-base bg-surface shadow-app pointer-events-auto flex max-h-[88vh] w-[min(620px,94vw)] flex-col rounded-2xl border"
-        >
-          <header className="border-border-base flex flex-none items-start justify-between gap-3 border-b px-4 py-3">
-            <div>
-              <h2 className="text-fg text-[15px] font-semibold">
-                Hold and drag the boxes to rearrange the sections
-              </h2>
-              <p className="text-fg-subtle mt-0.5 text-[12px]">
-                Each box is drawn where that section actually falls, at the size it actually takes.
-              </p>
-            </div>
-            <Button size="icon" variant="ghost" aria-label="Close" onClick={onClose}>
-              <X size={16} />
-            </Button>
-          </header>
+      <Modal label="Rearrange the sections" onClose={onClose} className="max-w-[620px]">
+        <ModalHeader
+          title="Hold and drag the boxes to rearrange the sections"
+          subtitle="Each box is drawn where that section actually falls, at the size it actually takes."
+          onClose={onClose}
+        />
 
-          <div className="scroll-slim flex-1 overflow-y-auto px-4 py-4">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragCancel={() => setCarried(null)}
-            >
-              <SortableContext items={slots} strategy={rectSortingStrategy}>
-                <div className="flex flex-col items-center gap-5">
-                  {pages.map((page, index) => (
-                    <div key={index} className="w-full max-w-[380px]">
-                      <p className="text-fg-subtle mb-1.5 text-center text-[12px]">
-                        Page {index + 1} of {pages.length}
-                      </p>
-                      <div className="border-border-base bg-surface shadow-app relative aspect-[210/297] w-full rounded-lg border">
-                        <div
-                          className="absolute"
-                          style={{
-                            left: `${margin.x * 100}%`,
-                            right: `${margin.x * 100}%`,
-                            top: `${margin.y * 100}%`,
-                            bottom: `${margin.y * 100}%`,
-                          }}
-                        >
-                          {index === 0
-                            ? headers.map((band) => (
-                                <div
-                                  key={band.x}
-                                  className={cn(
-                                    BOX_CLASS,
-                                    'border-border-base bg-app-primary/20 text-fg top-0',
-                                  )}
-                                  style={{
-                                    left: `${band.x * 100}%`,
-                                    width: `${band.width * 100}%`,
-                                    height: `${band.height * 100}%`,
-                                  }}
-                                >
-                                  <Lock
-                                    size={11}
-                                    className="text-fg-subtle absolute top-1 left-1"
-                                    aria-hidden="true"
-                                  />
-                                  <span>Header</span>
-                                </div>
-                              ))
-                            : null}
+        <div className="scroll-slim min-h-0 flex-1 overflow-y-auto px-4 py-4">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={() => setCarried(null)}
+          >
+            <SortableContext items={slots} strategy={rectSortingStrategy}>
+              <div className="flex flex-col items-center gap-5">
+                {pages.map((page, index) => (
+                  <div key={index} className="w-full max-w-[380px]">
+                    <p className="text-fg-subtle text-ui-xs mb-1.5 text-center">
+                      Page {index + 1} of {pages.length}
+                    </p>
+                    <div className="border-border-base bg-surface shadow-app rounded-control relative aspect-[210/297] w-full border">
+                      <div
+                        className="absolute"
+                        style={{
+                          left: `${margin.x * 100}%`,
+                          right: `${margin.x * 100}%`,
+                          top: `${margin.y * 100}%`,
+                          bottom: `${margin.y * 100}%`,
+                        }}
+                      >
+                        {index === 0
+                          ? headers.map((band) => (
+                              <div
+                                key={band.x}
+                                className={cn(
+                                  BOX_CLASS,
+                                  'border-border-base bg-app-primary/20 text-fg top-0',
+                                )}
+                                style={{
+                                  left: `${band.x * 100}%`,
+                                  width: `${band.width * 100}%`,
+                                  height: `${band.height * 100}%`,
+                                }}
+                              >
+                                <Lock
+                                  size={11}
+                                  className="text-fg-subtle absolute top-1 left-1"
+                                  aria-hidden="true"
+                                />
+                                <span>Header</span>
+                              </div>
+                            ))
+                          : null}
 
-                          {page.boxes.map((box) => {
-                            const label = getSectionHeading(resume, box.slot);
+                        {page.boxes.map((box) => {
+                          const label = getSectionHeading(resume, box.slot);
 
-                            return box.head ? (
-                              <DraggableBox key={box.key} box={box} label={label} />
-                            ) : (
-                              <ContinuedBox key={box.key} box={box} label={label} />
-                            );
-                          })}
-                        </div>
+                          return box.head ? (
+                            <DraggableBox key={box.key} box={box} label={label} />
+                          ) : (
+                            <ContinuedBox key={box.key} box={box} label={label} />
+                          );
+                        })}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </SortableContext>
-
-              {/* Follows the pointer, so the gesture reads as carrying the box
-                rather than as the page rearranging itself underneath it. */}
-              <DragOverlay dropAnimation={null}>
-                {carried ? (
-                  <div
-                    data-drag-overlay=""
-                    style={{ width: carried.width, height: carried.height }}
-                    className="border-app-primary bg-surface shadow-app text-fg flex cursor-grabbing items-center justify-center rounded-md border px-1.5 text-center text-[11px] leading-tight"
-                  >
-                    <span className="line-clamp-3 px-2">{carried.label}</span>
                   </div>
-                ) : null}
-              </DragOverlay>
-            </DndContext>
-          </div>
+                ))}
+              </div>
+            </SortableContext>
+
+            {/* Follows the pointer, so the gesture reads as carrying the box
+                rather than as the page rearranging itself underneath it. */}
+            <DragOverlay dropAnimation={null}>
+              {carried ? (
+                <div
+                  data-drag-overlay=""
+                  style={{ width: carried.width, height: carried.height }}
+                  className="border-app-primary bg-surface shadow-app text-fg text-ui-2xs flex cursor-grabbing items-center justify-center rounded-lg border px-1.5 text-center leading-tight"
+                >
+                  <span className="line-clamp-3 px-2">{carried.label}</span>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </div>
-      </div>
+      </Modal>
 
       {/*
         The copy the map is measured from: the real template at real page width,

@@ -4,6 +4,15 @@ export { ColorPicker, type ColorPickerProps, type ColorSwatch } from './ColorPic
 export { Field, type FieldProps } from './Field';
 export { ImageUpload, type ImageUploadProps } from './ImageUpload';
 export { Input, Textarea, type InputProps, type TextareaProps } from './Input';
+export { Menu, type MenuEntry, type MenuItem, type MenuProps, type MenuSeparator } from './Menu';
+export {
+  Drawer,
+  Modal,
+  ModalHeader,
+  type DrawerProps,
+  type ModalHeaderProps,
+  type ModalProps,
+} from './Modal';
 export { MonthInput, type MonthInputProps } from './MonthInput';
 export {
   Badge,
@@ -17,7 +26,13 @@ export {
 } from './Misc';
 export { ScoreRing, type ScoreRingProps, type ScoreTone } from './ScoreRing';
 export { Select, type SelectOption, type SelectProps } from './Select';
-export { SortableItem, SortableList, type SortableItemProps, type SortableListProps } from './SortableList';
+export {
+  SortableItem,
+  SortableList,
+  type SortableItemProps,
+  type SortableListProps,
+} from './SortableList';
 export { Switch, type SwitchProps } from './Switch';
 export { TagInput, type TagInputProps } from './TagInput';
 export { Tabs, type TabItem, type TabsProps } from './Tabs';
+export { Toaster } from './Toaster';

@@ -18,8 +18,8 @@ export const DateRangeEditor = ({ value, onChange, label = 'Dates' }: DateRangeE
   const reversed = isRangeReversed(value);
 
   return (
-    <div className="col-span-2 flex flex-col gap-2">
-      <div className="grid grid-cols-2 gap-3">
+    <div className="col-span-full flex flex-col gap-2">
+      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
         <Field label={`${label} — start`}>
           {({ id }) => (
             <MonthInput
@@ -42,7 +42,7 @@ export const DateRangeEditor = ({ value, onChange, label = 'Dates' }: DateRangeE
             )}
           </Field>
         ) : (
-          <div className="flex items-end pb-1.5 text-[13px] text-fg-subtle">Ongoing</div>
+          <div className="text-ui text-fg-subtle flex items-end pb-1.5">Ongoing</div>
         )}
       </div>
 

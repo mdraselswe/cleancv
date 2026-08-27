@@ -12,8 +12,10 @@ export {
   useLibraryActions,
   useLibraryDocuments,
   useLibraryStore,
+  useSaveState,
   type LibraryActions,
   type LibraryStatus,
+  type SaveState,
   type WorkspaceState,
 } from './useLibrary';
 export { useLibraryReady, useLibrarySync } from './useLibrarySync';

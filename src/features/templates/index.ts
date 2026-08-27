@@ -9,6 +9,7 @@ export {
 export { ResumeDocument } from './shared/ResumeDocument';
 export { SectionBody } from './shared/SectionBody';
 export { ContactRow } from './shared/ContactRow';
+export { TemplatePreview, type TemplatePreviewProps } from './shared/TemplatePreview';
 
 export {
   resolvePageBleed,

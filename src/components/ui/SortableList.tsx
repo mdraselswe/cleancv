@@ -84,15 +84,22 @@ export interface SortableItemProps {
 }
 
 export const SortableItem = ({ id, children }: SortableItemProps) => {
-  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
 
   const handle = (
     <button
       ref={setActivatorNodeRef}
       type="button"
       aria-label="Reorder"
-      className="cursor-grab rounded p-1.5 text-fg-subtle transition hover:bg-surface-2 hover:text-fg active:cursor-grabbing"
+      className="tap-target text-fg-subtle hover:bg-surface-2 hover:text-fg flex h-9 w-8 cursor-grab items-center justify-center rounded-lg transition active:cursor-grabbing"
       {...attributes}
       {...listeners}
     >
@@ -105,7 +112,7 @@ export const SortableItem = ({ id, children }: SortableItemProps) => {
       ref={setNodeRef}
       role="listitem"
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn(isDragging && 'relative z-10 opacity-90 shadow-app')}
+      className={cn(isDragging && 'shadow-pop relative z-10 opacity-95')}
     >
       {children(handle)}
     </div>

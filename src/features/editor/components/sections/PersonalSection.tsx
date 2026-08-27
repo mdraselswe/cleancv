@@ -36,13 +36,13 @@ export const PersonalSection = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="rounded-lg bg-warning/10 px-3 py-2 text-[12px] leading-relaxed text-warning">
+      <p className="rounded-control bg-warning/10 text-ui-xs text-warning px-3 py-2 leading-relaxed">
         Date of birth, gender, religion and marital status are expected on CVs in South Asia and the
         Gulf. For US, UK, Canadian and most EU applications, leave this section off — it invites
         discrimination screening and adds nothing.
       </p>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
         {text('fatherName', "Father's name", undefined, LIMITS.nameChars)}
         {text('motherName', "Mother's name", undefined, LIMITS.nameChars)}
         {text('dateOfBirth', 'Date of birth', '01 January 1995', 20)}

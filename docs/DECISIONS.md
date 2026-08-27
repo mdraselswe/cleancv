@@ -1373,3 +1373,95 @@ set, so neither can escape.
 Reproducing it took a scripted move rather than a screenshot — the sample resume leaves skills in the
 narrative column, so the layout that shows the bug is one the fixture never renders. Worth
 remembering: a fixture that never exercises a combination is not evidence the combination works.
+
+## ADR-047 — The app chrome gets a scale, and a phone gets the whole app
+
+**Status.** Accepted.
+
+**Context.** The document had been measured, argued over and rebuilt ten times. The application
+around it had not been looked at once. Measuring it — headless Chrome at 390, 768, 1024 and 1440,
+reading computed geometry rather than screenshots — found that it had grown the way an app grows when
+every change is local:
+
+- The toolbar wrapped onto a second row below `sm`. It stood **82px** tall on a 390×844 phone against
+  52px on a desktop, and the row it gained was almost empty: the app name, the document name and the
+  template picker were each hidden at a different breakpoint, leaving a logo and four unlabelled
+  glyphs. A tenth of the shortest screen, spent on the least.
+- **44 controls** were under 40px on that phone. Every icon button was 32×32; Apple asks for 44 and
+  Android for 48. The document-name button was 22×26.
+- The template picker was **hidden below `md` entirely**, so a phone could not change the design.
+  Undo and redo were hidden below `sm`. The document name was hidden below `md` — no way to tell
+  which CV was open.
+- A tablet fell to the phone's one-pane-at-a-time layout the moment the window dropped below 1024px,
+  which put the preview a tab away from the field being typed into. In the same layout the form had
+  no width cap, so at 768px a single-line "Full name" field ran to **736px**.
+- Eight hard-coded pixel type sizes — 11, 11.5, 12, 12.5, 13, 13.5, 14, 15 — reached for a case at a
+  time. That is not a scale, it is a history.
+- The template picker was ten paragraphs of prose, in an app whose entire subject is what a page
+  looks like.
+- `sonner` had been a dependency for months and was imported nowhere. No action anywhere reported
+  its outcome, and nothing said the autosave had run.
+
+**Decision.**
+
+*A scale, not a history.* Five named steps — `text-ui-2xs` through `text-ui-lg` — and three radii by
+role: `rounded-control`, `rounded-card`, `rounded-panel`. Named `ui` rather than reusing Tailwind's
+`sm`/`base` because the resume canvas has its own scale in points and must never inherit one of these
+by accident. Naming a size is what makes it a decision; tuning one now moves the app rather than one
+component.
+
+*Thumb-sized where there is a thumb.* A `.tap-target` class grows a control's hit area to 44px
+through an `::after` under `@media (pointer: coarse)` — outwards, into the gap already around it, so
+nothing in the layout moves. Keyed on the pointer and not on a width: a 1280px tablet has the same
+thumb as a 390px phone, and a desktop window dragged narrow still has a mouse.
+
+*One toolbar row at every width.* What stays visible is what the reader needs without thinking —
+which CV is open, whether it is saved, how to get the PDF out. Everything else collapses into one
+overflow `Menu` rather than disappearing at a breakpoint: a narrow window loses the shortcut, never
+the action. The same menu replaced the four unlabelled glyphs on every entry row.
+
+*Three layouts, not two.* `compact` under 768 keeps the tab bar; `split` from 768 shows form and page
+together with the score as a drawer; `full` from 1024 gives the score its own column. The split is a
+fraction of the container rather than a fixed 520px, because the same divider has to work in a 1080px
+gap and a 768px one.
+
+*A picker that shows the page.* `TemplatePreview` renders the real template at real page size, scaled
+down, under that design's own `defaultTheme` — what choosing it would actually do. Not a hand-drawn
+impression: an impression is a second thing to keep in step with the design and is wrong the first
+time either changes. `content-visibility: auto` keeps ten off-screen resumes from being laid out.
+
+*Say what happened.* `sonner` for export, backup and restore outcomes; a `SaveState` on the library
+store with a `pending` step said *before* the debounce, because the gap between the keystroke and the
+write is exactly the window worth telling the reader about.
+
+**Consequence.** On a 390px phone: toolbar 53px, and **zero** app controls under 44px. Nothing
+overflows horizontally at any width measured. A tablet gets both panes and every control the desktop
+has. Unit 164/164, regression 136/136, lint, `tsc` and `next build` all pass.
+
+**What the measuring caught that reading would not.** `col-span-2` on a grid that collapses to one
+column does not span — it *creates* an implicit second column. Every full-width field in the editor
+was silently building a second track and squeezing the field beside it, which is why "Phone" came out
+90px wide on a tablet while "Alternate phone" took 240. `col-span-full` spans whatever is there. And
+the score panel's toggle was `lg:inline-flex` while the tab bar stopped at `md`, so between 768 and
+1023 the score had no way in at all — no tab below, no column beside, and a button that had not
+appeared yet.
+
+**Follow-up: the strip that could not be scrolled.** The measurement never ran. `useScrollEdges`
+held a `useRef` and did its work in an effect keyed on `[measure]`, and on a first visit the pane is
+showing its empty state — no strip, `ref.current` null, early return — and nothing in that dependency
+list changes when the strip finally mounts. So `data-overflow-end` stayed `false` for the life of the
+session: no fade, both arrows held at `opacity: 0`, and the scrollbar deliberately hidden by
+`scroll-none`. Three affordances, all switched off by one silent early return, leaving a strip a
+mouse could not move at all.
+
+The fix is a callback ref: the element announces itself when it arrives, and the effect is keyed on
+the node. Worth stating as a rule — **an effect that reads `ref.current` and returns early when it is
+null must be keyed on the node, not on a callback**, or it only ever runs on the mount where the
+element already happened to exist.
+
+Two more things came out of chasing it. The selected tab is now scrolled into view whenever it
+changes, because a section reached from anywhere but the strip — a "Fix it" link, the toolbar's
+"Change the design" — was being highlighted somewhere off to the right where nobody could see it.
+And `navigateToFix` was calling `closeScore()`, which on a desktop closed the score's own column: the
+drawer needs dismissing because it covers the form being navigated to, a column beside it covers
+nothing. `dismissScoreOverlay` closes only the drawer.

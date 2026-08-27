@@ -6,21 +6,27 @@ import {
   FileUp,
   FolderOpen,
   Gauge,
+  Keyboard,
+  Loader2,
   Monitor,
   Moon,
+  MoreHorizontal,
+  Palette,
   Redo2,
   Sun,
   Undo2,
   Upload,
-  Loader2,
 } from 'lucide-react';
 
-import { Badge, Button, Select } from '@/components/ui';
+import { Badge, Button, Menu, Select, type MenuEntry } from '@/components/ui';
 import { APP_NAME } from '@/constants';
-import { IMPORT_INPUT_ID } from '@/features/export';
 import type { TemplateId } from '@/constants';
+import { IMPORT_INPUT_ID } from '@/features/export';
+import type { SaveState } from '@/features/library';
 import type { ThemePreference } from '@/hooks';
 import { cn } from '@/lib/cn';
+
+import { SaveStatus } from './SaveStatus';
 
 const SCORE_TONE_CLASS = {
   excellent: 'text-success',
@@ -36,10 +42,26 @@ const SCORE_TONE_BADGE = {
   poor: 'danger',
 } as const;
 
+const THEME_ICON: Record<ThemePreference, typeof Sun> = {
+  light: Sun,
+  dark: Moon,
+  system: Monitor,
+};
+
+const THEME_LABEL: Record<ThemePreference, string> = {
+  light: 'Theme: light',
+  dark: 'Theme: dark',
+  system: 'Theme: system',
+};
+
 export interface ToolbarProps {
   documentName: string;
+  saveState: SaveState;
   onOpenLibrary: () => void;
   onOpenImport: () => void;
+  /** Jumps the editor to the design panel — the template picker on a phone. */
+  onOpenDesign: () => void;
+  onOpenShortcuts: () => void;
   templateId: TemplateId;
   templateOptions: readonly { value: string; label: string }[];
   onTemplateChange: (id: TemplateId) => void;
@@ -63,16 +85,28 @@ export interface ToolbarProps {
   scorePanelOpen: boolean;
 }
 
-const THEME_ICON: Record<ThemePreference, typeof Sun> = {
-  light: Sun,
-  dark: Moon,
-  system: Monitor,
-};
-
+/**
+ * The application bar: one row at every width.
+ *
+ * It used to wrap onto a second row below `sm`, which cost a phone eighty-two
+ * pixels of a screen that had none to spare and left the first row all but
+ * empty — the app name, the document name and the template picker were each
+ * hidden at a different breakpoint, so what remained was a logo and four
+ * unlabelled glyphs. Everything past the essentials now collapses into one
+ * overflow menu instead of disappearing: a narrow window loses the shortcut,
+ * never the action.
+ *
+ * What stays visible at every width is what the reader needs to know and do
+ * without thinking — which CV is open, whether it is saved, and how to get the
+ * PDF out.
+ */
 export const Toolbar = ({
   documentName,
+  saveState,
   onOpenLibrary,
   onOpenImport,
+  onOpenDesign,
+  onOpenShortcuts,
   templateId,
   templateOptions,
   onTemplateChange,
@@ -93,35 +127,119 @@ export const Toolbar = ({
 }: ToolbarProps) => {
   const ThemeIcon = THEME_ICON[themePreference];
 
+  const menuEntries: MenuEntry[] = [
+    {
+      id: 'undo',
+      label: 'Undo',
+      hint: 'Ctrl+Z',
+      icon: <Undo2 size={15} />,
+      disabled: !canUndo,
+      onSelect: onUndo,
+    },
+    {
+      id: 'redo',
+      label: 'Redo',
+      hint: 'Ctrl+Shift+Z',
+      icon: <Redo2 size={15} />,
+      disabled: !canRedo,
+      onSelect: onRedo,
+    },
+    { id: 'sep-1', separator: true },
+    {
+      id: 'design',
+      label: 'Change the design',
+      icon: <Palette size={15} />,
+      onSelect: onOpenDesign,
+    },
+    {
+      id: 'import',
+      label: 'Import a CV file',
+      icon: <FileUp size={15} />,
+      onSelect: onOpenImport,
+    },
+    {
+      id: 'restore',
+      label: 'Restore a JSON backup',
+      icon: <Upload size={15} />,
+      /*
+       * The file input is opened by script here rather than by a `<label>`:
+       * a menu item has to be a button to take part in the menu's roving
+       * focus, and a label inside one is neither focusable in that order nor
+       * announced as an item. The button carries the same accessible name, and
+       * the click happens inside the reader's own gesture.
+       */
+      onSelect: () => document.getElementById(IMPORT_INPUT_ID)?.click(),
+    },
+    {
+      id: 'backup',
+      label: 'Download a JSON backup',
+      icon: <FileJson size={15} />,
+      onSelect: onExportJson,
+    },
+    { id: 'sep-2', separator: true },
+    {
+      id: 'ats-pdf',
+      label: 'Download the ATS PDF',
+      icon: <Download size={15} />,
+      disabled: pendingExport !== null,
+      onSelect: onExportAts,
+    },
+    { id: 'sep-3', separator: true },
+    {
+      id: 'theme',
+      label: THEME_LABEL[themePreference],
+      icon: <ThemeIcon size={15} />,
+      onSelect: onCycleTheme,
+    },
+    {
+      id: 'shortcuts',
+      label: 'Keyboard shortcuts',
+      hint: '?',
+      icon: <Keyboard size={15} />,
+      onSelect: onOpenShortcuts,
+    },
+  ];
+
   return (
-    <div className="flex flex-wrap items-center gap-2 px-3 py-2 sm:px-4">
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span className="rounded-md bg-primary px-1.5 py-1 text-[11px] font-bold text-primary-fg">
+    <div className="flex min-h-13 items-center gap-2 px-2.5 py-2 sm:px-4">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <span className="bg-primary text-primary-fg text-ui-2xs flex h-6 w-6 flex-none items-center justify-center rounded-lg font-bold">
           CV
         </span>
-        <span className="hidden text-sm font-semibold text-fg sm:inline">{APP_NAME}</span>
+        <span className="text-fg text-ui-md hidden font-semibold sm:inline">{APP_NAME}</span>
+
+        <span aria-hidden="true" className="bg-border-base hidden h-5 w-px flex-none sm:block" />
+
         <button
           type="button"
           onClick={onOpenLibrary}
           title="My CVs — switch, duplicate or back up"
-          className="hover:bg-surface-2 text-fg-subtle hover:text-fg -ml-1 inline-flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-1 transition"
+          className="tap-target text-fg-muted hover:bg-surface-2 hover:text-fg rounded-control inline-flex min-w-0 items-center gap-1.5 px-1.5 py-1 transition"
         >
           <FolderOpen size={14} className="flex-none" />
-          <span className="hidden truncate text-[13px] md:inline">
+          <span className="text-ui max-w-[9rem] truncate md:max-w-[16rem]">
             {documentName || 'Untitled resume'}
           </span>
         </button>
+
+        <SaveStatus state={saveState} className="hidden md:inline-flex" />
       </div>
 
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="flex flex-none items-center gap-1">
         <button
           type="button"
           onClick={onToggleScorePanel}
           aria-pressed={scorePanelOpen}
           title="ATS score"
           className={cn(
-            'hidden items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[13px] font-medium transition lg:inline-flex',
-            scorePanelOpen ? 'border-primary bg-primary-soft' : 'border-border-base hover:bg-surface-2',
+            // From `md`, which is where the tab bar stops carrying a Score
+            // tab. Between the two the score had no way in at all: no tab
+            // below, no column beside, and a toggle that only appeared at
+            // 1024px.
+            'tap-target rounded-control text-ui hidden items-center gap-1.5 border px-2.5 py-1.5 font-medium transition md:inline-flex',
+            scorePanelOpen
+              ? 'border-primary bg-primary-soft'
+              : 'border-border-base hover:bg-surface-2',
           )}
         >
           <Gauge size={14} className={SCORE_TONE_CLASS[atsTone]} />
@@ -129,7 +247,7 @@ export const Toolbar = ({
           <Badge tone={SCORE_TONE_BADGE[atsTone]}>{atsScore}</Badge>
         </button>
 
-        <div className="mr-1 hidden items-center gap-0.5 sm:flex">
+        <div className="hidden items-center gap-0.5 md:flex">
           <Button
             size="icon"
             variant="ghost"
@@ -157,52 +275,27 @@ export const Toolbar = ({
           value={templateId}
           onChange={(event) => onTemplateChange(event.target.value as TemplateId)}
           aria-label="Template"
-          className="hidden h-8 w-44 md:block"
+          className="mx-1 hidden h-9 w-44 lg:block"
         />
 
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onOpenImport}
-          aria-label="Import from a PDF, DOCX or screenshot"
-          title="Import from a PDF, DOCX or screenshot"
-        >
-          <FileUp size={15} />
-        </Button>
+        <Menu
+          label="More actions"
+          entries={menuEntries}
+          trigger={(props) => (
+            <Button size="icon" variant="ghost" aria-label="More actions" title="More" {...props}>
+              <MoreHorizontal size={17} />
+            </Button>
+          )}
+        />
 
-        {/* A label, not a ref-clicking button: keyboard and AT behaviour is native. */}
-        <label
-          htmlFor={IMPORT_INPUT_ID}
-          title="Restore a JSON backup from this app"
-          className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-fg-muted transition hover:bg-surface-2 hover:text-fg"
-        >
-          <Upload size={15} />
-          <span className="sr-only">Import JSON</span>
-        </label>
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onExportJson}
-          aria-label="Export JSON"
-          title="Download a JSON backup"
-        >
-          <FileJson size={15} />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onCycleTheme}
-          aria-label={`Theme: ${themePreference}`}
-          title={`Theme: ${themePreference}`}
-        >
-          <ThemeIcon size={15} />
-        </Button>
+        <span aria-hidden="true" className="bg-border-base mx-1 hidden h-5 w-px sm:block" />
 
         <Button
           variant="outline"
           size="sm"
           onClick={onExportAts}
           disabled={pendingExport !== null}
+          className="hidden sm:inline-flex"
           leading={
             pendingExport === 'ats' ? (
               <Loader2 size={14} className="animate-spin" />

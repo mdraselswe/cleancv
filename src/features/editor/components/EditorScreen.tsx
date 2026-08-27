@@ -1,28 +1,36 @@
 'use client';
 
 import { FileText, Gauge, PencilLine, X } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { AppShell, Pane, SplitPane } from '@/components/layout';
-import { Button, Tabs } from '@/components/ui';
+import { Button, Drawer, ModalHeader, Tabs, Toaster } from '@/components/ui';
 import type { AtsFixTarget } from '@/constants';
 import { AtsPanel, useAtsScore } from '@/features/ats';
 import { useKeyboardShortcuts, useTheme } from '@/hooks';
 import { IMPORT_INPUT_ID, useExportJson, useExportPdf } from '@/features/export';
 import { ImportDialog } from '@/features/import';
-import { LibraryPanel, useActiveDocument, useLibraryReady, useLibrarySync } from '@/features/library';
+import {
+  LibraryPanel,
+  useActiveDocument,
+  useLibraryReady,
+  useLibrarySync,
+  useSaveState,
+} from '@/features/library';
 import { useResume, useResumeActions, useResumeStore } from '@/features/resume';
 import { getAvailableTemplates, getTemplate } from '@/features/templates';
 
 import { useEditorLayout, type EditorTab } from '../hooks/useEditorLayout';
 import { EditorPane } from './EditorPane';
 import { PreviewPane } from './PreviewPane';
+import { ShortcutsDialog } from './ShortcutsDialog';
 import { Toolbar } from './Toolbar';
 
 const TABS = [
-  { value: 'edit' as const, label: 'Edit', icon: <PencilLine size={16} /> },
-  { value: 'preview' as const, label: 'Preview', icon: <FileText size={16} /> },
-  { value: 'score' as const, label: 'Score', icon: <Gauge size={16} /> },
+  { value: 'edit' as const, label: 'Edit', icon: <PencilLine size={17} /> },
+  { value: 'preview' as const, label: 'Preview', icon: <FileText size={17} /> },
+  { value: 'score' as const, label: 'Score', icon: <Gauge size={17} /> },
 ];
 
 /**
@@ -37,6 +45,7 @@ export const EditorScreen = () => {
   useLibrarySync();
   const ready = useLibraryReady();
   const activeDocument = useActiveDocument();
+  const saveState = useSaveState();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const actions = useResumeActions();
@@ -61,13 +70,17 @@ export const EditorScreen = () => {
 
   // A "Fix it" link in the score panel has to move the editor, not just scroll it.
   const [pendingTarget, setPendingTarget] = useState<AtsFixTarget | null>(null);
-  const { setTab } = layout;
+  const { setTab, dismissScoreOverlay } = layout;
   const navigateToFix = useCallback(
     (target: AtsFixTarget) => {
       setPendingTarget(target);
       setTab('edit');
+      // On a tablet the score sits over the form it is sending the reader to.
+      // On a desktop it sits beside it, and closing it there would take away a
+      // panel nobody asked to lose.
+      dismissScoreOverlay();
     },
-    [setTab],
+    [setTab, dismissScoreOverlay],
   );
   const json = useExportJson((imported) => actions.replaceResume(imported, { resetHistory: true }));
 
@@ -76,19 +89,54 @@ export const EditorScreen = () => {
     [],
   );
 
+  const exportDesign = useCallback(
+    () => void pdf.exportPdf(resume, 'design', pageBreaks),
+    [pdf, resume, pageBreaks],
+  );
+
   useKeyboardShortcuts([
     { key: 'z', meta: true, handler: actions.undo },
     { key: 'z', meta: true, shift: true, handler: actions.redo },
     { key: 'y', meta: true, handler: actions.redo },
+    { key: 's', meta: true, allowInInput: true, handler: exportDesign },
+    { key: 'k', meta: true, allowInInput: true, handler: () => setLibraryOpen(true) },
+    { key: '?', shift: true, handler: () => layout.setShortcutsOpen(true) },
   ]);
+
+  /*
+   * A failed export is reported where every other outcome is — the export that
+   * worked says so in a toast, and one that did not should not have to be
+   * looked for somewhere else. The retry is offered on the toast itself
+   * because a failure here is usually transient.
+   */
+  const { error: pdfError, failedMode, clearError } = pdf;
+  useEffect(() => {
+    if (!pdfError) return;
+
+    toast.error(pdfError, {
+      action: failedMode
+        ? {
+            label: 'Try again',
+            onClick: () =>
+              void pdf.exportPdf(resume, failedMode, failedMode === 'ats' ? [] : pageBreaks),
+          }
+        : undefined,
+      onDismiss: clearError,
+      onAutoClose: clearError,
+    });
+    // `pdf` and `resume` are read by the retry only, and re-firing the toast
+    // every time the document changes would repeat a message already shown.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pdfError, failedMode, clearError]);
 
   const toolbar = (
     <Toolbar
-      documentName={
-        activeDocument?.name || resume.meta.documentName || resume.basics.fullName
-      }
+      documentName={activeDocument?.name || resume.meta.documentName || resume.basics.fullName}
+      saveState={saveState}
       onOpenLibrary={() => setLibraryOpen(true)}
       onOpenImport={() => setImportOpen(true)}
+      onOpenDesign={() => navigateToFix('panel:design')}
+      onOpenShortcuts={() => layout.setShortcutsOpen(true)}
       templateId={resume.meta.templateId}
       templateOptions={templateOptions}
       onTemplateChange={(id) => actions.setTemplate(id, getTemplate(id).meta.defaultTheme)}
@@ -97,15 +145,15 @@ export const EditorScreen = () => {
       onUndo={actions.undo}
       onRedo={actions.redo}
       pendingExport={pdf.pending}
-      onExportDesign={() => void pdf.exportPdf(resume, 'design', pageBreaks)}
+      onExportDesign={exportDesign}
       onExportAts={() => void pdf.exportPdf(resume, 'ats')}
       onExportJson={() => json.exportJson(resume)}
       themePreference={theme.preference}
       onCycleTheme={theme.cycle}
       atsScore={score.total}
       atsTone={score.tone}
-      scorePanelOpen={layout.scorePanelOpen}
-      onToggleScorePanel={() => layout.setScorePanelOpen(!layout.scorePanelOpen)}
+      scorePanelOpen={layout.scoreOpen}
+      onToggleScorePanel={layout.toggleScore}
     />
   );
 
@@ -131,7 +179,7 @@ export const EditorScreen = () => {
   );
 
   const previewPane = (
-    <Pane className="bg-surface-2">
+    <Pane className="bg-canvas">
       <PreviewPane
         resume={resume}
         zoom={layout.zoom}
@@ -149,38 +197,46 @@ export const EditorScreen = () => {
     <AppShell
       toolbar={toolbar}
       bottomBar={
-        <Tabs
-          items={TABS}
-          value={layout.tab}
-          onChange={(value: EditorTab) => layout.setTab(value)}
-          variant="bar"
-          ariaLabel="Editor view"
-        />
+        // Only the one-pane layout needs a way to swap panes.
+        layout.mode === 'compact' ? (
+          <Tabs
+            items={TABS}
+            value={layout.tab}
+            onChange={(value: EditorTab) => layout.setTab(value)}
+            variant="bar"
+            ariaLabel="Editor view"
+          />
+        ) : undefined
       }
     >
       {/* Storage is read after mount; rendering before it lands would flash an empty resume. */}
       {!ready ? (
-        <div className="flex h-full items-center justify-center text-sm text-fg-subtle">
-          Loading your resume…
+        <EditorSkeleton />
+      ) : layout.mode === 'compact' ? (
+        <div className="flex h-full min-h-0 flex-col">
+          {layout.tab === 'preview' ? previewPane : null}
+          {layout.tab === 'edit' ? editorPane : null}
+          {layout.tab === 'score' ? <Pane className="bg-surface">{atsPanel}</Pane> : null}
         </div>
-      ) : layout.isDesktop ? (
+      ) : (
         <div className="flex h-full min-h-0">
           <div className="min-w-0 flex-1">
             <SplitPane left={editorPane} right={previewPane} className="h-full" />
           </div>
 
-          {layout.scorePanelOpen ? (
+          {/* A column of its own only where there is one to spare. */}
+          {layout.mode === 'full' && layout.scoreOpen ? (
             <aside
               aria-label="ATS score"
-              className="flex w-[360px] flex-none flex-col border-l border-border-base bg-surface"
+              className="border-border-base bg-surface flex w-[360px] flex-none flex-col border-l"
             >
-              <div className="flex flex-none items-center justify-between border-b border-border-base px-3 py-2">
-                <span className="text-[13px] font-semibold text-fg">ATS score</span>
+              <div className="border-border-base flex flex-none items-center justify-between border-b px-3 py-2">
+                <span className="text-fg text-ui font-semibold">ATS score</span>
                 <Button
                   size="icon"
                   variant="ghost"
                   aria-label="Close score panel"
-                  onClick={() => layout.setScorePanelOpen(false)}
+                  onClick={layout.closeScore}
                 >
                   <X size={15} />
                 </Button>
@@ -189,13 +245,19 @@ export const EditorScreen = () => {
             </aside>
           ) : null}
         </div>
-      ) : (
-        <div className="h-full">
-          {layout.tab === 'preview' ? previewPane : null}
-          {layout.tab === 'edit' ? editorPane : null}
-          {layout.tab === 'score' ? <Pane className="bg-surface">{atsPanel}</Pane> : null}
-        </div>
       )}
+
+      {/* On a tablet the score arrives over the work and leaves again. */}
+      {layout.mode === 'split' && layout.scoreOpen ? (
+        <Drawer label="ATS score" onClose={layout.closeScore} className="max-w-sm">
+          <ModalHeader
+            title="ATS score"
+            subtitle={`${score.total} out of 100`}
+            onClose={layout.closeScore}
+          />
+          <div className="scroll-slim min-h-0 flex-1 overflow-y-auto">{atsPanel}</div>
+        </Drawer>
+      ) : null}
 
       <input
         id={IMPORT_INPUT_ID}
@@ -215,37 +277,37 @@ export const EditorScreen = () => {
         onApply={(next) => actions.replaceResume(next)}
       />
 
-      {pdf.error ? (
-        <div
-          role="alert"
-          className="fixed bottom-20 left-1/2 z-30 flex max-w-[92vw] -translate-x-1/2 items-center gap-3 rounded-lg border border-danger bg-surface px-4 py-2 text-sm text-danger shadow-app lg:bottom-6"
-        >
-          <span className="min-w-0">{pdf.error}</span>
-          {pdf.failedMode ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                void pdf.exportPdf(
-                  resume,
-                  pdf.failedMode ?? 'design',
-                  pdf.failedMode === 'ats' ? [] : pageBreaks,
-                )
-              }
-            >
-              Try again
-            </Button>
-          ) : null}
-          <button
-            type="button"
-            aria-label="Dismiss"
-            onClick={pdf.clearError}
-            className="text-fg-subtle hover:text-fg transition"
-          >
-            <X size={15} />
-          </button>
-        </div>
+      {layout.shortcutsOpen ? (
+        <ShortcutsDialog onClose={() => layout.setShortcutsOpen(false)} />
       ) : null}
+
+      <Toaster />
     </AppShell>
   );
 };
+
+/**
+ * The shape of the editor while storage is read.
+ *
+ * A centred "Loading…" tells the reader the app is busy and nothing else; the
+ * layout then appears all at once and everything moves. Blocking out the panes
+ * that are about to arrive means the only thing that changes at the end is
+ * that the boxes fill with words.
+ */
+const EditorSkeleton = () => (
+  <div className="flex h-full min-h-0 animate-pulse gap-px" aria-hidden="true">
+    <div className="bg-surface flex min-w-0 flex-1 flex-col gap-3 p-4 lg:max-w-[520px]">
+      <div className="bg-surface-2 rounded-control h-8 w-full" />
+      <div className="bg-surface-2 mt-2 h-4 w-1/3 rounded-lg" />
+      <div className="bg-surface-2 rounded-control h-9 w-full" />
+      <div className="bg-surface-2 mt-2 h-4 w-1/4 rounded-lg" />
+      <div className="bg-surface-2 rounded-control h-9 w-full" />
+      <div className="bg-surface-2 mt-2 h-4 w-2/5 rounded-lg" />
+      <div className="bg-surface-2 rounded-control h-24 w-full" />
+    </div>
+
+    <div className="bg-canvas hidden min-w-0 flex-1 items-start justify-center p-8 md:flex">
+      <div className="bg-surface shadow-sheet aspect-[210/297] w-full max-w-[420px] rounded-sm" />
+    </div>
+  </div>
+);
