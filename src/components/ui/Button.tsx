@@ -8,11 +8,11 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outl
 export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-primary-fg shadow-sm hover:brightness-110 active:brightness-95',
-  secondary: 'bg-surface-2 text-fg hover:bg-border-base',
+  primary: 'app-button-primary bg-primary text-primary-fg hover:brightness-105 active:translate-y-0 active:brightness-95',
+  secondary: 'border border-transparent bg-surface-2 text-fg hover:border-primary/20 hover:bg-primary-soft',
   ghost: 'text-fg-muted hover:bg-surface-2 hover:text-fg',
   danger: 'bg-danger text-white hover:brightness-110',
-  outline: 'border border-border-strong bg-surface text-fg hover:bg-surface-2',
+  outline: 'border border-border-strong bg-surface/80 text-fg shadow-sm hover:border-primary/40 hover:bg-primary-soft',
 };
 
 /*

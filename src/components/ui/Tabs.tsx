@@ -36,7 +36,7 @@ export const Tabs = <T extends string>({
     className={cn(
       variant === 'segmented'
         ? 'bg-surface-2 rounded-control inline-flex gap-0.5 p-0.5'
-        : 'border-border-base bg-surface grid w-full grid-flow-col border-t',
+        : 'border-border-base bg-surface/90 grid w-full grid-flow-col border-t backdrop-blur-xl',
       className,
     )}
   >
@@ -61,7 +61,9 @@ export const Tabs = <T extends string>({
                   // A thumb-sized row, and the label under the glyph rather
                   // than beside it so three of them fit a 320px phone.
                   'text-ui-2xs min-h-12 flex-col gap-1 py-2',
-                  active ? 'text-primary' : 'text-fg-subtle hover:text-fg-muted',
+                  active
+                    ? 'bg-gradient-to-t from-primary-soft to-transparent text-primary'
+                    : 'text-fg-subtle hover:text-fg-muted',
                 ),
           )}
         >

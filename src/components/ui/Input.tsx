@@ -10,8 +10,8 @@ import {
 import { cn } from '@/lib/cn';
 
 const CONTROL_BASE =
-  'w-full rounded-control border bg-surface px-3 text-ui-md text-fg transition placeholder:text-fg-subtle ' +
-  'focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50';
+  'w-full rounded-control border bg-surface/85 px-3 text-ui-md text-fg shadow-sm transition placeholder:text-fg-subtle ' +
+  'hover:border-primary/30 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
   invalid?: boolean;

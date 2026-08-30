@@ -121,7 +121,7 @@ export const EditorPane = ({
         whichever end still has names behind it, and on a pointer device the
         arrows scroll it without a trackpad gesture. See `useScrollEdges`.
       */}
-      <div className="border-border-base bg-surface/90 sticky top-0 z-10 flex items-center border-b backdrop-blur">
+      <div className="border-border-base bg-surface/80 sticky top-0 z-10 flex items-center border-b backdrop-blur-xl">
         <StripArrow side="start" atEdge={atStart} onClick={() => scrollBy(-200)} />
 
         <nav
@@ -143,7 +143,7 @@ export const EditorPane = ({
                 className={cn(
                   'tap-target rounded-control text-ui px-2.5 py-1.5 font-medium whitespace-nowrap transition',
                   selected
-                    ? 'bg-primary-soft text-primary'
+                    ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-fg shadow-sm'
                     : 'text-fg-muted hover:bg-surface-2 hover:text-fg',
                 )}
               >
@@ -162,9 +162,15 @@ export const EditorPane = ({
         times the longest value anyone types into one and a distance the eye
         has to travel back across for the next label.
       */}
-      <div className="@container mx-auto flex w-full max-w-[680px] flex-col gap-4 px-4 py-4">
-        <header>
-          <h2 className="text-fg text-ui-lg font-semibold">{title}</h2>
+      <div className="@container mx-auto flex w-full max-w-[680px] flex-col gap-4 px-4 py-5 sm:px-5">
+        <header className="border-primary/15 bg-gradient-to-br from-primary-soft via-surface to-accent-soft rounded-card border px-4 py-3.5 shadow-sm">
+          <div className="mb-1 flex items-center gap-1.5">
+            <Sparkles size={13} className="text-accent" aria-hidden="true" />
+            <span className="text-primary text-ui-2xs font-bold tracking-[0.14em] uppercase">
+              Build your story
+            </span>
+          </div>
+          <h2 className="text-fg text-ui-lg font-bold tracking-tight">{title}</h2>
           <p className="text-fg-subtle text-ui-xs mt-0.5">{description}</p>
         </header>
 

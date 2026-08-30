@@ -36,8 +36,8 @@ export const SplitPane = ({
         {...handleProps}
         aria-label="Resize editor pane"
         className={cn(
-          'bg-border-base group relative w-px flex-none cursor-col-resize transition',
-          'hover:bg-border-strong focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
+          'bg-border-base group relative w-0.5 flex-none cursor-col-resize transition',
+          'hover:bg-primary focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
           dragging && 'bg-primary',
         )}
       >

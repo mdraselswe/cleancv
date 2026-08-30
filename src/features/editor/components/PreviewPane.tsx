@@ -39,7 +39,7 @@ export const PreviewPane = ({
   const effectiveZoom = zoomMode === 'fit' ? fitZoom : zoom;
 
   return (
-    <div ref={containerRef} className="bg-canvas relative min-h-full px-4 py-6 sm:px-8">
+    <div ref={containerRef} className="app-preview-canvas relative min-h-full px-4 py-6 sm:px-8">
       <ResumePreview
         resume={resume}
         zoom={effectiveZoom}
@@ -54,7 +54,7 @@ export const PreviewPane = ({
         no pointer events, so the page behind the pill stays scrollable.
       */}
       <div className="pointer-events-none sticky bottom-3 z-10 mt-6 flex justify-center">
-        <div className="border-border-base bg-surface/95 shadow-pop pointer-events-auto inline-flex items-center gap-0.5 rounded-full border p-1 backdrop-blur">
+        <div className="border-primary/15 bg-surface/90 shadow-pop pointer-events-auto inline-flex items-center gap-0.5 rounded-full border p-1 backdrop-blur-xl">
           <Button size="icon" variant="ghost" onClick={onZoomOut} aria-label="Zoom out">
             <Minus size={15} />
           </Button>

@@ -202,10 +202,17 @@ export const Toolbar = ({
   ];
 
   return (
-    <div className="flex min-h-13 items-center gap-2 px-2.5 py-2 sm:px-4">
+    <div className="flex min-h-15 items-center gap-2.5 px-2.5 py-2.5 sm:px-5">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <BrandMark className="h-6 w-6" />
-        <span className="text-fg text-ui-md hidden font-semibold sm:inline">{APP_NAME}</span>
+        <BrandMark className="h-8 w-8 drop-shadow-sm" />
+        <span className="hidden min-w-0 flex-col sm:flex">
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-ui-md font-bold tracking-tight text-transparent">
+            {APP_NAME}
+          </span>
+          <span className="text-fg-subtle text-[9px] font-semibold tracking-[0.16em] uppercase">
+            Resume studio
+          </span>
+        </span>
 
         <span aria-hidden="true" className="bg-border-base hidden h-5 w-px flex-none sm:block" />
 
@@ -213,9 +220,9 @@ export const Toolbar = ({
           type="button"
           onClick={onOpenLibrary}
           title="My CVs — switch, duplicate or back up"
-          className="tap-target text-fg-muted hover:bg-surface-2 hover:text-fg rounded-control inline-flex min-w-0 items-center gap-1.5 px-1.5 py-1 transition"
+          className="tap-target border-border-base bg-surface/70 text-fg-muted hover:border-primary/30 hover:bg-primary-soft hover:text-fg rounded-control inline-flex min-w-0 items-center gap-1.5 border px-2.5 py-1.5 shadow-sm transition"
         >
-          <FolderOpen size={14} className="flex-none" />
+          <FolderOpen size={14} className="text-primary flex-none" />
           <span className="text-ui max-w-[9rem] truncate md:max-w-[16rem]">
             {documentName || 'Untitled resume'}
           </span>
@@ -237,8 +244,8 @@ export const Toolbar = ({
             // 1024px.
             'tap-target rounded-control text-ui hidden items-center gap-1.5 border px-2.5 py-1.5 font-medium transition md:inline-flex',
             scorePanelOpen
-              ? 'border-primary bg-primary-soft'
-              : 'border-border-base hover:bg-surface-2',
+              ? 'border-primary/40 bg-primary-soft shadow-sm'
+              : 'border-border-base bg-surface/60 hover:border-primary/30 hover:bg-primary-soft',
           )}
         >
           <Gauge size={14} className={SCORE_TONE_CLASS[atsTone]} />
@@ -309,7 +316,7 @@ export const Toolbar = ({
 
         <Button
           variant="primary"
-          size="sm"
+          size="md"
           onClick={onExportDesign}
           disabled={pendingExport !== null}
           leading={
@@ -323,7 +330,7 @@ export const Toolbar = ({
           Download
         </Button>
 
-        <span aria-hidden="true" className="bg-border-base mx-1 h-5 w-px" />
+        <span aria-hidden="true" className="bg-border-base mx-0.5 h-6 w-px" />
 
         {/*
           Last, past the divider: the account is not one of the document's

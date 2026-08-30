@@ -48,7 +48,7 @@ export const AtsPanel = ({
 
   return (
     <div className="flex flex-col gap-5 p-4">
-      <div className="flex items-center gap-4">
+      <div className="border-primary/15 bg-gradient-to-br from-primary-soft via-surface to-accent-soft rounded-card flex items-center gap-4 border p-3.5 shadow-sm">
         <ScoreRing score={score.total} tone={score.tone} label={score.band} />
 
         <div className="min-w-0">
@@ -61,7 +61,7 @@ export const AtsPanel = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="border-border-base bg-surface/60 rounded-card flex flex-col gap-2 border p-3">
         {score.categories.map((category) => (
           <CategoryBar
             key={category.category}

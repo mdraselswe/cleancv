@@ -19,7 +19,9 @@ export interface AppShellProps {
 /** Full-height frame: a fixed toolbar, a scrolling body, an optional bottom bar. */
 export const AppShell = ({ toolbar, children, bottomBar, className }: AppShellProps) => (
   <div className={cn('bg-bg flex h-dvh flex-col overflow-hidden', className)}>
-    <header className="border-border-base bg-surface z-20 flex-none border-b">{toolbar}</header>
+    <header className="app-toolbar border-border-base/80 z-20 flex-none border-b backdrop-blur-xl">
+      {toolbar}
+    </header>
 
     <main className="min-h-0 flex-1">{children}</main>
 
@@ -28,7 +30,9 @@ export const AppShell = ({ toolbar, children, bottomBar, className }: AppShellPr
       bar sits under the gesture area, where the bottom third of every label is
       covered and a tap lands on the system rather than on the app.
     */}
-    {bottomBar ? <div className="pb-safe bg-surface z-20 flex-none">{bottomBar}</div> : null}
+    {bottomBar ? (
+      <div className="pb-safe bg-surface/90 z-20 flex-none backdrop-blur-xl">{bottomBar}</div>
+    ) : null}
   </div>
 );
 

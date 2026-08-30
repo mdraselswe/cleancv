@@ -6,27 +6,29 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  --app-bg: #f6f7f9;
+  --app-bg: #f5f6ff;
   --app-surface: #ffffff;
-  --app-surface-2: #f1f3f6;
+  --app-surface-2: #f0f2ff;
   /* The tray the preview's sheets sit on. Darker than any panel, so a white
      page reads as paper rather than as one more surface. */
-  --app-canvas: #e7eaf0;
-  --app-border: #e2e5ea;
-  --app-border-strong: #cbd1da;
-  --app-fg: #14181f;
-  --app-fg-muted: #5c6573;
-  --app-fg-subtle: #8a929e;
-  --app-primary: #2563eb;
+  --app-canvas: #e8eaf7;
+  --app-border: #e1e3f2;
+  --app-border-strong: #c9cce3;
+  --app-fg: #17182d;
+  --app-fg-muted: #5f6178;
+  --app-fg-subtle: #9092a8;
+  --app-primary: #4f46e5;
   --app-primary-fg: #ffffff;
-  --app-primary-soft: #e8effd;
+  --app-primary-soft: #eeedff;
+  --app-accent: #0891b2;
+  --app-accent-soft: #e5f8fc;
   --app-danger: #dc2626;
   --app-warning: #c2740a;
   --app-success: #15803d;
-  --app-ring: #93b4fb;
-  --app-shadow: 0 1px 2px rgb(20 24 31 / 0.06), 0 8px 24px -12px rgb(20 24 31 / 0.18);
-  --app-shadow-pop: 0 4px 6px -2px rgb(20 24 31 / 0.08), 0 16px 40px -12px rgb(20 24 31 / 0.28);
-  --app-shadow-sheet: 0 0 0 1px rgb(20 24 31 / 0.07), 0 12px 32px -12px rgb(20 24 31 / 0.3);
+  --app-ring: #a5a1f8;
+  --app-shadow: 0 1px 2px rgb(31 31 74 / 0.05), 0 12px 30px -16px rgb(79 70 229 / 0.22);
+  --app-shadow-pop: 0 8px 18px -8px rgb(49 46 129 / 0.18), 0 24px 54px -20px rgb(79 70 229 / 0.32);
+  --app-shadow-sheet: 0 0 0 1px rgb(49 46 129 / 0.08), 0 24px 54px -20px rgb(31 31 74 / 0.38);
 
   --score-excellent: #15803d;
   --score-strong: #4d7c0f;
@@ -41,18 +43,20 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --app-bg: #0e1116;
-    --app-surface: #161a21;
-    --app-surface-2: #1d222b;
-    --app-canvas: #090b0f;
-    --app-border: #262c36;
-    --app-border-strong: #39414e;
-    --app-fg: #e8ebf0;
-    --app-fg-muted: #9aa3b2;
-    --app-fg-subtle: #6e7787;
-    --app-primary: #4f83f1;
-    --app-primary-fg: #08101f;
-    --app-primary-soft: #16233c;
+    --app-bg: #0d1020;
+    --app-surface: #15182b;
+    --app-surface-2: #1d2038;
+    --app-canvas: #090b16;
+    --app-border: #292d49;
+    --app-border-strong: #404563;
+    --app-fg: #f0f1ff;
+    --app-fg-muted: #a9abc2;
+    --app-fg-subtle: #747891;
+    --app-primary: #8b83ff;
+    --app-primary-fg: #ffffff;
+    --app-primary-soft: #27244b;
+    --app-accent: #38c9e8;
+    --app-accent-soft: #12343f;
     --app-danger: #f26d6d;
     --app-warning: #e0a44a;
     --app-success: #4ec27f;
@@ -71,18 +75,20 @@
 }
 
 :root[data-theme='dark'] {
-  --app-bg: #0e1116;
-  --app-surface: #161a21;
-  --app-surface-2: #1d222b;
-  --app-canvas: #090b0f;
-  --app-border: #262c36;
-  --app-border-strong: #39414e;
-  --app-fg: #e8ebf0;
-  --app-fg-muted: #9aa3b2;
-  --app-fg-subtle: #6e7787;
-  --app-primary: #4f83f1;
-  --app-primary-fg: #08101f;
-  --app-primary-soft: #16233c;
+  --app-bg: #0d1020;
+  --app-surface: #15182b;
+  --app-surface-2: #1d2038;
+  --app-canvas: #090b16;
+  --app-border: #292d49;
+  --app-border-strong: #404563;
+  --app-fg: #f0f1ff;
+  --app-fg-muted: #a9abc2;
+  --app-fg-subtle: #747891;
+  --app-primary: #8b83ff;
+  --app-primary-fg: #ffffff;
+  --app-primary-soft: #27244b;
+  --app-accent: #38c9e8;
+  --app-accent-soft: #12343f;
   --app-danger: #f26d6d;
   --app-warning: #e0a44a;
   --app-success: #4ec27f;
@@ -112,6 +118,8 @@
   --color-primary: var(--app-primary);
   --color-primary-fg: var(--app-primary-fg);
   --color-primary-soft: var(--app-primary-soft);
+  --color-accent: var(--app-accent);
+  --color-accent-soft: var(--app-accent-soft);
   --color-danger: var(--app-danger);
   --color-warning: var(--app-warning);
   --color-success: var(--app-success);
@@ -172,11 +180,36 @@ body {
 }
 
 body {
-  background: var(--app-bg);
+  background:
+    radial-gradient(circle at 8% -10%, color-mix(in srgb, var(--app-primary) 14%, transparent), transparent 34rem),
+    radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--app-accent) 10%, transparent), transparent 28rem),
+    var(--app-bg);
   color: var(--app-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+.app-toolbar {
+  background: color-mix(in srgb, var(--app-surface) 88%, transparent);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.55), 0 10px 34px -24px rgb(79 70 229 / 0.6);
+}
+
+.app-button-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #6d5dfc 58%, #0891b2 130%);
+  box-shadow: 0 8px 18px -10px rgb(79 70 229 / 0.9);
+}
+
+.app-button-primary:hover {
+  box-shadow: 0 10px 24px -10px rgb(79 70 229 / 0.95);
+  translate: 0 -1px;
+}
+
+.app-preview-canvas {
+  background:
+    radial-gradient(circle at 20% 12%, color-mix(in srgb, var(--app-primary) 13%, transparent), transparent 28rem),
+    radial-gradient(circle at 88% 74%, color-mix(in srgb, var(--app-accent) 10%, transparent), transparent 24rem),
+    var(--app-canvas);
 }
 
 :focus-visible {

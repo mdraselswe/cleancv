@@ -34,8 +34,8 @@ export const CollapsibleCard = ({
   return (
     <div
       className={cn(
-        'rounded-card border-border-base bg-surface overflow-hidden border transition',
-        open && 'shadow-app',
+        'rounded-card border-border-base bg-surface/90 overflow-hidden border shadow-sm transition',
+        open && 'border-primary/20 shadow-app',
         className,
       )}
     >
