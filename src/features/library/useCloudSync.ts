@@ -36,7 +36,7 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
         (document) => document.meta.updatedAt > (uploadedAt.get(document.meta.id) ?? 0),
       );
       const pull = forcePull || !hasPulled;
-      const response = await fetch('/api/cvs/sync', {
+      const response = await fetch('/api/resumes/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ documents, deleted: index.deleted, pull }),

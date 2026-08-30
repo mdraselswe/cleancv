@@ -25,11 +25,7 @@ const syncRequestSchema = z.object({
 const unauthorized = () =>
   Response.json({ error: 'Sign in to sync CVs across your devices.' }, { status: 401 });
 
-/**
- * Merge a browser's complete local library into its owner's cloud library.
- * Newest timestamp wins, including deletions; the response is the canonical
- * merged state the browser should apply locally.
- */
+/** Merge a browser's local library into its owner's canonical cloud library. */
 export async function POST(request: Request) {
   const user = await getSessionUser(request.headers, { fresh: true });
   if (!user) return unauthorized();
