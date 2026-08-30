@@ -28,6 +28,9 @@ const envSchema = z.object({
   /** `CleanCV <hello@example.com>`, or a bare address. */
   EMAIL_FROM: z.string().min(3).optional(),
 
+  /** The only account allowed to open the private usage dashboard. */
+  ADMIN_EMAIL: z.email().optional(),
+
   /** Set by Vercel. The deployment's own hostname, without a scheme. */
   VERCEL_URL: z.string().optional(),
   /** Set by Vercel to the stable production hostname, without a scheme. */

@@ -43,9 +43,9 @@ export const PrivacyPolicy = () => (
           </>,
           <>
             <strong className="text-fg font-semibold">
-              No advertising, no analytics, no tracking cookies.
+              Anonymous usage analytics, never advertising profiles.
             </strong>{' '}
-            We do not sell or share your data, and there is nobody to sell it to.
+            Visits are counted in aggregate and are not connected to your CV or account identity.
           </>,
           <>
             <strong className="text-fg font-semibold">
@@ -55,6 +55,20 @@ export const PrivacyPolicy = () => (
           </>,
         ]}
       />
+    </LegalSection>
+
+    <LegalSection id="analytics" heading="Anonymous usage analytics">
+      <p>
+        Vercel Web Analytics counts page views and approximate unique visitors so we can understand
+        whether the service is useful. It may report the page, referrer, country, device type,
+        operating system and browser. The analytics record is anonymous, uses no tracking cookie,
+        does not retain an IP address, and is not joined to a CleanCV account or CV.
+      </p>
+      <p>
+        Signed-in account activity shown to the service owner is limited to account details already
+        listed below, the number of synced CVs, and timestamps from sessions and sync writes. The
+        dashboard does not expose CV content.
+      </p>
     </LegalSection>
 
     <LegalSection id="who-we-are" heading="Who this is">
@@ -139,8 +153,8 @@ export const PrivacyPolicy = () => (
         <code className="font-mono">SameSite</code>, and served over HTTPS only.
       </p>
       <p>
-        There are no advertising cookies, no analytics cookies and no third-party trackers on this
-        site — which is why you have not been shown a cookie banner. Your theme choice and a few
+        There are no advertising cookies, analytics cookies or cross-site trackers on this site.
+        Anonymous analytics are cookie-free. Your theme choice and a few
         interface preferences are kept in your browser&apos;s local storage, which is not a cookie
         and never leaves your device.
       </p>
@@ -151,12 +165,12 @@ export const PrivacyPolicy = () => (
       <LegalList
         items={[
           <>
-            <strong className="text-fg font-semibold">Vercel</strong> hosts the site. Like any web
-            host it keeps request logs, which include IP addresses.
+            <strong className="text-fg font-semibold">Vercel</strong> hosts the site, keeps request
+            logs, and provides anonymous aggregate Web Analytics.
           </>,
           <>
             <strong className="text-fg font-semibold">Neon</strong> hosts the database that holds
-            accounts and sessions.
+            accounts, sessions and signed-in users&apos; synced CVs.
           </>,
           <>
             <strong className="text-fg font-semibold">Resend</strong> sends the two emails this
@@ -170,8 +184,8 @@ export const PrivacyPolicy = () => (
         ]}
       />
       <p>
-        None of them is sent your CV. We do not sell personal data, and we do not share it with
-        anyone beyond the four above.
+        Vercel receives CV content briefly when rendering a PDF, and Neon stores synced CVs for
+        signed-in users. Resend and Google are not sent CV content. We do not sell personal data.
       </p>
     </LegalSection>
 
