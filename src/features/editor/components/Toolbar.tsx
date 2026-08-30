@@ -18,9 +18,9 @@ import {
   Upload,
 } from 'lucide-react';
 
+import { BrandMark } from '@/components/brand';
 import { Badge, Button, Menu, Select, type MenuEntry } from '@/components/ui';
-import { APP_NAME } from '@/constants';
-import type { TemplateId } from '@/constants';
+import { APP_NAME, type TemplateId } from '@/constants';
 import { UserMenu } from '@/features/auth';
 import { IMPORT_INPUT_ID } from '@/features/export';
 import type { SaveState } from '@/features/library';
@@ -204,9 +204,7 @@ export const Toolbar = ({
   return (
     <div className="flex min-h-13 items-center gap-2 px-2.5 py-2 sm:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <span className="bg-primary text-primary-fg text-ui-2xs flex h-6 w-6 flex-none items-center justify-center rounded-lg font-bold">
-          CV
-        </span>
+        <BrandMark className="h-6 w-6" />
         <span className="text-fg text-ui-md hidden font-semibold sm:inline">{APP_NAME}</span>
 
         <span aria-hidden="true" className="bg-border-base hidden h-5 w-px flex-none sm:block" />
@@ -329,10 +327,8 @@ export const Toolbar = ({
 
         {/*
           Last, past the divider: the account is not one of the document's
-          controls. It is still on the strip at 390px, because "am I signed
-          in?" is the question behind every refused download, and burying the
-          answer in an overflow menu is how somebody concludes the button is
-          broken.
+          controls. It remains visible because it is how readers know whether
+          this browser is syncing their CVs to other devices.
         */}
         <UserMenu />
       </div>

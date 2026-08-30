@@ -182,6 +182,33 @@ describe('library documents', () => {
     expect(useLibraryStore.getState().activeId).toBeTruthy();
   });
 
+  it('keeps a deletion tombstone until cloud sync acknowledges it', async () => {
+    const { useLibraryStore } = library;
+    const removedId = useLibraryStore.getState().activeId;
+
+    await useLibraryStore.getState().actions.remove(removedId);
+
+    expect(useLibraryStore.getState().deleted).toEqual([
+      expect.objectContaining({ id: removedId }),
+    ]);
+
+    const index = store.get('library:index') as { deleted: Array<{ id: string }> };
+    expect(index.deleted[0].id).toBe(removedId);
+  });
+
+  it('applies a newer cloud deletion without resurrecting the document', async () => {
+    const { useLibraryStore } = library;
+    const removedId = useLibraryStore.getState().activeId;
+    const localUpdatedAt = useLibraryStore.getState().documents[0].updatedAt;
+
+    await useLibraryStore
+      .getState()
+      .actions.reconcileCloud([], [{ id: removedId, deletedAt: localUpdatedAt + 1 }]);
+
+    expect(useLibraryStore.getState().documents).toHaveLength(1);
+    expect(useLibraryStore.getState().documents[0].id).not.toBe(removedId);
+  });
+
   it('restores a backup without overwriting newer local work', async () => {
     const { useLibraryStore, useResumeStore } = library;
     await setName('Newer local edit');

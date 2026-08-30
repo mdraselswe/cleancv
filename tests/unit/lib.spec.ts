@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { moveItem, uniqueStrings, updateById } from '@/lib/array';
 import { formatDateRange, formatMonth, isRangeReversed, rangeSortValue } from '@/lib/date';
+import { fitScale } from '@/lib/image';
 import { containsPhrase, joinNonEmpty, stripEmphasis, toFileStem, wordCount } from '@/lib/text';
 import { displayUrl, ensureProtocol } from '@/lib/url';
 
@@ -93,5 +94,24 @@ describe('stripEmphasis', () => {
 
   it('ignores an unclosed marker rather than eating the rest of the line', () => {
     expect(stripEmphasis('a **dangling marker')).toBe('a **dangling marker');
+  });
+});
+
+describe('image', () => {
+  it('scales a large picture down to the longest edge', () => {
+    // A phone portrait: 3024 down to 512 on its long side.
+    expect(fitScale(4032, 3024, 512)).toBeCloseTo(512 / 4032);
+    expect(fitScale(3024, 4032, 512)).toBeCloseTo(512 / 4032);
+  });
+
+  it('never enlarges a picture that is already small', () => {
+    // A scanned signature. Enlarging spends four times the bytes on the same
+    // information rendered blurrier.
+    expect(fitScale(200, 60, 512)).toBe(1);
+    expect(fitScale(512, 512, 512)).toBe(1);
+  });
+
+  it('survives a bitmap with no dimensions rather than dividing by zero', () => {
+    expect(fitScale(0, 0, 512)).toBe(1);
   });
 });

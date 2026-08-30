@@ -18,7 +18,7 @@ export const LEGAL_ENTITY = 'Muhammad Rasel';
  * never moves tells a reader it has never been reviewed, which is either untrue
  * or worth knowing.
  */
-export const LEGAL_UPDATED = '2026-08-28';
+export const LEGAL_UPDATED = '2026-08-31';
 
 export const LEGAL_ROUTES = {
   privacy: '/privacy',

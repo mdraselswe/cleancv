@@ -14,6 +14,7 @@ import {
 } from '@/components/ui';
 import {
   DEFAULT_DECLARATION_TEXT,
+  IMAGE_BUDGET,
   LIMITS,
   ON_REQUEST_TEXT,
   REFERENCE_MODES,
@@ -279,7 +280,7 @@ export const SignatureSection = () => {
           label="Signature image"
           shape="wide"
           value={signature.image}
-          maxBytes={LIMITS.imageBytes}
+          budget={IMAGE_BUDGET}
           hint="A transparent PNG reads best."
           onChange={(image) => patch('signature', { image })}
         />

@@ -1,13 +1,15 @@
 import { createElement } from 'react';
+import { eq } from 'drizzle-orm';
 
-import { ATS_EXPORT_TEMPLATE_ID, SIGN_IN_REQUIRED, type TemplateId } from '@/constants';
+import { ATS_EXPORT_TEMPLATE_ID, type TemplateId } from '@/constants';
 import { normalizeResume } from '@/features/resume';
 import { getTemplate, resolvePageBleed } from '@/features/templates';
 import { attachResume } from '@/lib/pdf/attachResume';
 import { renderPdf } from '@/lib/pdf/renderPdf';
 import { toFileStem } from '@/lib/text';
-import { getSessionUser } from '@/server/auth/session';
-import { isAuthConfigured, isProduction } from '@/server/env';
+import { db } from '@/server/db';
+import { rateLimit } from '@/server/db/schema';
+import { isAuthConfigured } from '@/server/env';
 
 /**
  * POST a resume, get a PDF back.
@@ -45,64 +47,55 @@ const readPageBreaks = (value: unknown): number[] =>
 
 const badRequest = (message: string) => Response.json({ error: message }, { status: 400 });
 
-/**
- * The gate.
- *
- * Here rather than on the button, because a hidden button is a suggestion. The
- * request that renders the PDF is the thing worth an account, and this is the
- * only place that request is served — so this is the only place the check
- * belongs. Everything else the app does stays open. See ADR-048.
- *
- * A deployment with no auth configured is refused rather than waved through:
- * in development that is a machine with no database, and the gate opens; in
- * production it is a misconfiguration, and opening would quietly turn the gate
- * off for everyone.
- */
-const requireDownloadAccess = async (request: Request): Promise<Response | null> => {
-  if (!isAuthConfigured()) {
-    if (!isProduction()) return null;
+const PDF_RATE_LIMIT = { windowMs: 10 * 60 * 1000, max: 20 } as const;
 
-    return Response.json(
-      { error: 'Downloads are unavailable: this deployment has no auth configured.' },
-      { status: 503 },
-    );
-  }
+/** Keeps the now-public headless-browser endpoint useful without leaving it unbounded. */
+const checkPdfRateLimit = async (request: Request): Promise<Response | null> => {
+  if (!isAuthConfigured()) return null;
 
-  /*
-   * "Nobody is signed in" and "the session could not be checked" are different
-   * answers and get different ones back. Reporting a database outage as
-   * `sign_in_required` would send somebody who *is* signed in to a sign-in page
-   * that works, to come back and be refused again.
-   */
-  let user: Awaited<ReturnType<typeof getSessionUser>>;
+  const address =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip');
+  if (!address) return null;
+
+  const key = `pdf:${address}`;
+  const now = Date.now();
 
   try {
-    /*
-     * From the database, not from the cached copy in the cookie. This is the
-     * one check in the app that gates work rather than decorating a menu, and
-     * a revoked session must stop working the moment it is revoked.
-     */
-    user = await getSessionUser(request.headers, { fresh: true });
-  } catch (error) {
-    console.error('[pdf] session lookup failed', error);
+    const existing = await db().query.rateLimit.findFirst({
+      where: eq(rateLimit.key, key),
+    });
+    const insideWindow = existing && now - existing.lastRequest < PDF_RATE_LIMIT.windowMs;
 
-    return Response.json(
-      { error: 'Could not check your sign-in just now. Try again in a moment.' },
-      { status: 503 },
-    );
+    if (insideWindow && existing.count >= PDF_RATE_LIMIT.max) {
+      const retryAfter = Math.ceil(
+        (PDF_RATE_LIMIT.windowMs - (now - existing.lastRequest)) / 1000,
+      );
+
+      return Response.json(
+        { error: 'Too many PDF downloads from this connection. Try again in a few minutes.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      );
+    }
+
+    await db()
+      .insert(rateLimit)
+      .values({ id: key, key, count: 1, lastRequest: now })
+      .onConflictDoUpdate({
+        target: rateLimit.key,
+        set: { count: insideWindow ? existing.count + 1 : 1, lastRequest: now },
+      });
+  } catch (error) {
+    // PDF export remains available if the optional account database is down.
+    console.error('[pdf] rate-limit lookup failed', error);
   }
 
-  if (user) return null;
-
-  return Response.json(
-    { error: SIGN_IN_REQUIRED.message, code: SIGN_IN_REQUIRED.code },
-    { status: 401 },
-  );
+  return null;
 };
 
 export async function POST(request: Request) {
-  const denied = await requireDownloadAccess(request);
-  if (denied) return denied;
+  const limited = await checkPdfRateLimit(request);
+  if (limited) return limited;
 
   let body: PdfRequestBody;
 

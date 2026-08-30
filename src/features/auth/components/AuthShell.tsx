@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { BrandMark } from '@/components/brand';
 import { APP_NAME, LEGAL_ROUTES, ROUTES } from '@/constants';
 
 /**
@@ -26,12 +27,7 @@ export const AuthShell = ({ title, subtitle, children, footer }: AuthShellProps)
         href={ROUTES.editor}
         className="tap-target text-fg-muted hover:text-fg text-ui-md mx-auto inline-flex items-center gap-2 font-semibold transition"
       >
-        <span
-          aria-hidden="true"
-          className="bg-primary text-primary-fg rounded-control text-ui-xs inline-flex h-6 w-6 items-center justify-center font-bold"
-        >
-          C
-        </span>
+        <BrandMark className="h-6 w-6" />
         {APP_NAME}
       </Link>
 

@@ -319,6 +319,14 @@ Templates MUST NOT:
     `globalSetup` — one server for the whole run, because Next refuses a second `next dev` for the
     same project and four spec files each starting their own left three of them dead. A gate that
     can only be run by remembering an env var is a gate that stops being run. See ADR-048.
+82. An uploaded picture is resized on the way in, never merely refused. It rides inside the resume
+    JSON, so its bytes are paid for in storage, in every backup and inside every exported PDF — to
+    fill a 30mm frame. WebP, because a scanned signature is a transparent PNG and JPEG paints that
+    black; `imageOrientation: 'from-image'`, because otherwise a phone portrait arrives on its side;
+    and never enlarged. `IMAGE_BUDGET` is what is produced, `LIMITS.imageBytes` is what may be
+    loaded, and they are separate numbers because `imageSchema` drops an over-long data URL to `''`
+    — lowering the ceiling would delete the photo out of every document saved before that day.
+    See ADR-050.
 5. **No tables, no text-in-image, and no repeated header/footer text** — a name or a page number
    printed into every page's margin is chrome a parser reads as content. Page margins come from the
    PDF's own margin box, never from padding on the flow, which only indents its first and last

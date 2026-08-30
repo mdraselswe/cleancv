@@ -23,6 +23,7 @@ const emptyIndex = (): LibraryIndex => ({
   version: LIBRARY_SCHEMA_VERSION,
   activeId: '',
   documents: [],
+  deleted: [],
 });
 
 export const createDocument = (resume: Resume, name = ''): CvDocument => {

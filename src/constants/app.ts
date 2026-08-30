@@ -90,12 +90,40 @@ export const LIMITS = {
   skillGroups: 12,
   skillsPerGroup: 40,
   customLinks: 8,
-  /** Photo and signature uploads, in bytes. Stored as data URLs in localStorage. */
+  /**
+   * The largest image a *saved document* may carry, in bytes.
+   *
+   * This is a ceiling on what may be loaded, not a target for what is produced
+   * — `IMAGE_BUDGET` decides that, and aims far below it. The two are separate
+   * numbers on purpose: the schema drops an over-long data URL to `''`, so
+   * lowering this would quietly delete the photograph out of every document
+   * saved before the day it changed.
+   */
   imageBytes: 500 * 1024,
   nameChars: 80,
   headlineChars: 120,
   summaryChars: 800,
   bulletChars: 300,
+} as const;
+
+/**
+ * How far an upload is squeezed before it enters the document.
+ *
+ * `maxEdge` is set from what the paper actually asks for: a portrait frame is
+ * around 30mm wide, which is 354 pixels at the 300 DPI a printer wants, so 512
+ * leaves headroom for the designs that draw it larger and for a reader who
+ * zooms into the frame. Anything above that is detail no output can show.
+ *
+ * `storedBytes` is a budget a 512px WebP comfortably fits, so the quality
+ * ladder in `downscaleImage` only engages for the unusual picture and the
+ * ordinary one is encoded once. Measured rather than guessed: an 8.8 MB
+ * 4032×3024 source of pure noise — which compresses worse than any photograph
+ * of a face — came out at 87 KB, and a signature at 5 KB.
+ */
+export const IMAGE_BUDGET = {
+  uploadBytes: 12 * 1024 * 1024,
+  maxEdge: 512,
+  storedBytes: 120 * 1024,
 } as const;
 
 export const DEBOUNCE_MS = {

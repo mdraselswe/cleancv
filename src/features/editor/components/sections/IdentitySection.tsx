@@ -3,7 +3,7 @@
 import { Plus, Trash2 } from 'lucide-react';
 
 import { Button, Field, ImageUpload, Input, SectionLabel } from '@/components/ui';
-import { LIMITS, PHOTO_FRAME } from '@/constants';
+import { IMAGE_BUDGET, LIMITS, PHOTO_FRAME } from '@/constants';
 import { useResume, useResumeActions } from '@/features/resume';
 import { createCustomLink } from '@/features/resume';
 
@@ -71,7 +71,7 @@ export const IdentitySection = () => {
       <ImageUpload
         label="Photo"
         value={basics.photo}
-        maxBytes={LIMITS.imageBytes}
+        budget={IMAGE_BUDGET}
         hint="Optional, and a parse risk. Leave it off for US, UK and Canadian applications."
         onChange={(photo) => {
           // A new photo is a new subject: the old framing described someone

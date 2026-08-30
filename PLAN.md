@@ -29,6 +29,10 @@ react-hook-form · @dnd-kit · Puppeteer · Vitest
 - [x] **M9 — Polish**: dark mode, undo/redo, shortcuts, empty states, responsive pass, a11y
 - [x] **M10 — Accounts**: Better Auth + Neon/Drizzle + Resend, Google ar email/password, PDF download-e
       server-side gate. CV local-i thake — sync kora hoy nai (ADR-048)
+- [x] **M10.1 — Upload downscale**: photo/signature upload-e resize on the way in, WebP + EXIF
+      orientation, 8.8 MB -> 87 KB mepe dekha (ADR-050)
+- [ ] **M11 — Opt-in cloud sync**: `document` table on Neon, batch upsert + `since` pull, IndexedDB
+      outbox, conflict-e dui copy-i rakha, default off. Full plan: `docs/SYNC-PLAN.md`
 
 ## Sections (data model coverage)
 
@@ -71,8 +75,8 @@ Prottek rule: `pass | warn | error` + fix suggestion + click-to-field navigation
 
 ## Phase 2 (later)
 
-DOCX export · cover letter builder · AI bullet rewrite · accounts + cloud sync · shareable public
-link · template gallery thumbnails · score history · "fix all safe issues" bulk action
+DOCX export · cover letter builder · AI bullet rewrite · shareable public link · template gallery
+thumbnails · score history · "fix all safe issues" bulk action
 
 Done since: section order presets, custom sections, document library (IndexedDB + workspace folder
 + whole-library backup), CV import from PDF / DOCX / screenshot with an offline parser and an

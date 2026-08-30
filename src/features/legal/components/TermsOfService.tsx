@@ -32,8 +32,8 @@ export const TermsOfService = () => (
     <LegalSection id="service" heading="What the service is">
       <p>
         {APP_NAME} is a tool for writing a CV and exporting it as a PDF, run by {LEGAL_ENTITY}. The
-        document you write is stored by your own browser; the service renders it into a PDF when you
-        ask for one. How that works in detail is set out in the{' '}
+        document you write is stored by your browser and, if you sign in, synced to your account;
+        the service renders it into a PDF when you ask for one. Details are in the{' '}
         <Link href={LEGAL_ROUTES.privacy} className="text-fg underline">
           Privacy Policy
         </Link>
@@ -43,7 +43,7 @@ export const TermsOfService = () => (
     </LegalSection>
 
     <LegalSection id="account" heading="Your account">
-      <p>You only need an account to download a PDF. Everything else works without one.</p>
+      <p>An account is optional and adds cross-device sync. Downloads and editing work without one.</p>
       <LegalList
         items={[
           'Use a real email address you control. You will be asked to confirm it before the account works, and it is the only way back in if you forget your password.',
@@ -61,8 +61,8 @@ export const TermsOfService = () => (
     <LegalSection id="your-content" heading="What you write stays yours">
       <p>
         Your CV is your work and your property. We claim no rights over it, no licence to it, and no
-        ownership of anything you write, import or export. We could not use it if we wanted to: it
-        is on your device, not ours.
+        ownership of anything you write, import or export. Signed-in CVs are stored only to provide
+        the sync feature you requested.
       </p>
       <p>
         You are responsible for what it says. Do not put someone else&apos;s personal details in it
@@ -109,10 +109,9 @@ export const TermsOfService = () => (
 
     <LegalSection id="backups" heading="Keep your own copy">
       <p>
-        This is the one thing worth acting on. Your CV is stored by your browser, and browsers lose
-        data: clearing site data removes it, private windows never keep it, and a reinstalled
-        machine takes it with it. Nothing on our side can bring it back, because nothing on our side
-        ever had it.
+        Local copies can still be lost when browser data is cleared. Cloud sync protects signed-in
+        CVs across devices, but it is not a substitute for a backup and the service has no uptime or
+        permanent-storage guarantee.
       </p>
       <p>
         Download a JSON backup, or point the app at a workspace folder that a sync service already
@@ -124,8 +123,8 @@ export const TermsOfService = () => (
     <LegalSection id="ending" heading="Ending it">
       <p>
         You can stop using the service at any time, and ask us at <Mail /> to delete your account.
-        We may close an account that breaks these terms. Either way your CV is unaffected — it was
-        never ours to delete.
+        We may close an account that breaks these terms. Account deletion also removes its cloud CV
+        copies; local copies already stored in your browsers remain under your control.
       </p>
     </LegalSection>
 

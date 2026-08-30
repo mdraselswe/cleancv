@@ -3,7 +3,9 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -118,3 +120,32 @@ export const rateLimit = pgTable('rate_limit', {
 });
 
 export const authSchema = { user, session, account, verification, rateLimit };
+
+/**
+ * A user's cloud copy of a local-first CV.
+ *
+ * Deleted rows stay as small tombstones. An old browser may come online months
+ * later with the document still in IndexedDB; retaining the deletion timestamp
+ * is what stops that stale copy from bringing the CV back.
+ */
+export const cvDocument = pgTable(
+  'cv_document',
+  {
+    id: text('id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull().default(''),
+    personName: text('person_name').notNull().default(''),
+    resume: jsonb('resume'),
+    createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+    updatedAt: bigint('updated_at', { mode: 'number' }).notNull(),
+    deletedAt: bigint('deleted_at', { mode: 'number' }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.id] }),
+    index('cv_document_user_updated_idx').on(table.userId, table.updatedAt),
+  ],
+);
+
+export const databaseSchema = { ...authSchema, cvDocument };

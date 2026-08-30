@@ -5,7 +5,7 @@ import { PrivacyPolicy } from '@/features/legal';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: `How ${APP_NAME} handles your CV and your account: the CV stays in your browser, and the account is a name and an email address.`,
+  description: `How ${APP_NAME} handles your CV, optional cloud sync, and your account.`,
 };
 
 export default function PrivacyPage() {

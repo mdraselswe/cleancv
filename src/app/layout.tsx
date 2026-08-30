@@ -67,6 +67,12 @@ const resumeGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: APP_NAME,
   description: APP_TAGLINE,
+  applicationName: APP_NAME,
+  appleWebApp: {
+    capable: true,
+    title: APP_NAME,
+    statusBarStyle: 'default',
+  },
 };
 
 export const viewport: Viewport = {

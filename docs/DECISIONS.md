@@ -1605,3 +1605,46 @@ reading records a consent nobody gave; a sentence at the moment of the act is th
 the links are real. `LEGAL_CONTACT_EMAIL`, `LEGAL_ENTITY` and `LEGAL_UPDATED` are constants, because
 both documents print them and Google's consent screen quotes the address — three copies is two that
 go stale.
+
+## ADR-050 — Uploads are resized on the way in, not refused
+
+**Status.** Accepted.
+
+**Context.** A photo and a signature live inside the resume JSON as data URLs, which is what makes a
+document portable through export, import and backup with no asset hosting. The price is that every
+byte is paid for three times: in IndexedDB, in the JSON backup, and again inside the exported PDF,
+where the payload is embedded so the file can be imported back.
+
+Uploads were taken at whatever size the camera wrote and merely refused above 500 KB, which got both
+halves wrong. A phone portrait is eight or nine megabytes, so the reader was told to go and shrink it
+themselves — using software we did not name, for a reason we did not explain. And a picture that
+squeaked under the cap was still two orders of magnitude larger than the thirty-millimetre frame it
+renders into: 500 KB of detail, to print at 354 pixels.
+
+**Decision.** `lib/image.ts` resizes on upload. The longest side goes to `IMAGE_BUDGET.maxEdge`,
+which is 512 — 30mm at 300 DPI is 354 pixels, so that is headroom, and anything above it is detail no
+output can show. Encoding walks down a fixed ladder and stops at the first rung under
+`storedBytes`, so the ordinary picture is encoded exactly once. Nothing is ever enlarged: a signature
+scanned at 200px is already the whole picture, and blowing it up spends four times the bytes on the
+same information rendered blurrier.
+
+WebP, not JPEG. A scanned signature is a PNG with a transparent background and JPEG would paint that
+black. A browser that cannot encode WebP does not fail — `toDataURL` quietly answers with a PNG — so
+the format is read back off the result rather than assumed, and PNG is the right fallback because it
+keeps the alpha that was the whole reason for avoiding JPEG.
+
+`createImageBitmap` is given `imageOrientation: 'from-image'`. Without it a portrait taken in
+landscape grip arrives on its side, because the rotation a phone writes is EXIF metadata the canvas
+ignores, and there is no control in the editor that could put it back.
+
+**Consequence.** Measured in a real browser rather than argued: an 8.8 MB 4032×3024 source of pure
+noise — which compresses worse than any photograph of a face — comes out at 87 KB in 205ms, a 102×
+reduction; a 1200×400 signature comes out at 4.6 KB with its corner pixel still fully transparent;
+and a 200×60 signature comes out at 200×60. Two hundred milliseconds is long enough to be seen, so
+the button says `Resizing…` and what it produced is reported underneath — otherwise the reader
+uploads a file they know the size of and is told nothing about what became of it.
+
+`LIMITS.imageBytes` stays at 500 KB and is now only a ceiling on what a *saved document* may carry.
+It is deliberately not the same number as `IMAGE_BUDGET.storedBytes`: `imageSchema` drops an
+over-long data URL to `''`, so lowering that ceiling would quietly delete the photograph out of every
+document saved before the day it changed.

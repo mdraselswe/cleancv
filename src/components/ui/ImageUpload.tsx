@@ -4,6 +4,7 @@ import { ImagePlus, Trash2 } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
 
 import { cn } from '@/lib/cn';
+import { downscaleImage, type ImageBudget } from '@/lib/image';
 
 import { Button } from './Button';
 
@@ -11,8 +12,8 @@ export interface ImageUploadProps {
   value: string;
   onChange: (dataUrl: string) => void;
   label: string;
-  /** Bytes. Files above this are rejected with a message rather than truncated. */
-  maxBytes: number;
+  /** How far the picture is resized before it enters the document. */
+  budget: ImageBudget;
   hint?: string;
   /** `avatar` crops to a circle, `wide` suits a signature strip. */
   shape?: 'avatar' | 'wide';
@@ -21,40 +22,64 @@ export interface ImageUploadProps {
 
 const ACCEPTED = 'image/png,image/jpeg,image/webp';
 
+const kb = (bytes: number) => `${Math.max(1, Math.round(bytes / 1024))} KB`;
+
 /**
- * Reads a file to a data URL so uploads live inside the resume JSON — the whole
- * document stays portable through export/import with no asset hosting.
+ * Uploads live inside the resume JSON as data URLs, so the whole document stays
+ * portable through export and import with no asset hosting.
+ *
+ * Which is exactly why the picture is resized on the way in rather than taken
+ * at whatever size the camera wrote it: a four-megabyte portrait would be
+ * carried in storage, in every backup and inside every exported PDF, to fill a
+ * frame thirty millimetres wide. See `lib/image.ts`.
+ *
+ * What it was resized to is reported, because otherwise the reader uploads a
+ * file they know the size of and is told nothing about what became of it.
  */
 export const ImageUpload = ({
   value,
   onChange,
   label,
-  maxBytes,
+  budget,
   hint,
   shape = 'avatar',
   className,
 }: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
 
-    if (file.size > maxBytes) {
-      setError(`Image must be under ${Math.round(maxBytes / 1024)} KB.`);
-      return;
-    }
+    setBusy(true);
+    setError('');
+    setNote('');
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setError('');
-      onChange(typeof reader.result === 'string' ? reader.result : '');
-    };
-    reader.onerror = () => setError('That file could not be read.');
-    reader.readAsDataURL(file);
+    try {
+      const image = await downscaleImage(file, budget);
+
+      onChange(image.dataUrl);
+      setNote(`Resized to ${image.width}×${image.height}, ${kb(image.bytes)}.`);
+    } catch (cause) {
+      // Every message `downscaleImage` throws is written to be read by whoever
+      // picked the file, so it is shown as it is rather than replaced.
+      setError(cause instanceof Error ? cause.message : 'That file could not be read.');
+    } finally {
+      setBusy(false);
+    }
   };
+
+  const footnote = error ? (
+    <p className="text-ui-xs text-danger">{error}</p>
+  ) : note ? (
+    <p className="text-ui-xs text-fg-subtle">{note}</p>
+  ) : hint ? (
+    <p className="text-ui-xs text-fg-subtle">{hint}</p>
+  ) : null;
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
@@ -78,25 +103,31 @@ export const ImageUpload = ({
 
         <div className="flex flex-col gap-1.5">
           <div className="flex gap-1.5">
-            <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
-              {value ? 'Replace' : 'Upload'}
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={() => inputRef.current?.click()}
+            >
+              {busy ? 'Resizing…' : value ? 'Replace' : 'Upload'}
             </Button>
             {value ? (
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => onChange('')}
+                disabled={busy}
+                onClick={() => {
+                  setNote('');
+                  setError('');
+                  onChange('');
+                }}
                 leading={<Trash2 size={14} />}
               >
                 Remove
               </Button>
             ) : null}
           </div>
-          {error ? (
-            <p className="text-ui-xs text-danger">{error}</p>
-          ) : hint ? (
-            <p className="text-ui-xs text-fg-subtle">{hint}</p>
-          ) : null}
+          {footnote}
         </div>
       </div>
 
@@ -104,7 +135,7 @@ export const ImageUpload = ({
         ref={inputRef}
         type="file"
         accept={ACCEPTED}
-        onChange={handleFile}
+        onChange={(event) => void handleFile(event)}
         className="sr-only"
         tabIndex={-1}
       />

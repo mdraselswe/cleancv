@@ -28,19 +28,18 @@ const Mail = () => (
 export const PrivacyPolicy = () => (
   <LegalShell
     title="Privacy Policy"
-    summary={`How ${APP_NAME} handles your CV and your account. In short: the CV stays in your browser, and the account is an email address and a name.`}
+    summary={`How ${APP_NAME} handles your CV, optional cloud sync, and your account.`}
   >
     <LegalSection id="short-version" heading="The short version">
       <LegalList
         items={[
           <>
-            <strong className="text-fg font-semibold">Your CV lives in your browser</strong>, not on
-            our servers. We do not have a copy of it and cannot read it.
+            <strong className="text-fg font-semibold">Your CV is local-first.</strong> It is saved
+            in your browser; when you sign in, an account copy is stored for cross-device sync.
           </>,
           <>
-            <strong className="text-fg font-semibold">An account stores four things</strong>: your
-            name, your email address, a password hash (or your Google account id), and your login
-            sessions.
+            <strong className="text-fg font-semibold">An account stores your synced CVs</strong> as
+            well as your identity and login sessions. Guests do not upload a persistent copy.
           </>,
           <>
             <strong className="text-fg font-semibold">
@@ -64,12 +63,12 @@ export const PrivacyPolicy = () => (
       </p>
     </LegalSection>
 
-    <LegalSection id="your-cv" heading="Your CV stays in your browser">
+    <LegalSection id="your-cv" heading="Your CV is local-first">
       <p>
         Everything you type into the editor — your name, contact details, photograph, employment
         history, every bullet — is stored by your browser on your own device, in IndexedDB. It is
-        saved as you type, and it is not uploaded anywhere. Clearing your browsing data deletes it,
-        and we cannot recover it for you, because we never had it.
+        saved as you type and remains usable offline. Signed-out CVs are not stored in our database,
+        so clearing browsing data can erase the only copy unless you made a backup.
       </p>
       <p>
         If you point the app at a workspace folder, it also writes copies of your documents into
@@ -80,13 +79,17 @@ export const PrivacyPolicy = () => (
         Photographs and signatures you upload are converted to data URLs and stored the same way —
         in your browser, alongside the rest of the document.
       </p>
+      <p>
+        When you sign in, your documents—including embedded photographs or signatures—are copied
+        to our database and merged with your other signed-in devices. The newest saved copy wins.
+        Deleting a CV leaves a small marker so an old offline device cannot restore it.
+      </p>
     </LegalSection>
 
     <LegalSection id="account" heading="What an account stores">
       <p>
-        You only need an account to download a PDF. Everything else — writing, the ten designs, the
-        theme controls, the ATS score, import, the JSON backup, the document library — works without
-        one.
+        Accounts are optional and provide cloud sync. Writing, designs, ATS scoring, imports,
+        backups, the document library, and PDF downloads all work without an account.
       </p>
       <p>When you create an account, our database holds:</p>
       <LegalList
@@ -97,17 +100,15 @@ export const PrivacyPolicy = () => (
           'One row per active session, holding a session token, the IP address and browser user-agent it was created from, and when it expires. This is what lets you stay signed in, and what makes it possible to sign every other browser out when you reset your password.',
           'Short-lived tokens for confirming your email address and resetting your password. Each is deleted once it is used, and expires within an hour either way.',
           'Counters keyed by IP address, used to rate-limit sign-in attempts.',
+          'The CV documents you sync, their names and timestamps, and deletion markers for CVs removed on another device.',
         ]}
       />
-      <p>
-        There is no field in our database for a CV, a job application, or anything you write in the
-        editor.
-      </p>
     </LegalSection>
 
     <LegalSection id="transit" heading="When your CV does reach our server">
       <p>
-        Two features send document content off your device. Both are things you start deliberately.
+        Cloud sync, PDF export, and optional smart import send document content off your device.
+        Sync starts only after you sign in; the other two start only when you request them.
       </p>
       <p>
         <strong className="text-fg font-semibold">Downloading a PDF.</strong> The PDF is rendered by

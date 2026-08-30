@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 
-import { MAX_DOCUMENTS } from '@/constants';
+import { LIBRARY_SCHEMA_VERSION, MAX_DOCUMENTS } from '@/constants';
 import { createEmptyResume, useResumeStore, type Resume } from '@/features/resume';
 
 import {
@@ -15,7 +15,7 @@ import {
   writeDocument,
   writeIndex,
 } from './storage';
-import type { CvDocument, DocumentMeta, LibraryIndex } from './schema';
+import type { CvDocument, DeletedDocument, DocumentMeta, LibraryIndex } from './schema';
 import {
   chooseWorkspace,
   forgetWorkspace,
@@ -62,6 +62,7 @@ export interface WorkspaceState {
 interface LibraryState {
   status: LibraryStatus;
   documents: DocumentMeta[];
+  deleted: DeletedDocument[];
   activeId: string;
   workspace: WorkspaceState;
   saveState: SaveState;
@@ -91,6 +92,8 @@ export interface LibraryActions {
 
   /** Merges documents from a backup file or a folder. Returns how many landed. */
   importDocuments: (incoming: CvDocument[]) => Promise<number>;
+  /** Applies the canonical result returned by cloud sync. */
+  reconcileCloud: (incoming: CvDocument[], deleted: DeletedDocument[]) => Promise<void>;
 }
 
 type LibraryStore = LibraryState & { actions: LibraryActions };
@@ -134,8 +137,8 @@ const sortByRecent = (documents: DocumentMeta[]): DocumentMeta[] =>
 export const useLibraryStore = create<LibraryStore>()((set, get) => {
   /** Writes the index from whatever is currently in state. */
   const persistIndex = async () => {
-    const { documents, activeId } = get();
-    const index: LibraryIndex = { version: 1, activeId, documents };
+    const { documents, deleted, activeId } = get();
+    const index: LibraryIndex = { version: LIBRARY_SCHEMA_VERSION, activeId, documents, deleted };
 
     await writeIndex(index);
   };
@@ -184,7 +187,13 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
         ? index.activeId
         : all[0].id;
 
-      set({ status: 'ready', documents: sortByRecent(all), activeId, error: '' });
+      set({
+        status: 'ready',
+        documents: sortByRecent(all),
+        deleted: index.deleted,
+        activeId,
+        error: '',
+      });
 
       await load(activeId);
       await persistIndex();
@@ -265,7 +274,11 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       const document = createDocument(createEmptyResume(), name);
 
       await writeDocument(document);
-      set({ documents: sortByRecent([document.meta, ...documents]), activeId: document.meta.id });
+      set((state) => ({
+        documents: sortByRecent([document.meta, ...documents]),
+        deleted: state.deleted.filter((entry) => entry.id !== document.meta.id),
+        activeId: document.meta.id,
+      }));
 
       lastLoadedResume = document.resume;
       useResumeStore.getState().actions.replaceResume(document.resume, { resetHistory: true });
@@ -291,7 +304,10 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       copy.meta.personName = source.meta.personName;
 
       await writeDocument(copy);
-      set({ documents: sortByRecent([copy.meta, ...documents]) });
+      set((state) => ({
+        documents: sortByRecent([copy.meta, ...documents]),
+        deleted: state.deleted.filter((entry) => entry.id !== copy.meta.id),
+      }));
       await persistIndex();
       await mirror(copy);
     },
@@ -317,8 +333,9 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
     },
 
     remove: async (id) => {
-      const { documents, activeId } = get();
+      const { documents, activeId, deleted } = get();
       const document = await readDocument(id);
+      const deletedAt = Date.now();
 
       await deleteDocument(id);
       if (workspaceHandle && document) await removeFromWorkspace(workspaceHandle, document);
@@ -327,13 +344,19 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
 
       // Deleting the last document leaves a blank one rather than no editor.
       if (remaining.length === 0) {
-        set({ documents: [] });
+        set({
+          documents: [],
+          deleted: [...deleted.filter((entry) => entry.id !== id), { id, deletedAt }],
+        });
         await actions.createNew('My CV');
 
         return;
       }
 
-      set({ documents: remaining });
+      set({
+        documents: remaining,
+        deleted: [...deleted.filter((entry) => entry.id !== id), { id, deletedAt }],
+      });
       if (activeId === id) await load(remaining[0].id);
       await persistIndex();
     },
@@ -410,6 +433,56 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
 
       return landed;
     },
+
+    reconcileCloud: async (incoming, cloudDeleted) => {
+      const state = get();
+      const localById = new Map(state.documents.map((entry) => [entry.id, entry]));
+      const deletionById = new Map<string, number>();
+
+      for (const entry of [...state.deleted, ...cloudDeleted]) {
+        deletionById.set(entry.id, Math.max(deletionById.get(entry.id) ?? 0, entry.deletedAt));
+      }
+
+      for (const [id, deletedAt] of deletionById) {
+        const local = localById.get(id);
+        if (!local || deletedAt < local.updatedAt) continue;
+
+        await deleteDocument(id);
+        localById.delete(id);
+      }
+
+      for (const document of incoming) {
+        const deletedAt = deletionById.get(document.meta.id) ?? 0;
+        if (deletedAt >= document.meta.updatedAt) continue;
+
+        const local = localById.get(document.meta.id);
+        if (local && local.updatedAt >= document.meta.updatedAt) continue;
+        if (!local && localById.size >= MAX_DOCUMENTS) continue;
+
+        await writeDocument(document);
+        localById.set(document.meta.id, document.meta);
+      }
+
+      // The server has acknowledged these tombstones, so its retained copy is
+      // now enough to stop stale devices from resurrecting the documents.
+      const documents = sortByRecent([...localById.values()]);
+      let activeId = state.activeId;
+
+      if (!documents.some((entry) => entry.id === activeId)) activeId = documents[0]?.id ?? '';
+
+      set({ documents, deleted: [], activeId });
+
+      if (!activeId) {
+        await actions.createNew('My CV');
+        return;
+      }
+
+      if (activeId !== state.activeId || incoming.some((entry) => entry.meta.id === activeId)) {
+        await load(activeId);
+      }
+
+      await persistIndex();
+    },
   };
 
   return {
@@ -417,6 +490,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
     saveState: 'idle',
     savedAt: 0,
     documents: [],
+    deleted: [],
     activeId: '',
     workspace: IDLE_WORKSPACE,
     error: '',

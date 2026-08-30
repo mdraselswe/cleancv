@@ -4,7 +4,7 @@ import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 
 import { serverEnv } from '../env';
-import { authSchema } from './schema';
+import { databaseSchema } from './schema';
 
 /**
  * The database handle.
@@ -28,7 +28,7 @@ const createDatabase = () => {
     throw new Error('DATABASE_URL is not set. Accounts need a database (see .env.example).');
   }
 
-  return drizzle(neon(url), { schema: authSchema });
+  return drizzle(neon(url), { schema: databaseSchema });
 };
 
 let cached: Database | null = null;

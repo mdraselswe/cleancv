@@ -26,11 +26,17 @@ export const cvDocumentSchema = z.object({
   resume: resumeSchema,
 });
 
+export const deletedDocumentSchema = z.object({
+  id: z.string().min(1),
+  deletedAt: z.number().int().positive(),
+});
+
 /** What the library index holds: metadata only, so listing never loads a photo. */
 export const libraryIndexSchema = z.object({
   version: z.number().int().catch(LIBRARY_SCHEMA_VERSION).default(LIBRARY_SCHEMA_VERSION),
   activeId: z.string().catch('').default(''),
   documents: z.array(documentMetaSchema).catch([]).default([]),
+  deleted: z.array(deletedDocumentSchema).catch([]).default([]),
 });
 
 /** The shape of a full backup file: every document in one export. */
@@ -43,5 +49,6 @@ export const backupFileSchema = z.object({
 
 export type DocumentMeta = z.infer<typeof documentMetaSchema>;
 export type CvDocument = z.infer<typeof cvDocumentSchema>;
+export type DeletedDocument = z.infer<typeof deletedDocumentSchema>;
 export type LibraryIndex = z.infer<typeof libraryIndexSchema>;
 export type BackupFile = z.infer<typeof backupFileSchema>;

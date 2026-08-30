@@ -19,4 +19,15 @@ export {
   type WorkspaceState,
 } from './useLibrary';
 export { useLibraryReady, useLibrarySync } from './useLibrarySync';
-export type { BackupFile, CvDocument, DocumentMeta, LibraryIndex } from './schema';
+export {
+  useCloudSync,
+  useCloudSyncStore,
+  type CloudSyncStatus,
+} from './useCloudSync';
+export type {
+  BackupFile,
+  CvDocument,
+  DeletedDocument,
+  DocumentMeta,
+  LibraryIndex,
+} from './schema';

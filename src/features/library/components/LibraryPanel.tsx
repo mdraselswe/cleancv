@@ -2,19 +2,24 @@
 
 import {
   AlertTriangle,
+  Cloud,
+  CloudOff,
   Copy,
   DownloadCloud,
   FolderOpen,
   FolderSync,
   HardDriveDownload,
   Plus,
+  RefreshCw,
   Trash2,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Button, Drawer, Input, ModalHeader, SectionLabel } from '@/components/ui';
-import { MAX_DOCUMENTS } from '@/constants';
+import { AUTH_ROUTES, MAX_DOCUMENTS, REDIRECT_PARAM, ROUTES } from '@/constants';
+import { useAuthSession } from '@/features/auth';
 import { downloadText } from '@/features/export';
 import { formatRelativeTime } from '@/lib/date';
 import { cn } from '@/lib/cn';
@@ -22,6 +27,7 @@ import { cn } from '@/lib/cn';
 import { backupFilename, parseBackup, serializeBackup } from '../backup';
 import { readAllDocuments, readIndex } from '../storage';
 import { useLibraryStore } from '../useLibrary';
+import { useCloudSyncStore } from '../useCloudSync';
 
 const BACKUP_INPUT_ID = 'cv-library-backup-input';
 
@@ -38,6 +44,9 @@ export interface LibraryPanelProps {
  * user who does not understand that will find out the hard way.
  */
 export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
+  const router = useRouter();
+  const { signedIn, pending: sessionPending } = useAuthSession();
+  const cloud = useCloudSyncStore();
   const { status, documents, activeId, workspace, error, actions } = useLibraryStore();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [draftName, setDraftName] = useState('');
@@ -200,9 +209,61 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
         <div className="border-border-base mt-5 border-t pt-4">
           <SectionLabel>Keeping your CVs safe</SectionLabel>
           <p className="text-fg-subtle text-ui-xs mt-1">
-            Everything above lives in this browser. Clearing site data erases it, so keep a copy
-            somewhere the browser cannot reach.
+            Every edit is saved in this browser first, so CleanCV keeps working offline.
           </p>
+
+          {!sessionPending && signedIn ? (
+            <div className="border-border-base rounded-card mt-3 border p-3">
+              <div className="flex items-start gap-2.5">
+                <span className="bg-primary-soft text-primary rounded-control flex h-8 w-8 flex-none items-center justify-center">
+                  {cloud.status === 'error' ? <CloudOff size={16} /> : <Cloud size={16} />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-fg text-ui font-medium">Cloud sync</p>
+                  <p className="text-fg-subtle text-ui-xs mt-0.5">
+                    {cloud.status === 'syncing'
+                      ? 'Syncing this browser with your account…'
+                      : cloud.status === 'error'
+                        ? cloud.error
+                        : cloud.lastSyncedAt
+                          ? `Available on your other devices. Last synced ${formatRelativeTime(cloud.lastSyncedAt)}.`
+                          : 'Your CVs will be available anywhere you sign in.'}
+                  </p>
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-label="Sync CVs now"
+                  title="Sync now"
+                  disabled={cloud.status === 'syncing'}
+                  onClick={() => void cloud.syncNow()}
+                >
+                  <RefreshCw size={14} className={cloud.status === 'syncing' ? 'animate-spin' : ''} />
+                </Button>
+              </div>
+            </div>
+          ) : !sessionPending ? (
+            <div className="border-border-base rounded-card mt-3 border p-3">
+              <p className="text-fg text-ui font-medium">Use your CVs on every device</p>
+              <p className="text-fg-subtle text-ui-xs mt-0.5">
+                Sign in for free cloud sync. Downloads and every editor feature remain free without
+                an account.
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-2"
+                leading={<Cloud size={14} />}
+                onClick={() =>
+                  router.push(
+                    `${AUTH_ROUTES.signIn}?${REDIRECT_PARAM}=${encodeURIComponent(ROUTES.editor)}`,
+                  )
+                }
+              >
+                Sign in to sync
+              </Button>
+            </div>
+          ) : null}
 
           {workspace.supported ? (
             <div className="border-border-base rounded-card mt-3 border p-3">

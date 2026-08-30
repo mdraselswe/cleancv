@@ -57,21 +57,5 @@ export const AUTH_RATE_LIMIT = {
   forgotPassword: { window: 60 * 10, max: 4 },
 } as const;
 
-/**
- * What the PDF route says when nobody is signed in.
- *
- * A machine-readable code beside the sentence: the export hook opens the
- * sign-in dialog on the code, and shows the sentence if anything else fails.
- */
-export const SIGN_IN_REQUIRED = {
-  code: 'sign_in_required',
-  message: 'Sign in to download your PDF. Everything else stays open.',
-} as const;
-
-/**
- * Why the gate exists, in the words the dialog uses.
- *
- * Kept here rather than in the component so the sign-in page and the dialog
- * cannot drift into telling the reader two different stories.
- */
-export const GATE_REASON = 'Downloads need an account. Editing, designs and the ATS score do not.';
+/** The benefit described on the sign-in page. */
+export const GATE_REASON = 'Sign in to keep your CVs synced across browsers and devices.';

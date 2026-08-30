@@ -24,7 +24,7 @@ export default async function SignUpPage({
   return (
     <AuthShell
       title="Create an account"
-      subtitle="One account unlocks the PDF downloads. Your CV never leaves this browser."
+      subtitle="Keep your CVs synced across browsers and devices. Every feature stays free."
     >
       <SignUpForm redirectTo={next} googleEnabled={isGoogleConfigured()} />
     </AuthShell>
