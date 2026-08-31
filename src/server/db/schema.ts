@@ -148,4 +148,16 @@ export const cvDocument = pgTable(
   ],
 );
 
-export const databaseSchema = { ...authSchema, cvDocument };
+/** Privacy-safe counters for browsers that open the editor while signed out. */
+export const anonymousVisitor = pgTable(
+  'anonymous_visitor',
+  {
+    idHash: text('id_hash').primaryKey(),
+    firstSeenAt: timestamp('first_seen_at', { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
+    visitCount: integer('visit_count').notNull().default(1),
+  },
+  (table) => [index('anonymous_visitor_last_seen_idx').on(table.lastSeenAt)],
+);
+
+export const databaseSchema = { ...authSchema, cvDocument, anonymousVisitor };

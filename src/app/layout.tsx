@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, PT_Sans, Rubik, Source_Serif_4, Space_Grotesk, Volkhov } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 
+import { AnonymousVisitorTracker } from '@/components/analytics/AnonymousVisitorTracker';
 import { APP_NAME, APP_TAGLINE } from '@/constants';
 import { THEME_BOOTSTRAP_SCRIPT } from '@/hooks';
 
@@ -116,6 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       */}
       <body suppressHydrationWarning>
         {children}
+        <AnonymousVisitorTracker />
         <Analytics />
       </body>
     </html>

@@ -65,6 +65,11 @@ export const PrivacyPolicy = () => (
         does not retain an IP address, and is not joined to a CleanCV account or CV.
       </p>
       <p>
+        When the editor is opened while signed out, CleanCV also stores a random browser ID in local
+        storage. Only a one-way hash of that ID, first and last activity times, and a visit count are
+        stored. It is not based on an IP address, device fingerprint, name, email, or CV content.
+      </p>
+      <p>
         Signed-in account activity shown to the service owner is limited to account details already
         listed below, the number of synced CVs, and timestamps from sessions and sync writes. The
         dashboard does not expose CV content.
