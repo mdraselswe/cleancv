@@ -34,6 +34,22 @@
   --score-strong: #4d7c0f;
   --score-fair: #c2740a;
   --score-poor: #dc2626;
+
+  /*
+   * Hue families. Every section, every illustration and every decorative chip
+   * picks one of these rather than a colour of its own, so the interface is
+   * colourful from one palette instead of from a dozen unrelated values. The
+   * soft and strong steps are mixed from the hue and the live surface, which
+   * is what keeps each one legible in both themes without a second set.
+   */
+  --hue-indigo: #5b5bf0;
+  --hue-violet: #8b5cf6;
+  --hue-pink: #ec4899;
+  --hue-rose: #f43f5e;
+  --hue-amber: #f59e0b;
+  --hue-emerald: #10b981;
+  --hue-teal: #14b8a6;
+  --hue-sky: #0ea5e9;
 }
 
 :root[data-theme='dark'],
@@ -164,6 +180,18 @@
   --radius-control: 0.625rem; /* 10px */
   --radius-card: 0.875rem; /* 14px */
   --radius-panel: 1.125rem; /* 18px */
+
+  --color-hue-indigo: var(--hue-indigo);
+  --color-hue-violet: var(--hue-violet);
+  --color-hue-pink: var(--hue-pink);
+  --color-hue-rose: var(--hue-rose);
+  --color-hue-amber: var(--hue-amber);
+  --color-hue-emerald: var(--hue-emerald);
+  --color-hue-teal: var(--hue-teal);
+  --color-hue-sky: var(--hue-sky);
+  --color-hue: var(--hue);
+  --color-hue-soft: var(--hue-soft);
+  --color-hue-strong: var(--hue-strong);
 
   --shadow-app: var(--app-shadow);
   --shadow-pop: var(--app-shadow-pop);
@@ -330,6 +358,240 @@ body {
 .scroll-slim {
   scrollbar-width: thin;
   scrollbar-color: var(--app-border-strong) transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Hues. `hue-*` sets the three variables a coloured chip, icon tile or card
+   reads; nothing else in the app hard-codes a section colour.
+   --------------------------------------------------------------------------- */
+
+.hue-indigo { --hue: var(--hue-indigo); }
+.hue-violet { --hue: var(--hue-violet); }
+.hue-pink { --hue: var(--hue-pink); }
+.hue-rose { --hue: var(--hue-rose); }
+.hue-amber { --hue: var(--hue-amber); }
+.hue-emerald { --hue: var(--hue-emerald); }
+.hue-teal { --hue: var(--hue-teal); }
+.hue-sky { --hue: var(--hue-sky); }
+
+.hue-indigo,
+.hue-violet,
+.hue-pink,
+.hue-rose,
+.hue-amber,
+.hue-emerald,
+.hue-teal,
+.hue-sky {
+  --hue-soft: color-mix(in srgb, var(--hue) 14%, var(--app-surface));
+  --hue-strong: color-mix(in srgb, var(--hue) 78%, var(--app-fg));
+}
+
+.app-gradient-text {
+  background: linear-gradient(110deg, var(--hue-indigo), var(--hue-violet) 45%, var(--hue-pink));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.app-gradient-bg {
+  background: linear-gradient(120deg, var(--hue-indigo), var(--hue-violet) 55%, var(--hue-pink));
+}
+
+/* A card that answers the pointer: lifts, and its shadow follows. */
+.card-lift {
+  transition:
+    translate 200ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.card-lift:hover {
+  translate: 0 -3px;
+  box-shadow: var(--app-shadow-pop);
+}
+
+/* ---------------------------------------------------------------------------
+   Motion kit. All decorative; the reduced-motion block at the foot of the file
+   flattens every one of them.
+   --------------------------------------------------------------------------- */
+
+@keyframes app-rise {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+
+@keyframes app-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+@keyframes app-drift {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  50% {
+    translate: 6px -10px;
+    rotate: 3deg;
+  }
+}
+
+@keyframes app-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes app-gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes app-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--hue, var(--app-primary)) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+
+@keyframes app-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes app-wiggle {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: -8deg;
+  }
+  75% {
+    rotate: 8deg;
+  }
+}
+
+@keyframes app-sweep {
+  from {
+    translate: -120% 0;
+  }
+  to {
+    translate: 220% 0;
+  }
+}
+
+.animate-rise {
+  animation: app-rise 520ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.animate-float {
+  animation: app-float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: app-float 9s ease-in-out infinite;
+}
+
+.animate-drift {
+  animation: app-drift 11s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 220% 100%;
+  animation: app-gradient-shift 9s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: app-pulse-ring 1.8s ease-out infinite;
+}
+
+.animate-wiggle {
+  animation: app-wiggle 600ms ease-in-out;
+}
+
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--app-surface-2) 30%,
+    color-mix(in srgb, var(--app-primary) 10%, var(--app-surface-2)) 50%,
+    var(--app-surface-2) 70%
+  );
+  background-size: 200% 100%;
+  animation: app-shimmer 1.4s linear infinite;
+}
+
+/* Stroke-drawn SVG paths that write themselves on. Needs `pathLength="1"`. */
+.draw-on {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: app-draw 900ms 200ms cubic-bezier(0.6, 0, 0.2, 1) forwards;
+}
+
+/* A glint that crosses a button once on hover. */
+.glint {
+  position: relative;
+  overflow: hidden;
+}
+
+.glint::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.35), transparent);
+  translate: -120% 0;
+  pointer-events: none;
+}
+
+.glint:hover::after {
+  animation: app-sweep 700ms ease-out;
+}
+
+/* Children arrive one after another. Twelve steps is more than any list here. */
+.stagger > * {
+  animation: app-rise 520ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.stagger > :nth-child(1) { animation-delay: 0ms; }
+.stagger > :nth-child(2) { animation-delay: 55ms; }
+.stagger > :nth-child(3) { animation-delay: 110ms; }
+.stagger > :nth-child(4) { animation-delay: 165ms; }
+.stagger > :nth-child(5) { animation-delay: 220ms; }
+.stagger > :nth-child(6) { animation-delay: 275ms; }
+.stagger > :nth-child(7) { animation-delay: 330ms; }
+.stagger > :nth-child(8) { animation-delay: 385ms; }
+.stagger > :nth-child(9) { animation-delay: 440ms; }
+.stagger > :nth-child(10) { animation-delay: 495ms; }
+.stagger > :nth-child(11) { animation-delay: 550ms; }
+.stagger > :nth-child(12) { animation-delay: 605ms; }
+
+/* A dotted paper texture for hero and empty-state backdrops. */
+.bg-dots {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--app-primary) 22%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 20px 20px;
 }
 
 @media print {

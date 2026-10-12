@@ -1,11 +1,11 @@
 'use client';
 
-import { FileText, Gauge, PencilLine, X } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FileText, Gauge, PencilLine } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { AppShell, Pane, SplitPane } from '@/components/layout';
-import { Button, Drawer, ModalHeader, Tabs, Toaster } from '@/components/ui';
+import { Drawer, ModalHeader, Tabs, Toaster } from '@/components/ui';
 import type { AtsFixTarget } from '@/constants';
 import { AtsPanel, useAtsScore } from '@/features/ats';
 import { useKeyboardShortcuts, useTheme } from '@/hooks';
@@ -20,11 +20,13 @@ import {
   useSaveState,
 } from '@/features/library';
 import { useResume, useResumeActions, useResumeStore } from '@/features/resume';
-import { getAvailableTemplates, getTemplate } from '@/features/templates';
 
+import { useActiveSection } from '../hooks/useActiveSection';
 import { useEditorLayout, type EditorTab } from '../hooks/useEditorLayout';
+import { useSectionProgress } from '../hooks/useSectionProgress';
 import { EditorPane } from './EditorPane';
 import { PreviewPane } from './PreviewPane';
+import { SectionRail } from './SectionNav';
 import { ShortcutsDialog } from './ShortcutsDialog';
 import { Toolbar } from './Toolbar';
 
@@ -71,6 +73,10 @@ export const EditorScreen = () => {
   const [pageBreaks, setPageBreaks] = useState<number[]>([]);
   const { score, keywords } = useAtsScore({ measuredPages: pageCount });
 
+  // Owned here so the rail and the form agree on which section is open.
+  const section = useActiveSection();
+  const progress = useSectionProgress(section.tabs);
+
   // A "Fix it" link in the score panel has to move the editor, not just scroll it.
   const [pendingTarget, setPendingTarget] = useState<AtsFixTarget | null>(null);
   const { setTab, dismissScoreOverlay } = layout;
@@ -86,11 +92,6 @@ export const EditorScreen = () => {
     [setTab, dismissScoreOverlay],
   );
   const json = useExportJson((imported) => actions.replaceResume(imported, { resetHistory: true }));
-
-  const templateOptions = useMemo(
-    () => getAvailableTemplates().map(({ meta }) => ({ value: meta.id, label: meta.name })),
-    [],
-  );
 
   const exportDesign = useCallback(
     () => void pdf.exportPdf(resume, 'design', pageBreaks),
@@ -140,9 +141,6 @@ export const EditorScreen = () => {
       onOpenImport={() => setImportOpen(true)}
       onOpenDesign={() => navigateToFix('panel:design')}
       onOpenShortcuts={() => layout.setShortcutsOpen(true)}
-      templateId={resume.meta.templateId}
-      templateOptions={templateOptions}
-      onTemplateChange={(id) => actions.setTemplate(id, getTemplate(id).meta.defaultTheme)}
       canUndo={canUndo}
       canRedo={canRedo}
       onUndo={actions.undo}
@@ -173,6 +171,9 @@ export const EditorScreen = () => {
   const editorPane = (
     <Pane className="bg-surface">
       <EditorPane
+        section={section}
+        progress={progress}
+        showStrip={layout.mode === 'compact'}
         pendingTarget={pendingTarget}
         onPendingTargetHandled={() => setPendingTarget(null)}
         startedBlank={layout.startedBlank}
@@ -223,35 +224,20 @@ export const EditorScreen = () => {
         </div>
       ) : (
         <div className="flex h-full min-h-0">
+          <SectionRail
+            tabs={section.tabs}
+            active={section.active}
+            progress={progress}
+            onSelect={section.setActive}
+          />
           <div className="min-w-0 flex-1">
             <SplitPane left={editorPane} right={previewPane} className="h-full" />
           </div>
-
-          {/* A column of its own only where there is one to spare. */}
-          {layout.mode === 'full' && layout.scoreOpen ? (
-            <aside
-              aria-label="ATS score"
-              className="border-border-base bg-surface flex w-[360px] flex-none flex-col border-l"
-            >
-              <div className="border-border-base flex flex-none items-center justify-between border-b px-3 py-2">
-                <span className="text-fg text-ui font-semibold">ATS score</span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  aria-label="Close score panel"
-                  onClick={layout.closeScore}
-                >
-                  <X size={15} />
-                </Button>
-              </div>
-              <div className="scroll-slim min-h-0 flex-1 overflow-y-auto">{atsPanel}</div>
-            </aside>
-          ) : null}
         </div>
       )}
 
-      {/* On a tablet the score arrives over the work and leaves again. */}
-      {layout.mode === 'split' && layout.scoreOpen ? (
+      {/* Beside the work it would crowd it, so the breakdown arrives over it and leaves again. */}
+      {layout.mode !== 'compact' && layout.scoreOpen ? (
         <Drawer label="ATS score" onClose={layout.closeScore} className="max-w-sm">
           <ModalHeader
             title="ATS score"

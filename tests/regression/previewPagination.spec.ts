@@ -47,7 +47,7 @@ beforeAll(async () => {
     defaultViewport: { width: 1600, height: 1000 },
   });
   page = await browser.newPage();
-  await page.goto(server.baseUrl, { waitUntil: 'networkidle0', timeout: 60_000 });
+  await page.goto(`${server.baseUrl}/editor`, { waitUntil: 'networkidle0', timeout: 60_000 });
   await page.waitForSelector('.resume-root', { timeout: 30_000 });
 
   // A fresh profile boots an empty document; the sample is the shared fixture.

@@ -1,22 +1,30 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, FilePlus2, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
-import { Button, EmptyState } from '@/components/ui';
+import { EmptyIllustration, SectionIllustration } from '@/components/illustrations';
+import { Button } from '@/components/ui';
 import { isPanelTarget, panelIdOf, type AtsFixTarget } from '@/constants';
 import { useResume, useResumeActions } from '@/features/resume';
-import { useScrollEdges } from '@/hooks';
 import { cn } from '@/lib/cn';
 import { isBlank } from '@/lib/text';
 
-import { useActiveSection } from '../hooks/useActiveSection';
+import type { ActiveSectionController } from '../hooks/useActiveSection';
+import type { SectionProgress } from '../hooks/useSectionProgress';
+import { getPanelVisual, getSectionVisual } from '../sectionVisual';
+import { SectionStrip } from './SectionNav';
 import { SectionBodyEditor } from './SectionBodyEditor';
 import { SectionManager } from './SectionManager';
 import { DesignSection } from './sections/DesignSection';
 import { DocumentNameSection } from './sections/ClosingSections';
 
 export interface EditorPaneProps {
+  /** Which form is showing; owned by the screen so the rail and the pane agree. */
+  section: ActiveSectionController;
+  progress: SectionProgress;
+  /** The one-pane layout has no rail, so the pane carries its own strip. */
+  showStrip: boolean;
   /** Where the score panel asked to go; cleared once handled. */
   pendingTarget?: AtsFixTarget | null;
   onPendingTargetHandled?: () => void;
@@ -26,10 +34,13 @@ export interface EditorPaneProps {
 }
 
 /**
- * The form column: a tab strip that mirrors the document's section order, and
- * the active section's form beneath it.
+ * The form column: the active section's form under a header that says what it
+ * is for, and a stepper to the sections either side of it.
  */
 export const EditorPane = ({
+  section,
+  progress,
+  showStrip,
   pendingTarget,
   onPendingTargetHandled,
   startedBlank,
@@ -37,13 +48,13 @@ export const EditorPane = ({
 }: EditorPaneProps) => {
   const resume = useResume();
   const actions = useResumeActions();
-  const { active, setActive, tabs, title, description } = useActiveSection();
-  /*
-   * Destructured rather than kept whole: React's lint rules read any property
-   * of an object holding a ref as reading the ref during render. See ADR-042.
-   */
-  const { ref: stripRef, edgeProps, atStart, atEnd, scrollBy, scrollIntoView } = useScrollEdges();
-  const selectedTab = useRef<HTMLButtonElement>(null);
+  const { active, setActive, tabs, title, description } = section;
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // A new section starts at its top, not wherever the last one was scrolled to.
+  useEffect(() => {
+    rootRef.current?.parentElement?.scrollTo({ top: 0 });
+  }, [active.kind, active.key]);
 
   useEffect(() => {
     if (!pendingTarget) return;
@@ -59,17 +70,6 @@ export const EditorPane = ({
   }, [pendingTarget, setActive, onPendingTargetHandled]);
 
   /*
-   * Keep the selected tab on screen. Only the first few names fit, so a
-   * section reached from anywhere but the strip itself — the score panel's
-   * "Fix it", the toolbar's "Change the design", a tab remembered across a
-   * reload — would otherwise be highlighted somewhere off to the right where
-   * nobody can see which one is current.
-   */
-  useEffect(() => {
-    scrollIntoView(selectedTab.current);
-  }, [active, scrollIntoView]);
-
-  /*
    * The prompt is about what to do next, not about what the document holds. It
    * was gated on emptiness alone, which made "Start blank" inert: it opened the
    * contact section and then the prompt rendered over it again, so the only way
@@ -83,78 +83,46 @@ export const EditorPane = ({
 
   if (isEmpty) {
     return (
-      <div className="p-4">
-        <EmptyState
-          icon={<FilePlus2 size={22} />}
-          title="Start your resume"
-          description="Fill in the form, or load a worked example to see how a finished resume is put together."
-          action={
-            <div className="flex flex-wrap justify-center gap-2">
-              <Button
-                variant="primary"
-                onClick={actions.loadSample}
-                leading={<Sparkles size={14} />}
-              >
-                Load the sample
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  onStartBlank?.();
-                  setActive({ kind: 'section', key: 'contact' });
-                }}
-              >
-                Start blank
-              </Button>
-            </div>
-          }
-        />
+      <div className="flex min-h-full items-center justify-center p-4">
+        <div className="animate-rise border-primary/15 from-primary-soft via-surface to-accent-soft rounded-panel flex w-full max-w-md flex-col items-center gap-3 border bg-gradient-to-br px-6 py-8 text-center shadow-sm">
+          <div className="w-44">
+            <EmptyIllustration />
+          </div>
+          <h2 className="text-fg text-xl font-extrabold tracking-tight">Start your resume</h2>
+          <p className="text-fg-muted text-ui-md max-w-sm leading-relaxed">
+            Fill in the form, or load a worked example to see how a finished resume is put
+            together.
+          </p>
+          <div className="mt-2 flex flex-wrap justify-center gap-2">
+            <Button variant="primary" onClick={actions.loadSample} leading={<Sparkles size={14} />}>
+              Load the sample
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                onStartBlank?.();
+                setActive({ kind: 'section', key: 'contact' });
+              }}
+            >
+              Start blank
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
 
+  const visual =
+    active.kind === 'panel' ? getPanelVisual(active.key) : getSectionVisual(active.key);
+  const index = tabs.findIndex((tab) => tab.target.kind === active.kind && tab.target.key === active.key);
+  const previous = index > 0 ? tabs[index - 1] : undefined;
+  const next = index >= 0 && index < tabs.length - 1 ? tabs[index + 1] : undefined;
+
   return (
-    <div className="flex min-h-full flex-col">
-      {/*
-        Twelve section names do not fit any pane this app has, so the strip
-        scrolls. What it owes the reader is a way to know that: the mask fades
-        whichever end still has names behind it, and on a pointer device the
-        arrows scroll it without a trackpad gesture. See `useScrollEdges`.
-      */}
-      <div className="border-border-base bg-surface/80 sticky top-0 z-10 flex items-center border-b backdrop-blur-xl">
-        <StripArrow side="start" atEdge={atStart} onClick={() => scrollBy(-200)} />
-
-        <nav
-          ref={stripRef}
-          {...edgeProps}
-          aria-label="Resume sections"
-          className="scroll-fade scroll-none flex flex-1 gap-1 overflow-x-auto scroll-smooth px-3 py-2"
-        >
-          {tabs.map((tab) => {
-            const selected = active.kind === tab.target.kind && active.key === tab.target.key;
-
-            return (
-              <button
-                key={tab.id}
-                ref={selected ? selectedTab : undefined}
-                type="button"
-                aria-current={selected ? 'page' : undefined}
-                onClick={() => setActive(tab.target)}
-                className={cn(
-                  'tap-target rounded-control text-ui px-2.5 py-1.5 font-medium whitespace-nowrap transition',
-                  selected
-                    ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-fg shadow-sm'
-                    : 'text-fg-muted hover:bg-surface-2 hover:text-fg',
-                )}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        <StripArrow side="end" atEdge={atEnd} onClick={() => scrollBy(200)} />
-      </div>
+    <div ref={rootRef} className="flex min-h-full flex-col">
+      {showStrip ? (
+        <SectionStrip tabs={tabs} active={active} progress={progress} onSelect={setActive} />
+      ) : null}
 
       {/*
         A form column is capped rather than stretched. At a tablet's full width
@@ -162,60 +130,64 @@ export const EditorPane = ({
         times the longest value anyone types into one and a distance the eye
         has to travel back across for the next label.
       */}
-      <div className="@container mx-auto flex w-full max-w-[680px] flex-col gap-4 px-4 py-5 sm:px-5">
-        <header className="border-primary/15 bg-gradient-to-br from-primary-soft via-surface to-accent-soft rounded-card border px-4 py-3.5 shadow-sm">
-          <div className="mb-1 flex items-center gap-1.5">
-            <Sparkles size={13} className="text-accent" aria-hidden="true" />
-            <span className="text-primary text-ui-2xs font-bold tracking-[0.14em] uppercase">
-              Build your story
-            </span>
+      <div className="@container mx-auto flex w-full max-w-[680px] flex-1 flex-col gap-4 px-4 py-5 sm:px-5">
+        <header
+          className={cn(
+            `hue-${visual.hue} bg-hue-soft border-hue/20 rounded-panel relative flex items-center gap-3 overflow-hidden border px-4 py-3.5`,
+          )}
+        >
+          <div className="min-w-0 flex-1">
+            <div className="text-hue-strong mb-1 flex items-center gap-1.5">
+              <visual.Icon size={13} aria-hidden="true" />
+              <span className="text-ui-2xs font-bold tracking-[0.14em] uppercase">
+                {active.kind === 'panel' ? 'Customise' : 'Build your story'}
+              </span>
+            </div>
+            <h2 className="text-fg text-xl font-extrabold tracking-tight">{title}</h2>
+            <p className="text-fg-muted text-ui-xs mt-0.5 leading-snug">{description}</p>
           </div>
-          <h2 className="text-fg text-ui-lg font-bold tracking-tight">{title}</h2>
-          <p className="text-fg-subtle text-ui-xs mt-0.5">{description}</p>
+          <div className="hidden w-24 flex-none sm:block">
+            <SectionIllustration scene={visual.scene} />
+          </div>
         </header>
 
-        {active.kind === 'panel' && active.key === 'design' ? <DesignSection /> : null}
-        {active.kind === 'panel' && active.key === 'sections' ? (
-          <div className="flex flex-col gap-6">
-            <DocumentNameSection />
-            <SectionManager />
+        {/* Keyed so each section arrives rather than swaps. */}
+        <div key={`${active.kind}:${active.key}`} className="animate-rise flex flex-col gap-4">
+          {active.kind === 'panel' && active.key === 'design' ? <DesignSection /> : null}
+          {active.kind === 'panel' && active.key === 'sections' ? (
+            <div className="flex flex-col gap-6">
+              <DocumentNameSection />
+              <SectionManager />
+            </div>
+          ) : null}
+          {active.kind === 'section' ? <SectionBodyEditor sectionKey={active.key} /> : null}
+        </div>
+
+        {previous || next ? (
+          <div className="border-border-base mt-auto flex items-center justify-between gap-2 border-t pt-4">
+            {previous ? (
+              <Button
+                variant="ghost"
+                onClick={() => setActive(previous.target)}
+                leading={<ArrowLeft size={15} />}
+              >
+                {previous.label}
+              </Button>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <Button
+                variant="primary"
+                onClick={() => setActive(next.target)}
+                trailing={<ArrowRight size={15} />}
+              >
+                Next: {next.label}
+              </Button>
+            ) : null}
           </div>
         ) : null}
-        {active.kind === 'section' ? <SectionBodyEditor sectionKey={active.key} /> : null}
       </div>
     </div>
   );
 };
-
-interface StripArrowProps {
-  side: 'start' | 'end';
-  /** Nothing left to scroll this way: kept in the layout, faded out. */
-  atEdge: boolean;
-  onClick: () => void;
-}
-
-/**
- * Shown only to a wide window with a mouse in it.
- *
- * A finger swipes the strip, so on a touch screen this is a sub-thumb-sized
- * target that duplicates a gesture the reader already has — the two variants
- * are stacked rather than written as separate classes so the media queries
- * nest and neither can win over the other by ordering.
- *
- * Hidden from assistive technology: every tab it reaches is already in the
- * strip, and this only moves the viewport.
- */
-const StripArrow = ({ side, atEdge, onClick }: StripArrowProps) => (
-  <button
-    type="button"
-    tabIndex={-1}
-    aria-hidden="true"
-    onClick={onClick}
-    className={cn(
-      'text-fg-subtle hover:text-fg hidden h-7 w-6 flex-none items-center justify-center transition sm:pointer-fine:flex',
-      atEdge && 'pointer-events-none opacity-0',
-    )}
-  >
-    {side === 'start' ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-  </button>
-);

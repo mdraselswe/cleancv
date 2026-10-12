@@ -4,6 +4,7 @@ export { ColorPicker, type ColorPickerProps, type ColorSwatch } from './ColorPic
 export { Field, type FieldProps } from './Field';
 export { ImageUpload, type ImageUploadProps } from './ImageUpload';
 export { Input, Textarea, type InputProps, type TextareaProps } from './Input';
+export { HueIcon, type HueIconProps, type Hue } from './HueIcon';
 export { Menu, type MenuEntry, type MenuItem, type MenuProps, type MenuSeparator } from './Menu';
 export {
   Drawer,

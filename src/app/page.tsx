@@ -1,5 +1,5 @@
-import { EditorScreen } from '@/features/editor';
+import { HomeScreen } from '@/features/home';
 
 export default function Page() {
-  return <EditorScreen />;
+  return <HomeScreen />;
 }

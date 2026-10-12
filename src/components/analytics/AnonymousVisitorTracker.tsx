@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
+import { ROUTES } from '@/constants';
+
 const STORAGE_KEY = 'cleancv-anonymous-visitor';
 const SESSION_KEY = 'cleancv-visit-recorded';
 
@@ -10,7 +12,7 @@ export const AnonymousVisitorTracker = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname !== '/' || sessionStorage.getItem(SESSION_KEY)) return;
+    if ((pathname !== ROUTES.home && pathname !== ROUTES.editor) || sessionStorage.getItem(SESSION_KEY)) return;
 
     let visitorId = localStorage.getItem(STORAGE_KEY);
     if (!visitorId) {

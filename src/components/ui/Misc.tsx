@@ -34,20 +34,30 @@ export const Badge = ({ tone = 'neutral', children, className }: BadgeProps) => 
 
 export interface EmptyStateProps {
   icon?: ReactNode;
+  /** A drawn scene; takes the place of the icon and gives the state some weight. */
+  illustration?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
   className?: string;
 }
 
-export const EmptyState = ({ icon, title, description, action, className }: EmptyStateProps) => (
+export const EmptyState = ({
+  icon,
+  illustration,
+  title,
+  description,
+  action,
+  className,
+}: EmptyStateProps) => (
   <div
     className={cn(
       'border-border-base bg-surface-2/50 rounded-card flex flex-col items-center gap-2 border border-dashed px-6 py-10 text-center',
       className,
     )}
   >
-    {icon ? (
+    {illustration ? <div className="mb-1 w-40">{illustration}</div> : null}
+    {!illustration && icon ? (
       <div className="bg-surface text-fg-subtle border-border-base mb-1 flex h-11 w-11 items-center justify-center rounded-full border">
         {icon}
       </div>

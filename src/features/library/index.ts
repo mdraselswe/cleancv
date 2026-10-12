@@ -6,7 +6,8 @@ export {
   serializeBackup,
   type BackupReadResult,
 } from './backup';
-export { readAllDocuments, readIndex } from './storage';
+export { readAllDocuments, readDocument, readIndex } from './storage';
+export { useDocumentResumes } from './useDocumentResumes';
 export {
   useActiveDocument,
   useLibraryActions,

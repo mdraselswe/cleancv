@@ -1,11 +1,11 @@
 'use client';
 
 import {
+  ChevronDown,
   Download,
   FileJson,
   FileUp,
   FolderOpen,
-  Gauge,
   Keyboard,
   Loader2,
   Monitor,
@@ -17,10 +17,11 @@ import {
   Undo2,
   Upload,
 } from 'lucide-react';
+import Link from 'next/link';
 
 import { BrandMark } from '@/components/brand';
-import { Badge, Button, Menu, Select, type MenuEntry } from '@/components/ui';
-import { APP_NAME, type TemplateId } from '@/constants';
+import { Button, Menu, type MenuEntry } from '@/components/ui';
+import { APP_NAME, ROUTES } from '@/constants';
 import { UserMenu } from '@/features/auth';
 import { IMPORT_INPUT_ID } from '@/features/export';
 import type { SaveState } from '@/features/library';
@@ -29,18 +30,11 @@ import { cn } from '@/lib/cn';
 
 import { SaveStatus } from './SaveStatus';
 
-const SCORE_TONE_CLASS = {
-  excellent: 'text-success',
-  strong: 'text-success',
-  fair: 'text-warning',
-  poor: 'text-danger',
-} as const;
-
-const SCORE_TONE_BADGE = {
-  excellent: 'success',
-  strong: 'success',
-  fair: 'warning',
-  poor: 'danger',
+const SCORE_TONE_VAR = {
+  excellent: 'var(--score-excellent)',
+  strong: 'var(--score-strong)',
+  fair: 'var(--score-fair)',
+  poor: 'var(--score-poor)',
 } as const;
 
 const THEME_ICON: Record<ThemePreference, typeof Sun> = {
@@ -63,9 +57,6 @@ export interface ToolbarProps {
   /** Jumps the editor to the design panel — the template picker on a phone. */
   onOpenDesign: () => void;
   onOpenShortcuts: () => void;
-  templateId: TemplateId;
-  templateOptions: readonly { value: string; label: string }[];
-  onTemplateChange: (id: TemplateId) => void;
 
   canUndo: boolean;
   canRedo: boolean;
@@ -89,17 +80,15 @@ export interface ToolbarProps {
 /**
  * The application bar: one row at every width.
  *
- * It used to wrap onto a second row below `sm`, which cost a phone eighty-two
- * pixels of a screen that had none to spare and left the first row all but
- * empty — the app name, the document name and the template picker were each
- * hidden at a different breakpoint, so what remained was a logo and four
- * unlabelled glyphs. Everything past the essentials now collapses into one
- * overflow menu instead of disappearing: a narrow window loses the shortcut,
- * never the action.
+ * What stays visible is what the reader needs to know and do without
+ * thinking — where home is, which CV is open, whether it is saved, the score,
+ * and how to get the PDF out. Everything else collapses into one overflow menu
+ * instead of disappearing: a narrow window loses the shortcut, never the
+ * action.
  *
- * What stays visible at every width is what the reader needs to know and do
- * without thinking — which CV is open, whether it is saved, and how to get the
- * PDF out.
+ * Downloading is one primary button with its siblings on a chevron — the
+ * designed PDF is what nearly everyone wants, and the ATS PDF and the JSON
+ * backup are one click behind it rather than three competing buttons.
  */
 export const Toolbar = ({
   documentName,
@@ -108,9 +97,6 @@ export const Toolbar = ({
   onOpenImport,
   onOpenDesign,
   onOpenShortcuts,
-  templateId,
-  templateOptions,
-  onTemplateChange,
   canUndo,
   canRedo,
   onUndo,
@@ -171,21 +157,7 @@ export const Toolbar = ({
        */
       onSelect: () => document.getElementById(IMPORT_INPUT_ID)?.click(),
     },
-    {
-      id: 'backup',
-      label: 'Download a JSON backup',
-      icon: <FileJson size={15} />,
-      onSelect: onExportJson,
-    },
     { id: 'sep-2', separator: true },
-    {
-      id: 'ats-pdf',
-      label: 'Download the ATS PDF',
-      icon: <Download size={15} />,
-      disabled: pendingExport !== null,
-      onSelect: onExportAts,
-    },
-    { id: 'sep-3', separator: true },
     {
       id: 'theme',
       label: THEME_LABEL[themePreference],
@@ -201,18 +173,45 @@ export const Toolbar = ({
     },
   ];
 
+  const downloadEntries: MenuEntry[] = [
+    {
+      id: 'design-pdf',
+      label: 'Designed PDF',
+      hint: 'Ctrl+S',
+      icon: <Download size={15} />,
+      disabled: pendingExport !== null,
+      onSelect: onExportDesign,
+    },
+    {
+      id: 'ats-pdf',
+      label: 'ATS-safe PDF',
+      icon: <Download size={15} />,
+      disabled: pendingExport !== null,
+      onSelect: onExportAts,
+    },
+    { id: 'sep-dl', separator: true },
+    {
+      id: 'json',
+      label: 'JSON backup',
+      icon: <FileJson size={15} />,
+      onSelect: onExportJson,
+    },
+  ];
+
   return (
-    <div className="flex min-h-15 items-center gap-2.5 px-2.5 py-2.5 sm:px-5">
+    <div className="flex min-h-15 items-center gap-2 px-2.5 py-2 sm:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <BrandMark className="h-8 w-8 drop-shadow-sm" />
-        <span className="hidden min-w-0 flex-col sm:flex">
-          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-ui-md font-bold tracking-tight text-transparent">
+        <Link
+          href={ROUTES.home}
+          title={`${APP_NAME} home`}
+          aria-label={`${APP_NAME} home`}
+          className="tap-target rounded-control hover:bg-surface-2 flex flex-none items-center gap-2 p-1 transition"
+        >
+          <BrandMark className="h-8 w-8 drop-shadow-sm" />
+          <span className="app-gradient-text text-ui-lg hidden font-extrabold tracking-tight lg:block">
             {APP_NAME}
           </span>
-          <span className="text-fg-subtle text-[9px] font-semibold tracking-[0.16em] uppercase">
-            Resume studio
-          </span>
-        </span>
+        </Link>
 
         <span aria-hidden="true" className="bg-border-base hidden h-5 w-px flex-none sm:block" />
 
@@ -232,25 +231,25 @@ export const Toolbar = ({
       </div>
 
       <div className="flex flex-none items-center gap-1">
+        {/*
+          The score lives here as a number, always. The breakdown is a drawer
+          at every width that has two panes; the chip is the way into it, and
+          the phone has a tab of its own.
+        */}
         <button
           type="button"
           onClick={onToggleScorePanel}
           aria-pressed={scorePanelOpen}
           title="ATS score"
           className={cn(
-            // From `md`, which is where the tab bar stops carrying a Score
-            // tab. Between the two the score had no way in at all: no tab
-            // below, no column beside, and a toggle that only appeared at
-            // 1024px.
-            'tap-target rounded-control text-ui hidden items-center gap-1.5 border px-2.5 py-1.5 font-medium transition md:inline-flex',
+            'tap-target rounded-control text-ui hidden items-center gap-2 border py-1 pr-2.5 pl-1.5 font-semibold transition md:inline-flex',
             scorePanelOpen
               ? 'border-primary/40 bg-primary-soft shadow-sm'
               : 'border-border-base bg-surface/60 hover:border-primary/30 hover:bg-primary-soft',
           )}
         >
-          <Gauge size={14} className={SCORE_TONE_CLASS[atsTone]} />
+          <MiniRing score={atsScore} color={SCORE_TONE_VAR[atsTone]} />
           <span className="text-fg">ATS</span>
-          <Badge tone={SCORE_TONE_BADGE[atsTone]}>{atsScore}</Badge>
         </button>
 
         <div className="hidden items-center gap-0.5 md:flex">
@@ -276,13 +275,15 @@ export const Toolbar = ({
           </Button>
         </div>
 
-        <Select
-          options={templateOptions}
-          value={templateId}
-          onChange={(event) => onTemplateChange(event.target.value as TemplateId)}
-          aria-label="Template"
-          className="mx-1 hidden h-9 w-44 lg:block"
-        />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onOpenDesign}
+          className="hidden lg:inline-flex"
+          leading={<Palette size={14} />}
+        >
+          Design
+        </Button>
 
         <Menu
           label="More actions"
@@ -294,41 +295,41 @@ export const Toolbar = ({
           )}
         />
 
-        <span aria-hidden="true" className="bg-border-base mx-1 hidden h-5 w-px sm:block" />
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onExportAts}
-          disabled={pendingExport !== null}
-          className="hidden sm:inline-flex"
-          leading={
-            pendingExport === 'ats' ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <Download size={14} />
-            )
-          }
-          title="Single-column, plain-text PDF for job portals"
-        >
-          ATS PDF
-        </Button>
-
-        <Button
-          variant="primary"
-          size="md"
-          onClick={onExportDesign}
-          disabled={pendingExport !== null}
-          leading={
-            pendingExport === 'design' ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <Download size={14} />
-            )
-          }
-        >
-          Download
-        </Button>
+        <div className="flex items-stretch">
+          <Button
+            variant="primary"
+            size="md"
+            onClick={onExportDesign}
+            disabled={pendingExport !== null}
+            className="rounded-r-none"
+            leading={
+              pendingExport !== null ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Download size={14} />
+              )
+            }
+          >
+            <span className="hidden sm:inline">Download</span>
+            <span className="sm:hidden">PDF</span>
+          </Button>
+          <Menu
+            label="Download options"
+            entries={downloadEntries}
+            trigger={(props) => (
+              <Button
+                variant="primary"
+                size="icon"
+                aria-label="More download options"
+                title="More download options"
+                className="w-8 rounded-l-none border-l border-white/25"
+                {...props}
+              >
+                <ChevronDown size={15} />
+              </Button>
+            )}
+          />
+        </div>
 
         <span aria-hidden="true" className="bg-border-base mx-0.5 h-6 w-px" />
 
@@ -340,5 +341,39 @@ export const Toolbar = ({
         <UserMenu />
       </div>
     </div>
+  );
+};
+
+/** A score as a small ring with its number inside; the toolbar's whole readout. */
+const MiniRing = ({ score, color }: { score: number; color: string }) => {
+  const radius = 11;
+  const circumference = 2 * Math.PI * radius;
+  const clamped = Math.max(0, Math.min(100, score));
+
+  return (
+    <span className="relative inline-flex h-7 w-7 flex-none items-center justify-center">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+        <circle cx="14" cy="14" r={radius} fill="none" stroke="var(--app-border)" strokeWidth="3" />
+        <circle
+          cx="14"
+          cy="14"
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeDasharray={`${(clamped / 100) * circumference} ${circumference}`}
+          transform="rotate(-90 14 14)"
+          style={{ transition: 'stroke-dasharray 420ms ease' }}
+        />
+      </svg>
+      <span
+        className="absolute text-[10px] leading-none font-bold tabular-nums"
+        style={{ color }}
+        aria-label={`ATS score ${clamped}`}
+      >
+        {clamped}
+      </span>
+    </span>
   );
 };

@@ -73,7 +73,10 @@ export const IMPORT_MIME = {
 export const IMPORT_ACCEPT = `${IMPORT_MIME.pdf},${IMPORT_MIME.docx},image/*`;
 
 export const ROUTES = {
-  editor: '/',
+  /** The landing page and the reader's list of CVs. */
+  home: '/',
+  /** The editor itself. Sign-in sends the reader back here. */
+  editor: '/editor',
   print: '/print',
   api: {
     pdf: '/api/pdf',

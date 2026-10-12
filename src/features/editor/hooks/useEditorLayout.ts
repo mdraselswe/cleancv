@@ -81,8 +81,8 @@ export const useEditorLayout = (documentId?: string): EditorLayout => {
   const [tab, setTab] = useState<EditorTab>('edit');
   const [zoom, setZoomValue] = useState<number>(ZOOM.default);
   const [zoomMode, setZoomMode] = useState<ZoomMode>('fit');
-  // The desktop column is there on arrival; the tablet's drawer is not.
-  const [columnOpen, setColumnOpen] = useState(true);
+  // The score is a drawer at every width that has room for two panes: the
+  // number lives in the top bar all the time, and the breakdown is a visit.
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   /*
@@ -115,15 +115,9 @@ export const useEditorLayout = (documentId?: string): EditorLayout => {
     }, []),
     // Reset means "fit the pane again", not "go back to 75%".
     resetZoom: useCallback(() => setZoomMode('fit'), []),
-    scoreOpen: isDesktop ? columnOpen : drawerOpen,
-    toggleScore: useCallback(
-      () => (isDesktop ? setColumnOpen((open) => !open) : setDrawerOpen((open) => !open)),
-      [isDesktop],
-    ),
-    closeScore: useCallback(
-      () => (isDesktop ? setColumnOpen(false) : setDrawerOpen(false)),
-      [isDesktop],
-    ),
+    scoreOpen: drawerOpen,
+    toggleScore: useCallback(() => setDrawerOpen((open) => !open), []),
+    closeScore: useCallback(() => setDrawerOpen(false), []),
     dismissScoreOverlay: useCallback(() => setDrawerOpen(false), []),
     shortcutsOpen,
     setShortcutsOpen,
