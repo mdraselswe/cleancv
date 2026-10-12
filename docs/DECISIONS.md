@@ -1721,3 +1721,25 @@ Underline is `~~` rather than `__` because `__x__` cannot be told apart from ita
 `mailto:`, so a stored string can never render `javascript:`. In the designed PDF a link prints its
 label; the ATS design un-hides the address after it (`.atp .rz-link__url`), because a plain-text
 parser reads only what is drawn. The editor never binds Ctrl+K — the library owns it.
+
+## ADR-055 — Server copies are opt-in, capped at three, and expire when idle
+
+**Context.** Signing in used to upload every CV, automatically. For a free service that is an
+open-ended storage bill: nothing bounded how many CVs one account held or how large they were, and
+photographs are embedded in each.
+
+**Decision.** A CV is on the server only when its reader switches it on (`DocumentMeta.cloud`, off by
+default). An account keeps at most `CLOUD_SYNC.maxDocuments` (3), each at most `CLOUD_SYNC.maxBytes`
+(200 KB, photograph included). The limit is enforced in `/api/resumes/sync`, checked first in the
+browser with the same `checkCloudDocument` so the message says one number. Stopping sync writes a
+tombstone marked `unsynced` in an otherwise unused column, so the reader's other devices keep the CV
+and clear their flag instead of deleting it — no schema migration. A different account signing in on
+the same browser clears the flags (`STORAGE_KEYS.cloudOwner`), so it never uploads the previous
+person's CVs. The admin page lists accounts holding server copies with their last activity and size,
+and can delete the copies of one account or of every account idle `CLOUD_SYNC.inactiveMonths` (6)
+months — the list is recomputed on the server at the click. Only the copies go; the account and every
+CV in a reader's own browser stay.
+
+**Consequence.** The cap, the size and the idle period are quoted on the home page, the features
+page, the privacy policy, the terms and the sync controls from the same constants. No warning email
+precedes an idle deletion while mail is limited to Google sign-in; the policy says so.

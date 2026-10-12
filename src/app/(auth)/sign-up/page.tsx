@@ -26,7 +26,7 @@ export default async function SignUpPage({
   return (
     <AuthShell
       title="Create an account"
-      subtitle="A free account unlocks PDF downloads and syncs your CVs across devices."
+      subtitle="A free account unlocks PDF downloads, and lets you keep up to 3 CVs of your choice on your account."
     >
       <SignUpForm
         redirectTo={next}

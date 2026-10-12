@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import {
   APP_NAME,
+  CLOUD_SYNC,
   LEGAL_CONTACT_EMAIL,
   LEGAL_ENTITY,
   LEGAL_ROUTES,
@@ -37,8 +38,9 @@ export const TermsOfService = ({ emailAuth }: TermsOfServiceProps) => (
     <LegalSection id="service" heading="What the service is">
       <p>
         {APP_NAME} is a tool for writing a CV and exporting it as a PDF, run by {LEGAL_ENTITY}. The
-        document you write is stored by your browser and, if you sign in, synced to your account;
-        the service renders it into a PDF when you ask for one. Details are in the{' '}
+        document you write is stored by your browser; up to {CLOUD_SYNC.maxDocuments} CVs you
+        choose can also be kept on your account. The service renders a CV into a PDF when you ask
+        for one. Details are in the{' '}
         <Link href={LEGAL_ROUTES.privacy} className="text-fg underline">
           Privacy Policy
         </Link>
@@ -49,8 +51,9 @@ export const TermsOfService = ({ emailAuth }: TermsOfServiceProps) => (
 
     <LegalSection id="account" heading="Your account">
       <p>
-        A free account is required to download a PDF, and it adds cross-device sync. Editing and
-        everything else works without one.
+        A free account is required to download a PDF. It also lets you keep up to{' '}
+        {CLOUD_SYNC.maxDocuments} CVs of your choice on the server ({CLOUD_SYNC.maxBytes / 1024} KB
+        each); every other CV stays on your device. Editing and everything else works without one.
       </p>
       <LegalList
         items={[
@@ -74,8 +77,8 @@ export const TermsOfService = ({ emailAuth }: TermsOfServiceProps) => (
     <LegalSection id="your-content" heading="What you write stays yours">
       <p>
         Your CV is your work and your property. We claim no rights over it, no licence to it, and no
-        ownership of anything you write, import or export. Signed-in CVs are stored only to provide
-        the sync feature you requested.
+        ownership of anything you write, import or export. A CV is stored on the server only when
+        you switch it to sync, and only to provide that feature.
       </p>
       <p>
         You are responsible for what it says. Do not put someone else&apos;s personal details in it
@@ -122,9 +125,11 @@ export const TermsOfService = ({ emailAuth }: TermsOfServiceProps) => (
 
     <LegalSection id="backups" heading="Keep your own copy">
       <p>
-        Local copies can still be lost when browser data is cleared. Cloud sync protects signed-in
-        CVs across devices, but it is not a substitute for a backup and the service has no uptime or
-        permanent-storage guarantee.
+        Most of your CVs live only on your device, so a cleared browser or a lost machine takes
+        them with it. Syncing up to {CLOUD_SYNC.maxDocuments} CVs protects those across devices,
+        but it is not a substitute for a backup: the service has no uptime or permanent-storage
+        guarantee, and may remove the server copies of an account that has been inactive for{' '}
+        {CLOUD_SYNC.inactiveMonths} months, without notice.
       </p>
       <p>
         Download a JSON backup, or point the app at a workspace folder that a sync service already

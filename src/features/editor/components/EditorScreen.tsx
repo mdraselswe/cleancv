@@ -16,6 +16,7 @@ import {
   LibraryPanel,
   useActiveDocument,
   useCloudSync,
+  useCloudToggle,
   useLibraryReady,
   useLibrarySync,
   useSaveState,
@@ -47,11 +48,12 @@ export const EditorScreen = () => {
   const resume = useResume();
   // Boots the document library and writes the open CV back as it changes.
   useLibrarySync();
-  // Signed-in readers get background cloud sync; guests remain entirely local.
+  // Signed-in readers sync the CVs they switched on (at most three); everything else stays local.
   useCloudSync();
   const ready = useLibraryReady();
   const activeDocument = useActiveDocument();
   const saveState = useSaveState();
+  const cloud = useCloudToggle();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const actions = useResumeActions();
@@ -152,6 +154,12 @@ export const EditorScreen = () => {
       onExportJson={() => json.exportJson(resume)}
       themePreference={theme.preference}
       onCycleTheme={theme.cycle}
+      cloudSynced={Boolean(activeDocument?.cloud)}
+      cloudUsed={cloud.used}
+      cloudMax={cloud.max}
+      onToggleCloud={() => {
+        if (activeDocument) void cloud.toggle(activeDocument.id, !activeDocument.cloud);
+      }}
       atsScore={score.total}
       atsTone={score.tone}
       scorePanelOpen={layout.scoreOpen}

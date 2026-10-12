@@ -36,6 +36,7 @@ export const createDocument = (resume: Resume, name = ''): CvDocument => {
       personName: resume.basics.fullName,
       createdAt: now,
       updatedAt: now,
+      cloud: false,
     },
     resume,
   };

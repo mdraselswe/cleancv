@@ -41,7 +41,7 @@ export const SignInRequiredDialog = ({ onClose }: SignInRequiredDialogProps) => 
         </div>
 
         <p className="text-fg-subtle text-ui leading-relaxed">
-          Your CV stays in this browser, and once you are signed in it is also synced to your account so it follows you to other devices. It is free.
+          Your CV stays in this browser. Signing in does not upload it. You can later choose up to 3 CVs to keep on your account. It is free.
         </p>
 
         <div className="flex flex-col gap-2">

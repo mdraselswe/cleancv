@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   ACCOUNT_DELETION_DAYS,
   APP_NAME,
+  CLOUD_SYNC,
   LEGAL_CONTACT_EMAIL,
   LEGAL_ENTITY,
   LEGAL_ROUTES,
@@ -39,12 +40,16 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
       <LegalList
         items={[
           <>
-            <strong className="text-fg font-semibold">Your CV is local-first.</strong> It is saved
-            in your browser; when you sign in, an account copy is stored for cross-device sync.
+            <strong className="text-fg font-semibold">Your CV is local-first.</strong> Every CV is
+            saved in your browser, on your device.
           </>,
           <>
-            <strong className="text-fg font-semibold">An account stores your synced CVs</strong> as
-            well as your identity and login sessions. Guests do not upload a persistent copy.
+            <strong className="text-fg font-semibold">
+              Up to {CLOUD_SYNC.maxDocuments} CVs, the ones you choose, can also be kept on your
+              account
+            </strong>{' '}
+            so they follow you to other devices. Nothing is uploaded unless you switch a CV to
+            sync. Every other CV stays on your device only.
           </>,
           <>
             <strong className="text-fg font-semibold">
@@ -104,16 +109,21 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
         in your browser, alongside the rest of the document.
       </p>
       <p>
-        When you sign in, your documents—including embedded photographs or signatures—are copied
-        to our database and merged with your other signed-in devices. The newest saved copy wins.
-        Deleting a CV leaves a small marker so an old offline device cannot restore it.
+        Signing in does not upload anything by itself. A CV is copied to our database only after
+        you switch it to <em>sync to my account</em>, and an account can keep at most{' '}
+        {CLOUD_SYNC.maxDocuments} such CVs, each up to {CLOUD_SYNC.maxBytes / 1024} KB including
+        its photograph or signature. Those copies are merged across your signed-in devices; the
+        newest saved copy wins. Stopping sync removes the server copy and leaves the CV on your
+        device. Deleting a synced CV leaves a small marker so an old offline device cannot restore
+        it.
       </p>
     </LegalSection>
 
     <LegalSection id="account" heading="What an account stores">
       <p>
-        A free account is required to download a PDF, and it also provides cloud sync. Writing,
-        designs, ATS scoring, imports, backups and the document library work without an account.
+        A free account is required to download a PDF, and it lets you keep up to{' '}
+        {CLOUD_SYNC.maxDocuments} CVs of your choice on the server. Writing, designs, ATS scoring,
+        imports, backups and the document library work without an account.
       </p>
       <p>When you create an account, our database holds:</p>
       <LegalList
@@ -134,7 +144,7 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
               ]
             : []),
           'Counters keyed by IP address, used to rate-limit sign-in attempts.',
-          'The CV documents you sync, their names and timestamps, and deletion markers for CVs removed on another device.',
+          `The CVs you chose to sync (at most ${CLOUD_SYNC.maxDocuments}), their names and timestamps, and deletion markers for CVs removed on another device.`,
         ]}
       />
     </LegalSection>
@@ -142,7 +152,8 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
     <LegalSection id="transit" heading="When your CV does reach our server">
       <p>
         Cloud sync, PDF export, and optional smart import send document content off your device.
-        Sync starts only after you sign in; the other two start only when you request them.
+        Sync applies only to a CV you switched on, after you sign in; the other two start only
+        when you request them.
       </p>
       <p>
         <strong className="text-fg font-semibold">Downloading a PDF.</strong> The PDF is rendered by
@@ -218,6 +229,12 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
         Account data is kept while the account exists. Ask us to delete it and everything above is
         removed within {ACCOUNT_DELETION_DAYS} days, sessions included. Expired sessions and used
         tokens are deleted as they expire, without being asked.
+      </p>
+      <p>
+        Server copies of CVs are removed for an account that has been inactive for{' '}
+        {CLOUD_SYNC.inactiveMonths} months, at our discretion and without a notice. The account
+        itself, and every CV in your own browsers, are not affected, and you can switch a CV back
+        to sync at any time.
       </p>
       <p>
         Your CV is kept for exactly as long as you keep it, because it is on your machine. Deleting

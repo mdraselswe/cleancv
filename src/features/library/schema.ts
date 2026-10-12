@@ -19,6 +19,11 @@ export const documentMetaSchema = z.object({
   personName: z.string().trim().max(120).catch('').default(''),
   createdAt: z.number().int().catch(0).default(0),
   updatedAt: z.number().int().catch(0).default(0),
+  /**
+   * Whether this CV is also kept on the server, under the signed-in account.
+   * Off unless the reader turned it on: sync is opt-in, and capped per account.
+   */
+  cloud: z.boolean().catch(false).default(false),
 });
 
 export const cvDocumentSchema = z.object({

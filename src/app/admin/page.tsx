@@ -13,11 +13,15 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
-import { APP_NAME, AUTH_ROUTES, REDIRECT_PARAM, ROUTES } from '@/constants';
+import { APP_NAME, AUTH_ROUTES, CLOUD_SYNC, REDIRECT_PARAM, ROUTES } from '@/constants';
+import { inactiveCutoff, listCloudAccounts } from '@/server/admin/cloudCopies';
 import { getSessionUser } from '@/server/auth/session';
 import { db } from '@/server/db';
 import { anonymousVisitor, cvDocument, session, user as userTable } from '@/server/db/schema';
 import { serverEnv } from '@/server/env';
+
+import { deleteAccountCloudCopies, deleteInactiveCloudCopies } from './actions';
+import { ConfirmSubmit } from './ConfirmSubmit';
 
 export const metadata: Metadata = {
   title: `Usage dashboard — ${APP_NAME}`,
@@ -56,7 +60,8 @@ export default async function AdminPage() {
   if (currentUser.email.toLowerCase() !== ownerEmail) notFound();
 
   const database = db();
-  const [users, sessions, documents, guests] = await Promise.all([
+  const [cloudAccounts, users, sessions, documents, guests] = await Promise.all([
+    listCloudAccounts(),
     database
       .select({
         id: userTable.id,
@@ -109,6 +114,7 @@ export default async function AdminPage() {
   // This is a dynamic server page; activity windows intentionally use request time.
   // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
+  const inactiveRows = cloudAccounts.filter((row) => row.lastActiveAt < inactiveCutoff(now));
   const verified = rows.filter((user) => user.emailVerified).length;
   const activeToday = rows.filter((user) => now - user.lastActiveAt <= DAY_MS).length;
   const activeMonth = rows.filter((user) => now - user.lastActiveAt <= 30 * DAY_MS).length;
@@ -164,6 +170,89 @@ export default async function AdminPage() {
           <Stat icon={<Activity size={17} />} label="Active today" value={activeToday} />
           <Stat icon={<CalendarDays size={17} />} label="Active 30 days" value={activeMonth} />
           <Stat icon={<Cloud size={17} />} label="Synced CVs" value={syncedCvs} />
+        </section>
+
+        <section className="border-border-base bg-surface/90 rounded-panel overflow-hidden border shadow-app">
+          <div className="border-border-base flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3.5 sm:px-5">
+            <div>
+              <h2 className="text-fg text-ui-lg font-semibold">Cloud copies</h2>
+              <p className="text-fg-subtle text-ui-xs">
+                Up to {CLOUD_SYNC.maxDocuments} CVs per account, {CLOUD_SYNC.maxBytes / 1024} KB
+                each. Removing a copy never touches the account or anybody&apos;s own device.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-fg-muted text-ui-xs tabular-nums">
+                {cloudAccounts.length} accounts ·{' '}
+                {(cloudAccounts.reduce((total, row) => total + row.bytes, 0) / 1024).toFixed(0)} KB
+              </span>
+              <form action={deleteInactiveCloudCopies}>
+                <ConfirmSubmit
+                  disabled={inactiveRows.length === 0}
+                  message={`Delete the cloud CVs of ${inactiveRows.length} account(s) inactive for ${CLOUD_SYNC.inactiveMonths}+ months? This cannot be undone. Their own devices keep their copies.`}
+                  className="bg-danger text-ui rounded-control px-3 py-1.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
+                >
+                  Delete inactive ({CLOUD_SYNC.inactiveMonths}+ months): {inactiveRows.length}
+                </ConfirmSubmit>
+              </form>
+            </div>
+          </div>
+          {cloudAccounts.length === 0 ? (
+            <p className="text-fg-muted p-8 text-center text-sm">No CVs are kept on the server.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead className="bg-surface-2 text-fg-muted text-xs">
+                  <tr>
+                    <th className="px-4 py-2.5 font-semibold">Account</th>
+                    <th className="px-4 py-2.5 font-semibold">Last active</th>
+                    <th className="px-4 py-2.5 font-semibold">CVs</th>
+                    <th className="px-4 py-2.5 font-semibold">Size</th>
+                    <th className="px-4 py-2.5 text-right font-semibold">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-border-base divide-y">
+                  {cloudAccounts.map((account) => {
+                    const stale = account.lastActiveAt < inactiveCutoff(now);
+
+                    return (
+                      <tr key={account.id}>
+                        <td className="px-4 py-3">
+                          <p className="text-fg font-medium">{account.name || 'Unnamed'}</p>
+                          <p className="text-fg-subtle text-xs">{account.email}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={stale ? 'text-danger font-semibold' : 'text-fg-muted'}>
+                            {formatDate(account.lastActiveAt)}
+                          </span>
+                          {stale ? (
+                            <span className="text-danger ml-2 text-xs">
+                              inactive {CLOUD_SYNC.inactiveMonths}+ months
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="text-fg px-4 py-3 tabular-nums">{account.cvCount}</td>
+                        <td className="text-fg-muted px-4 py-3 tabular-nums">
+                          {(account.bytes / 1024).toFixed(0)} KB
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <form action={deleteAccountCloudCopies}>
+                            <input type="hidden" name="userId" value={account.id} />
+                            <ConfirmSubmit
+                              message={`Delete the ${account.cvCount} cloud CV(s) of ${account.email}? This cannot be undone. Their own devices keep their copies.`}
+                              className="border-danger/40 text-danger hover:bg-danger/10 rounded-control text-ui-xs border px-2.5 py-1 font-semibold transition"
+                            >
+                              Delete cloud CVs
+                            </ConfirmSubmit>
+                          </form>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
 
         <section className="border-border-base bg-surface/90 rounded-panel overflow-hidden border shadow-app">

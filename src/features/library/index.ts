@@ -14,11 +14,13 @@ export {
   useLibraryDocuments,
   useLibraryStore,
   useSaveState,
+  type CloudToggleResult,
   type LibraryActions,
   type LibraryStatus,
   type SaveState,
   type WorkspaceState,
 } from './useLibrary';
+export { useCloudToggle } from './useCloudToggle';
 export { useLibraryReady, useLibrarySync } from './useLibrarySync';
 export {
   useCloudSync,

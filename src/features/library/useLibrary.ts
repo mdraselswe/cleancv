@@ -4,7 +4,9 @@ import { create } from 'zustand';
 
 import { LIBRARY_SCHEMA_VERSION, MAX_DOCUMENTS } from '@/constants';
 import { createEmptyResume, useResumeStore, type Resume } from '@/features/resume';
+import { checkCloudDocument, documentBytes, type CloudRefusal } from '@/lib/cloudSync';
 
+import { queueUnsync } from './cloudQueue';
 import {
   createDocument,
   deleteDocument,
@@ -72,6 +74,16 @@ interface LibraryState {
   error: string;
 }
 
+/** Whether a CV could be switched to or from server sync, and why not if it could not. */
+export type CloudToggleResult = { ok: true } | { ok: false; reason: CloudRefusal | 'missing' };
+
+export interface CloudReconcileResult {
+  /** The server no longer keeps these; they stay on this device. */
+  unsynced: string[];
+  /** The server refused these; they stay on this device. */
+  rejected: string[];
+}
+
 export interface LibraryActions {
   /** Loads the index, migrates any pre-library resume, and opens a document. */
   boot: () => Promise<void>;
@@ -93,7 +105,15 @@ export interface LibraryActions {
   /** Merges documents from a backup file or a folder. Returns how many landed. */
   importDocuments: (incoming: CvDocument[]) => Promise<number>;
   /** Applies the canonical result returned by cloud sync. */
-  reconcileCloud: (incoming: CvDocument[], deleted: DeletedDocument[]) => Promise<void>;
+  reconcileCloud: (
+    incoming: CvDocument[],
+    deleted: DeletedDocument[],
+    result?: CloudReconcileResult,
+  ) => Promise<void>;
+  /** Switches one CV on or off for server sync. Opt-in, and capped per account. */
+  setCloud: (id: string, enabled: boolean) => Promise<CloudToggleResult>;
+  /** Turns every CV back to this-device-only — when another account signs in here. */
+  clearCloudFlags: () => Promise<void>;
 }
 
 type LibraryStore = LibraryState & { actions: LibraryActions };
@@ -417,6 +437,10 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
         if (existing && existing.updatedAt >= document.meta.updatedAt) continue;
         if (!existing && byId.size >= MAX_DOCUMENTS) break;
 
+        // A file says nothing about this account's server places: it lands
+        // as it was here, or as this device only.
+        document.meta.cloud = existing?.cloud ?? false;
+
         await writeDocument(document);
         byId.set(document.meta.id, document.meta);
         landed += 1;
@@ -434,7 +458,65 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       return landed;
     },
 
-    reconcileCloud: async (incoming, cloudDeleted) => {
+    setCloud: async (id, enabled) => {
+      const { documents } = get();
+      const target = documents.find((entry) => entry.id === id);
+      if (!target) return { ok: false, reason: 'missing' };
+
+      const stored = await readDocument(id);
+      let meta: DocumentMeta;
+
+      if (enabled) {
+        if (target.cloud) return { ok: true };
+
+        const refusal = checkCloudDocument({
+          bytes: documentBytes(stored?.resume),
+          alreadySynced: false,
+          syncedCount: documents.filter((entry) => entry.cloud).length,
+        });
+
+        if (refusal) return { ok: false, reason: refusal };
+
+        // Newer than any tombstone the server holds for it, so it takes its place back.
+        meta = { ...target, cloud: true, updatedAt: Date.now() };
+      } else {
+        if (!target.cloud) return { ok: true };
+
+        meta = { ...target, cloud: false };
+        queueUnsync(id);
+      }
+
+      if (stored) await writeDocument({ meta, resume: stored.resume });
+      set({ documents: sortByRecent(documents.map((entry) => (entry.id === id ? meta : entry))) });
+      await persistIndex();
+
+      return { ok: true };
+    },
+
+    clearCloudFlags: async () => {
+      const { documents } = get();
+      if (!documents.some((entry) => entry.cloud)) return;
+
+      const next: DocumentMeta[] = [];
+
+      for (const entry of documents) {
+        if (!entry.cloud) {
+          next.push(entry);
+          continue;
+        }
+
+        const meta = { ...entry, cloud: false };
+        const stored = await readDocument(entry.id);
+
+        if (stored) await writeDocument({ meta, resume: stored.resume });
+        next.push(meta);
+      }
+
+      set({ documents: sortByRecent(next) });
+      await persistIndex();
+    },
+
+    reconcileCloud: async (incoming, cloudDeleted, result) => {
       const state = get();
       const localById = new Map(state.documents.map((entry) => [entry.id, entry]));
       const deletionById = new Map<string, number>();
@@ -456,11 +538,36 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
         if (deletedAt >= document.meta.updatedAt) continue;
 
         const local = localById.get(document.meta.id);
-        if (local && local.updatedAt >= document.meta.updatedAt) continue;
+
+        if (local && local.updatedAt >= document.meta.updatedAt) {
+          // The server holds a copy of this one, so it takes a place and says so.
+          if (!local.cloud) {
+            const stored = await readDocument(local.id);
+            const meta = { ...local, cloud: true };
+
+            if (stored) await writeDocument({ meta, resume: stored.resume });
+            localById.set(local.id, meta);
+          }
+
+          continue;
+        }
+
         if (!local && localById.size >= MAX_DOCUMENTS) continue;
 
         await writeDocument(document);
         localById.set(document.meta.id, document.meta);
+      }
+
+      // CVs the server stopped keeping, or refused, go back to this device only.
+      for (const id of [...(result?.unsynced ?? []), ...(result?.rejected ?? [])]) {
+        const local = localById.get(id);
+        if (!local?.cloud) continue;
+
+        const stored = await readDocument(id);
+        const meta = { ...local, cloud: false };
+
+        if (stored) await writeDocument({ meta, resume: stored.resume });
+        localById.set(id, meta);
       }
 
       // The server has acknowledged these tombstones, so its retained copy is

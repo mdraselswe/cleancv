@@ -131,6 +131,10 @@ export const HomeScreen = () => {
                     resume={home.resumes[meta.id]}
                     hue={CARD_HUES[index % CARD_HUES.length]}
                     active={meta.id === home.activeId}
+                    synced={meta.cloud}
+                    syncUsed={home.cloud.used}
+                    syncMax={home.cloud.max}
+                    onToggleSync={() => void home.cloud.toggle(meta.id, !meta.cloud)}
                     onOpen={() => void home.openDocument(meta.id)}
                     onRename={() => home.setRenaming(meta)}
                     onDuplicate={() => void home.duplicateDocument(meta.id)}

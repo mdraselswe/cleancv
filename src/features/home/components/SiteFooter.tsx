@@ -4,6 +4,7 @@ import {
   APP_NAME,
   AUTHOR_LINKEDIN_URL,
   AUTH_ROUTES,
+  CLOUD_SYNC,
   LEGAL_CONTACT_EMAIL,
   LEGAL_ENTITY,
   LEGAL_ROUTES,
@@ -24,8 +25,8 @@ export const SiteFooter = () => (
     <div className="text-fg-subtle text-ui-xs mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 sm:px-6">
       <span className="flex flex-col gap-1">
         <span>
-          {APP_NAME} · free to use · your CVs stay in this browser, and sync to your account only
-          when you sign in.
+          {APP_NAME} · free to use · your CVs stay in this browser; up to {CLOUD_SYNC.maxDocuments} you
+          choose can sync to your account.
         </span>
         <span>
           Built by{' '}

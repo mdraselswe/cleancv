@@ -2,6 +2,8 @@
 
 import {
   ChevronDown,
+  Cloud,
+  CloudOff,
   Download,
   FileJson,
   FileUp,
@@ -71,6 +73,12 @@ export interface ToolbarProps {
   themePreference: ThemePreference;
   onCycleTheme: () => void;
 
+  /** This CV is also kept on the server. */
+  cloudSynced: boolean;
+  cloudUsed: number;
+  cloudMax: number;
+  onToggleCloud: () => void;
+
   atsScore: number;
   atsTone: 'excellent' | 'strong' | 'fair' | 'poor';
   onToggleScorePanel: () => void;
@@ -107,6 +115,10 @@ export const Toolbar = ({
   onExportJson,
   themePreference,
   onCycleTheme,
+  cloudSynced,
+  cloudUsed,
+  cloudMax,
+  onToggleCloud,
   atsScore,
   atsTone,
   onToggleScorePanel,
@@ -132,6 +144,13 @@ export const Toolbar = ({
       onSelect: onRedo,
     },
     { id: 'sep-1', separator: true },
+    {
+      id: 'cloud',
+      label: cloudSynced ? 'Stop syncing this CV' : 'Sync this CV to my account',
+      hint: `${cloudUsed} of ${cloudMax}`,
+      icon: cloudSynced ? <CloudOff size={15} /> : <Cloud size={15} />,
+      onSelect: onToggleCloud,
+    },
     {
       id: 'design',
       label: 'Change the design',
@@ -228,6 +247,26 @@ export const Toolbar = ({
         </button>
 
         <SaveStatus state={saveState} className="hidden md:inline-flex" />
+
+        <button
+          type="button"
+          onClick={onToggleCloud}
+          aria-pressed={cloudSynced}
+          title={
+            cloudSynced
+              ? `Kept on your account (${cloudUsed} of ${cloudMax}). Click to stop syncing.`
+              : `Only on this device. Click to sync it to your account (${cloudUsed} of ${cloudMax} used).`
+          }
+          className={cn(
+            'tap-target rounded-control text-ui-xs hidden items-center gap-1.5 border px-2 py-1 font-semibold transition lg:inline-flex',
+            cloudSynced
+              ? 'border-success/30 bg-success/10 text-success'
+              : 'border-border-base bg-surface/60 text-fg-muted hover:border-primary/30 hover:text-fg',
+          )}
+        >
+          {cloudSynced ? <Cloud size={13} /> : <CloudOff size={13} />}
+          {cloudSynced ? 'Synced' : 'This device only'}
+        </button>
       </div>
 
       <div className="flex flex-none items-center gap-1">

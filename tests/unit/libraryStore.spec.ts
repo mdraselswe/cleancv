@@ -240,11 +240,94 @@ describe('library documents', () => {
         personName: 'Someone Else',
         createdAt: 1,
         updatedAt: Date.now() + 1000,
+        cloud: false,
       },
       resume: useResumeStore.getState().resume,
     };
 
     expect(await useLibraryStore.getState().actions.importDocuments([incoming])).toBe(1);
     expect(useLibraryStore.getState().documents).toHaveLength(2);
+  });
+});
+
+describe('cloud sync places', () => {
+  const boot = async () => {
+    const library = await freshLibrary();
+    await library.useLibraryStore.getState().actions.boot();
+
+    return library;
+  };
+
+  it('starts every CV on this device only', async () => {
+    const { useLibraryStore } = await boot();
+
+    expect(useLibraryStore.getState().documents.every((entry) => !entry.cloud)).toBe(true);
+  });
+
+  it('gives out three places and refuses a fourth', async () => {
+    const { useLibraryStore } = await boot();
+    const { actions } = useLibraryStore.getState();
+
+    for (const name of ['B', 'C', 'D']) await actions.createNew(name);
+
+    const ids = useLibraryStore.getState().documents.map((entry) => entry.id);
+    const results = [];
+
+    for (const id of ids) results.push(await actions.setCloud(id, true));
+
+    expect(results.filter((result) => result.ok)).toHaveLength(3);
+    expect(results[3]).toEqual({ ok: false, reason: 'limit_reached' });
+    expect(useLibraryStore.getState().documents.filter((entry) => entry.cloud)).toHaveLength(3);
+  });
+
+  it('frees a place when a CV stops syncing', async () => {
+    const { useLibraryStore } = await boot();
+    const { actions } = useLibraryStore.getState();
+
+    for (const name of ['B', 'C', 'D']) await actions.createNew(name);
+
+    const ids = useLibraryStore.getState().documents.map((entry) => entry.id);
+    for (const id of ids.slice(0, 3)) await actions.setCloud(id, true);
+
+    await actions.setCloud(ids[0], false);
+
+    expect(await actions.setCloud(ids[3], true)).toEqual({ ok: true });
+  });
+
+  it('puts a CV back on this device only when the server stopped keeping it', async () => {
+    const { useLibraryStore } = await boot();
+    const { actions } = useLibraryStore.getState();
+    const id = useLibraryStore.getState().documents[0].id;
+
+    await actions.setCloud(id, true);
+    await actions.reconcileCloud([], [], { unsynced: [id], rejected: [] });
+
+    expect(useLibraryStore.getState().documents.find((entry) => entry.id === id)?.cloud).toBe(
+      false,
+    );
+  });
+
+  it('never lets a restored file arrive already synced', async () => {
+    const { useLibraryStore, useResumeStore } = await boot();
+    const { actions } = useLibraryStore.getState();
+
+    const landed = await actions.importDocuments([
+      {
+        meta: {
+          id: 'from-a-file',
+          name: 'From a file',
+          personName: '',
+          createdAt: 1,
+          updatedAt: Date.now() + 1000,
+          cloud: true,
+        },
+        resume: useResumeStore.getState().resume,
+      },
+    ]);
+
+    expect(landed).toBe(1);
+    expect(
+      useLibraryStore.getState().documents.find((entry) => entry.id === 'from-a-file')?.cloud,
+    ).toBe(false);
   });
 });

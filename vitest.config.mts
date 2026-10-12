@@ -7,6 +7,9 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // The first test in a file pays for loading the whole module graph, which on a
+    // slow disk is longer than vitest's default five seconds.
+    testTimeout: 30_000,
     include: ['**/*.spec.ts', '**/*.spec.tsx'],
   },
 });

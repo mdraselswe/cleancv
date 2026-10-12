@@ -1,9 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { create } from 'zustand';
 
+import { STORAGE_KEYS } from '@/constants';
 import { useAuthSession } from '@/features/auth';
+import { CLOUD_REFUSAL_MESSAGE, type CloudRefusal } from '@/lib/cloudSync';
+
+import { clearUnsync, takeUnsync } from './cloudQueue';
 
 import { cvDocumentSchema, deletedDocumentSchema } from './schema';
 import { readAllDocuments, readIndex } from './storage';
@@ -32,14 +37,17 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
     try {
       const index = await readIndex();
       const allDocuments = await readAllDocuments(index);
+      // Only what the reader switched on leaves the browser.
       const documents = allDocuments.filter(
-        (document) => document.meta.updatedAt > (uploadedAt.get(document.meta.id) ?? 0),
+        (document) =>
+          document.meta.cloud && document.meta.updatedAt > (uploadedAt.get(document.meta.id) ?? 0),
       );
+      const unsync = takeUnsync();
       const pull = forcePull || !hasPulled;
       const response = await fetch('/api/resumes/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ documents, deleted: index.deleted, pull }),
+        body: JSON.stringify({ documents, deleted: index.deleted, unsync, pull }),
       });
 
       if (!response.ok) {
@@ -50,8 +58,23 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
       const body = (await response.json()) as Record<string, unknown>;
       const remoteDocuments = cvDocumentSchema.array().parse(body.documents);
       const remoteDeleted = deletedDocumentSchema.array().parse(body.deleted);
+      const unsynced = Array.isArray(body.unsynced) ? (body.unsynced as string[]) : [];
+      const refused = Array.isArray(body.rejected)
+        ? (body.rejected as Array<{ id: string; reason: CloudRefusal }>)
+        : [];
 
-      await useLibraryStore.getState().actions.reconcileCloud(remoteDocuments, remoteDeleted);
+      clearUnsync(unsync);
+
+      await useLibraryStore.getState().actions.reconcileCloud(remoteDocuments, remoteDeleted, {
+        unsynced,
+        rejected: refused.map((entry) => entry.id),
+      });
+
+      // Said once per refusal, in words: a CV that quietly stayed local is a CV
+      // the reader believes is safe somewhere it is not.
+      for (const entry of refused) {
+        toast.error(CLOUD_REFUSAL_MESSAGE[entry.reason] ?? 'This CV could not be synced.');
+      }
       for (const document of [...allDocuments, ...remoteDocuments]) {
         uploadedAt.set(document.meta.id, document.meta.updatedAt);
       }
@@ -86,7 +109,10 @@ export const useCloudSync = (): void => {
   const { signedIn, pending, user } = useAuthSession();
   const libraryStatus = useLibraryStore((state) => state.status);
   const signature = useLibraryStore((state) =>
-    [...state.documents.map((entry) => `${entry.id}:${entry.updatedAt}`), ...state.deleted.map((entry) => `${entry.id}:d${entry.deletedAt}`)].join('|'),
+    [
+      ...state.documents.map((entry) => `${entry.id}:${entry.updatedAt}:${entry.cloud ? 1 : 0}`),
+      ...state.deleted.map((entry) => `${entry.id}:d${entry.deletedAt}`),
+    ].join('|'),
   );
 
   const ready = !pending && signedIn && libraryStatus === 'ready';
@@ -105,6 +131,23 @@ export const useCloudSync = (): void => {
       currentUserId = user.id;
       hasPulled = false;
       uploadedAt.clear();
+
+      /*
+       * The sync flags belong to the account that set them. Another account
+       * signing in on the same browser must not inherit them — its sync would
+       * upload the previous person's CVs under its own name.
+       */
+      try {
+        const owner = window.localStorage.getItem(STORAGE_KEYS.cloudOwner);
+
+        if (owner && owner !== user.id) {
+          void useLibraryStore.getState().actions.clearCloudFlags();
+        }
+
+        window.localStorage.setItem(STORAGE_KEYS.cloudOwner, user.id);
+      } catch {
+        // Storage can be blocked; the flags then simply stay as they are.
+      }
     }
 
     const timer = setTimeout(() => void runCloudSync(), 1200);

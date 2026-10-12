@@ -1,6 +1,14 @@
 'use client';
 
-import { Copy, FilePenLine, MoreHorizontal, PencilLine, Trash2 } from 'lucide-react';
+import {
+  Cloud,
+  CloudOff,
+  Copy,
+  FilePenLine,
+  MoreHorizontal,
+  PencilLine,
+  Trash2,
+} from 'lucide-react';
 
 import { Badge, Button, Menu, type Hue, type MenuEntry } from '@/components/ui';
 import type { DocumentMeta } from '@/features/library';
@@ -18,6 +26,11 @@ export interface DocumentCardProps {
   resume: Resume | undefined;
   hue: Hue;
   active: boolean;
+  /** Also kept on the server, under the signed-in account. */
+  synced: boolean;
+  syncUsed: number;
+  syncMax: number;
+  onToggleSync: () => void;
   onOpen: () => void;
   onRename: () => void;
   onDuplicate: () => void;
@@ -37,6 +50,10 @@ export const DocumentCard = ({
   resume,
   hue,
   active,
+  synced,
+  syncUsed,
+  syncMax,
+  onToggleSync,
   onOpen,
   onRename,
   onDuplicate,
@@ -53,6 +70,13 @@ export const DocumentCard = ({
     { id: 'open', label: 'Open', icon: <FilePenLine size={15} />, onSelect: onOpen },
     { id: 'rename', label: 'Rename', icon: <PencilLine size={15} />, onSelect: onRename },
     { id: 'duplicate', label: 'Duplicate', icon: <Copy size={15} />, onSelect: onDuplicate },
+    {
+      id: 'sync',
+      label: synced ? 'Stop syncing' : 'Sync to my account',
+      hint: `${syncUsed} of ${syncMax}`,
+      icon: synced ? <CloudOff size={15} /> : <Cloud size={15} />,
+      onSelect: onToggleSync,
+    },
     { id: 'sep', separator: true },
     { id: 'delete', label: 'Delete', icon: <Trash2 size={15} />, danger: true, onSelect: onDelete },
   ];
@@ -100,6 +124,23 @@ export const DocumentCard = ({
             Edited {formatRelativeTime(meta.updatedAt)}
             {resume ? ` · ${getTemplate(resume.meta.templateId).meta.name}` : ''}
           </p>
+          <button
+            type="button"
+            onClick={onToggleSync}
+            title={
+              synced
+                ? 'Kept on your account. Click to stop syncing.'
+                : `Only on this device. Click to sync (${syncUsed} of ${syncMax} used).`
+            }
+            className={`tap-target text-ui-2xs mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold transition ${
+              synced
+                ? 'bg-success/12 text-success hover:bg-success/20'
+                : 'bg-surface-2 text-fg-subtle hover:text-fg'
+            }`}
+          >
+            {synced ? <Cloud size={11} /> : <CloudOff size={11} />}
+            {synced ? 'Synced to account' : 'This device only'}
+          </button>
         </div>
 
         <Menu

@@ -12,6 +12,7 @@ import {
   readAllDocuments,
   readIndex,
   serializeBackup,
+  useCloudToggle,
   useDocumentResumes,
   useLibraryStore,
   type DocumentMeta,
@@ -31,6 +32,7 @@ export const useHome = () => {
   const { status, documents, activeId, error, actions } = useLibraryStore();
   const resumeActions = useResumeActions();
   const resumes = useDocumentResumes(documents);
+  const cloud = useCloudToggle();
 
   const [renaming, setRenaming] = useState<DocumentMeta | null>(null);
   const [deleting, setDeleting] = useState<DocumentMeta | null>(null);
@@ -185,6 +187,7 @@ export const useHome = () => {
     activeId,
     resumes,
     atLimit,
+    cloud,
     renaming,
     setRenaming,
     deleting,

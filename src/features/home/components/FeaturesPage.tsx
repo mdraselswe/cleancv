@@ -22,6 +22,7 @@ import type { Hue } from '@/components/ui';
 import {
   ACCOUNT_DELETION_DAYS,
   AUTH_ROUTES,
+  CLOUD_SYNC,
   LEGAL_ROUTES,
   MAX_DOCUMENTS,
   PDF_RATE_LIMIT,
@@ -72,7 +73,7 @@ const buildGroups = (): Group[] => {
         {
           icon: UserRound,
           title: 'A free account to download',
-          body: 'Write, design, score and import without signing in. Downloading a PDF needs a free account, which also syncs your CVs across devices.',
+          body: 'Write, design, score and import without signing in. Downloading a PDF needs a free account, which also lets you keep a few CVs on it.',
         },
       ],
     },
@@ -160,8 +161,13 @@ const buildGroups = (): Group[] => {
         },
         {
           icon: Cloud,
-          title: 'Free cloud sync with your account',
-          body: 'Once you are signed in, your CVs are copied to your account so they follow you to other devices. The copy in your browser stays either way.',
+          title: `Up to ${CLOUD_SYNC.maxDocuments} CVs on your account — you choose which`,
+          body: `Switch a CV to sync and it follows you to other devices (up to ${CLOUD_SYNC.maxBytes / 1024} KB each). Every other CV stays on your device only, and nothing is uploaded unless you switch it on.`,
+        },
+        {
+          icon: Database,
+          title: `Cloud copies expire after ${CLOUD_SYNC.inactiveMonths} months idle`,
+          body: 'If an account is not used for six months its server copies may be removed. Your account and your own devices are not affected, and you can sync a CV again any time.',
         },
         {
           icon: HardDrive,

@@ -1,13 +1,14 @@
-import { eq, lte } from 'drizzle-orm';
+import { and, eq, inArray, isNull, lte } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { MAX_DOCUMENTS } from '@/constants';
+import { CLOUD_SYNC, MAX_DOCUMENTS } from '@/constants';
 import {
   cvDocumentSchema,
   deletedDocumentSchema,
   type CvDocument,
   type DeletedDocument,
 } from '@/features/library/schema';
+import { checkCloudDocument, documentBytes, type CloudRefusal } from '@/lib/cloudSync';
 import { getSessionUser } from '@/server/auth/session';
 import { db } from '@/server/db';
 import { cvDocument } from '@/server/db/schema';
@@ -15,9 +16,24 @@ import { cvDocument } from '@/server/db/schema';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+/**
+ * Marks a tombstone as "stopped syncing" rather than "deleted".
+ *
+ * Kept in `personName`, which is unused on a tombstone, so no migration is
+ * needed. The distinction matters to the reader's other devices: a deleted CV
+ * is removed from them, a CV that merely stopped syncing stays where it is and
+ * simply goes back to being theirs alone.
+ */
+const UNSYNCED_MARK = 'unsynced';
+
 const syncRequestSchema = z.object({
   documents: z.array(cvDocumentSchema).max(MAX_DOCUMENTS),
   deleted: z.array(deletedDocumentSchema).max(MAX_DOCUMENTS * 2),
+  /** CVs the reader chose to stop keeping on the server. */
+  unsync: z
+    .array(z.string().min(1))
+    .max(MAX_DOCUMENTS)
+    .default([]),
   /** Initial/manual sync pulls the canonical library; autosaves only push deltas. */
   pull: z.boolean().default(true),
 });
@@ -25,7 +41,14 @@ const syncRequestSchema = z.object({
 const unauthorized = () =>
   Response.json({ error: 'Sign in to sync CVs across your devices.' }, { status: 401 });
 
-/** Merge a browser's local library into its owner's canonical cloud library. */
+/**
+ * Merge the CVs a browser chose to sync into the account's cloud copies.
+ *
+ * Opt-in and capped: only CVs the reader switched on arrive here, and the
+ * account keeps at most `CLOUD_SYNC.maxDocuments` of them, each at most
+ * `CLOUD_SYNC.maxBytes`. The cap is enforced here and not only in the browser,
+ * because a limit that lives in the client is a suggestion.
+ */
 export async function POST(request: Request) {
   const user = await getSessionUser(request.headers, { fresh: true });
   if (!user) return unauthorized();
@@ -39,9 +62,42 @@ export async function POST(request: Request) {
   }
 
   const database = db();
+  const now = Date.now();
+
+  // Which CVs hold a place right now. A tombstone holds none.
+  const live = new Set(
+    (
+      await database
+        .select({ id: cvDocument.id })
+        .from(cvDocument)
+        .where(and(eq(cvDocument.userId, user.id), isNull(cvDocument.deletedAt)))
+    ).map((row) => row.id),
+  );
+
+  // Stopping first, so the place it frees can be taken by a CV in this request.
+  if (input.unsync.length > 0) {
+    await database
+      .update(cvDocument)
+      .set({ resume: null, name: '', personName: UNSYNCED_MARK, updatedAt: now, deletedAt: now })
+      .where(and(eq(cvDocument.userId, user.id), inArray(cvDocument.id, input.unsync)));
+
+    for (const id of input.unsync) live.delete(id);
+  }
+
+  const rejected: Array<{ id: string; reason: CloudRefusal }> = [];
 
   for (const document of input.documents) {
     const { meta, resume } = document;
+    const refusal = checkCloudDocument({
+      bytes: documentBytes(resume),
+      alreadySynced: live.has(meta.id),
+      syncedCount: live.size,
+    });
+
+    if (refusal) {
+      rejected.push({ id: meta.id, reason: refusal });
+      continue;
+    }
 
     await database
       .insert(cvDocument)
@@ -67,6 +123,8 @@ export async function POST(request: Request) {
         },
         setWhere: lte(cvDocument.updatedAt, meta.updatedAt),
       });
+
+    live.add(meta.id);
   }
 
   for (const deletion of input.deleted) {
@@ -86,6 +144,7 @@ export async function POST(request: Request) {
         target: [cvDocument.userId, cvDocument.id],
         set: {
           resume: null,
+          personName: '',
           updatedAt: deletion.deletedAt,
           deletedAt: deletion.deletedAt,
         },
@@ -99,10 +158,12 @@ export async function POST(request: Request) {
 
   const documents: CvDocument[] = [];
   const deleted: DeletedDocument[] = [];
+  const unsynced: string[] = [];
 
   for (const row of rows) {
     if (row.deletedAt) {
-      deleted.push({ id: row.id, deletedAt: row.deletedAt });
+      if (row.personName === UNSYNCED_MARK) unsynced.push(row.id);
+      else deleted.push({ id: row.id, deletedAt: row.deletedAt });
       continue;
     }
 
@@ -113,6 +174,7 @@ export async function POST(request: Request) {
         personName: row.personName,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
+        cloud: true,
       },
       resume: row.resume,
     });
@@ -120,5 +182,12 @@ export async function POST(request: Request) {
     if (parsed.success) documents.push(parsed.data);
   }
 
-  return Response.json({ documents, deleted, syncedAt: Date.now() });
+  return Response.json({
+    documents,
+    deleted,
+    unsynced,
+    rejected,
+    syncedAt: now,
+    limits: { documents: CLOUD_SYNC.maxDocuments, bytes: CLOUD_SYNC.maxBytes },
+  });
 }

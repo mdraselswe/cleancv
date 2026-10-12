@@ -18,6 +18,8 @@ export const STORAGE_KEYS = {
   ui: 'cv-maker:ui',
   /** Bring-your-own endpoint config for smart import. Holds an API key. */
   smartImport: 'cv-maker:smart-import',
+  /** Which account this browser's cloud-synced flags belong to. */
+  cloudOwner: 'cv-maker:cloud-owner',
 } as const;
 
 /*
@@ -57,6 +59,22 @@ export const KEYBOARD_SHORTCUTS = [
 
 /** How long after the last edit the active document is written to storage. */
 export const AUTOSAVE_MS = 800;
+
+/**
+ * What an account may keep on the server.
+ *
+ * Everything else stays in the browser it was written in. The three numbers are
+ * quoted on the home page, the features page, both legal documents and the
+ * sync controls, all from here, so the promise and the enforcement are one
+ * value. `maxBytes` bounds a single CV including its photograph — a stored
+ * photo is at most ~120 KB (`IMAGE_BUDGET`), so a normal CV is far under it.
+ */
+export const CLOUD_SYNC = {
+  maxDocuments: 3,
+  maxBytes: 200 * 1024,
+  /** After this long without activity an admin may remove an account's cloud copies. */
+  inactiveMonths: 6,
+} as const;
 
 /** Documents a single browser profile may hold. Beyond this, listing gets unusable. */
 export const MAX_DOCUMENTS = 50;

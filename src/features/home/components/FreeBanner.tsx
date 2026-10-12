@@ -1,7 +1,7 @@
 import { Heart } from 'lucide-react';
 import Link from 'next/link';
 
-import { MAX_DOCUMENTS, PDF_RATE_LIMIT, ROUTES } from '@/constants';
+import { CLOUD_SYNC, MAX_DOCUMENTS, PDF_RATE_LIMIT, ROUTES } from '@/constants';
 
 /**
  * The one line that says what this costs, and the only conditions.
@@ -17,8 +17,9 @@ export const FreeBanner = () => (
       <Heart size={13} className="flex-none" aria-hidden="true" fill="currentColor" />
       <span>
         <strong className="font-extrabold">100% free</strong> — edit with no account; a free
-        account is needed only to download. Limits: {MAX_DOCUMENTS} CVs per browser,{' '}
-        {PDF_RATE_LIMIT.max} PDFs per {PDF_RATE_LIMIT.windowMs / 60000} minutes.
+        account is needed only to download. Limits: {MAX_DOCUMENTS} CVs per browser (up to{' '}
+        {CLOUD_SYNC.maxDocuments} sync to your account), {PDF_RATE_LIMIT.max} PDFs per{' '}
+        {PDF_RATE_LIMIT.windowMs / 60000} minutes.
       </span>
       <Link href={ROUTES.features} className="font-bold underline underline-offset-2">
         See everything included

@@ -35,6 +35,7 @@ import { formatRelativeTime } from '@/lib/date';
 import { cn } from '@/lib/cn';
 
 import { backupFilename, parseBackup, serializeBackup } from '../backup';
+import { useCloudToggle } from '../useCloudToggle';
 import { readAllDocuments, readIndex } from '../storage';
 import { useLibraryStore } from '../useLibrary';
 import { useCloudSyncStore } from '../useCloudSync';
@@ -59,6 +60,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
   const router = useRouter();
   const { signedIn, pending: sessionPending } = useAuthSession();
   const cloud = useCloudSyncStore();
+  const cloudToggle = useCloudToggle();
   const { status, documents, activeId, workspace, error, actions } = useLibraryStore();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -198,6 +200,22 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                       <Button
                         size="icon"
                         variant="ghost"
+                        aria-label={
+                          document.cloud ? `Stop syncing ${title}` : `Sync ${title} to my account`
+                        }
+                        title={
+                          document.cloud
+                            ? `Synced (${cloudToggle.used} of ${cloudToggle.max}). Click to stop.`
+                            : `This device only. Click to sync (${cloudToggle.used} of ${cloudToggle.max} used).`
+                        }
+                        className={document.cloud ? 'text-success' : undefined}
+                        onClick={() => void cloudToggle.toggle(document.id, !document.cloud)}
+                      >
+                        {document.cloud ? <Cloud size={14} /> : <CloudOff size={14} />}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
                         aria-label={`Duplicate ${title}`}
                         title="Duplicate — tailor a copy to one job"
                         disabled={atLimit}
@@ -241,9 +259,11 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                       ? 'Syncing this browser with your account…'
                       : cloud.status === 'error'
                         ? cloud.error
-                        : cloud.lastSyncedAt
-                          ? `Available on your other devices. Last synced ${formatRelativeTime(cloud.lastSyncedAt)}.`
-                          : 'Your CVs will be available anywhere you sign in.'}
+                        : `${cloudToggle.used} of ${cloudToggle.max} CVs are kept on your account${
+                            cloud.lastSyncedAt
+                              ? `, last synced ${formatRelativeTime(cloud.lastSyncedAt)}`
+                              : ''
+                          }. Every other CV stays on this device.`}
                   </p>
                 </div>
                 <Button
@@ -262,8 +282,9 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
             <div className="border-border-base rounded-card mt-3 border p-3">
               <p className="text-fg text-ui font-medium">Use your CVs on every device</p>
               <p className="text-fg-subtle text-ui-xs mt-0.5">
-                A free account is needed to download PDFs, and it also syncs your CVs across
-                devices. Editing stays open to everyone.
+                A free account is needed to download PDFs. It also lets you keep up to{' '}
+                {cloudToggle.max} CVs of your choice on your account so they follow you to other
+                devices. Every other CV stays on this device only.
               </p>
               <Button
                 size="sm"

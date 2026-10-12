@@ -58,6 +58,7 @@ describe('library backups', () => {
       personName: 'Muhammad Rasel',
       createdAt: 1,
       updatedAt: 2,
+      cloud: false,
     },
     resume: createSampleResume(),
   });
