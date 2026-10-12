@@ -198,8 +198,15 @@
   --shadow-sheet: var(--app-shadow-sheet);
 }
 
-* {
-  border-color: var(--app-border);
+/*
+ * In the base layer so a `border-primary` or `border-danger` utility can beat
+ * it. Unlayered, this rule outranked every utility and every border colour set
+ * in a class was silently ignored.
+ */
+@layer base {
+  * {
+    border-color: var(--app-border);
+  }
 }
 
 html,

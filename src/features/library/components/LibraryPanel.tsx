@@ -18,7 +18,16 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-import { Button, Drawer, HueIcon, Input, ModalHeader, SectionLabel, type Hue } from '@/components/ui';
+import {
+  Button,
+  Drawer,
+  HueIcon,
+  Input,
+  Modal,
+  ModalHeader,
+  SectionLabel,
+  type Hue,
+} from '@/components/ui';
 import { AUTH_ROUTES, MAX_DOCUMENTS, REDIRECT_PARAM, ROUTES } from '@/constants';
 import { useAuthSession } from '@/features/auth';
 import { downloadText } from '@/features/export';
@@ -52,6 +61,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
   const cloud = useCloudSyncStore();
   const { status, documents, activeId, workspace, error, actions } = useLibraryStore();
   const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [draftName, setDraftName] = useState('');
   const [notice, setNotice] = useState('');
   const backupInput = useRef<HTMLInputElement>(null);
@@ -200,7 +210,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                         variant="ghost"
                         aria-label={`Delete ${title}`}
                         title="Delete"
-                        onClick={() => void actions.remove(document.id)}
+                        onClick={() => setDeletingId(document.id)}
                       >
                         <Trash2 size={14} />
                       </Button>
@@ -377,6 +387,39 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
           {notice ? <p className="text-fg-muted text-ui-xs mt-2">{notice}</p> : null}
         </div>
       </div>
+      {deletingId ? (
+        <Modal label="Delete CV" onClose={() => setDeletingId(null)} className="max-w-[420px]">
+          <ModalHeader title="Delete this CV?" onClose={() => setDeletingId(null)} />
+          <div className="flex flex-col gap-4 p-4">
+            <p className="text-fg-muted text-ui-md leading-relaxed">
+              <strong className="text-fg">
+                {(() => {
+                  const target = documents.find((entry) => entry.id === deletingId);
+
+                  return target?.name || target?.personName || 'This CV';
+                })()}
+              </strong>{' '}
+              will be removed from this browser. Download a backup first if you might want it back.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setDeletingId(null)}>
+                Keep it
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  const id = deletingId;
+
+                  setDeletingId(null);
+                  void actions.remove(id);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      ) : null}
     </Drawer>
   );
 };

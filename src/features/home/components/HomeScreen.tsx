@@ -1,12 +1,10 @@
 'use client';
 
 import { DatabaseBackup, HardDriveDownload, Plus } from 'lucide-react';
-import Link from 'next/link';
 import { useRef } from 'react';
 
 import { EmptyIllustration } from '@/components/illustrations';
 import { Button, Toaster, type Hue } from '@/components/ui';
-import { APP_NAME, LEGAL_ROUTES } from '@/constants';
 import { ImportDialog } from '@/features/import';
 import { useCloudSync, useLibrarySync } from '@/features/library';
 import { useResume } from '@/features/resume';
@@ -15,7 +13,9 @@ import { useHome } from '../hooks/useHome';
 import { DeleteDialog, RenameDialog } from './DocumentDialogs';
 import { DocumentCard } from './DocumentCard';
 import { HeroSection } from './HeroSection';
+import { FreeBanner } from './FreeBanner';
 import { HomeHeader } from './HomeHeader';
+import { SiteFooter } from './SiteFooter';
 import { HowItWorks } from './HowItWorks';
 import { TemplateStrip } from './TemplateStrip';
 
@@ -46,6 +46,7 @@ export const HomeScreen = () => {
 
   return (
     <div className="bg-bg min-h-dvh">
+      <FreeBanner />
       <HomeHeader />
 
       <main>
@@ -159,21 +160,7 @@ export const HomeScreen = () => {
         </section>
       </main>
 
-      <footer className="border-border-base mt-8 border-t">
-        <div className="text-fg-subtle text-ui-xs mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 sm:px-6">
-          <span>
-            {APP_NAME} · your CVs stay in this browser unless you sign in to sync them.
-          </span>
-          <nav className="flex gap-4">
-            <Link href={LEGAL_ROUTES.privacy} className="hover:text-fg underline">
-              Privacy
-            </Link>
-            <Link href={LEGAL_ROUTES.terms} className="hover:text-fg underline">
-              Terms
-            </Link>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <input
         ref={restoreInput}

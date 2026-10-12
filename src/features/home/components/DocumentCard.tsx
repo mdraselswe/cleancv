@@ -60,7 +60,7 @@ export const DocumentCard = ({
   return (
     <article
       className={cn(
-        `hue-${hue} card-lift group border-border-base bg-surface rounded-panel relative flex flex-col overflow-hidden border`,
+        `hue-${hue} card-lift group border-border-base bg-surface rounded-panel relative flex flex-col border has-[[aria-expanded=true]]:z-30`,
         active && 'border-hue/50 ring-hue/20 ring-2',
       )}
     >
@@ -68,7 +68,7 @@ export const DocumentCard = ({
         type="button"
         onClick={onOpen}
         aria-label={`Open ${title}`}
-        className="bg-dots relative flex flex-col items-center px-4 pt-5 pb-0 text-left"
+        className="bg-dots rounded-t-panel relative flex flex-col items-center overflow-hidden px-4 pt-5 pb-0 text-left"
         style={{
           background:
             'linear-gradient(180deg, var(--hue-soft), color-mix(in srgb, var(--hue) 4%, var(--app-surface)))',

@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { eq } from 'drizzle-orm';
 
-import { ATS_EXPORT_TEMPLATE_ID, type TemplateId } from '@/constants';
+import { ATS_EXPORT_TEMPLATE_ID, PDF_RATE_LIMIT, type TemplateId } from '@/constants';
 import { normalizeResume } from '@/features/resume';
 import { getTemplate, resolvePageBleed } from '@/features/templates';
 import { attachResume } from '@/lib/pdf/attachResume';
@@ -47,7 +47,6 @@ const readPageBreaks = (value: unknown): number[] =>
 
 const badRequest = (message: string) => Response.json({ error: message }, { status: 400 });
 
-const PDF_RATE_LIMIT = { windowMs: 10 * 60 * 1000, max: 20 } as const;
 
 /** Keeps the now-public headless-browser endpoint useful without leaving it unbounded. */
 const checkPdfRateLimit = async (request: Request): Promise<Response | null> => {
