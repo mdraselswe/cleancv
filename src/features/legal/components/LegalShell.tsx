@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 import { APP_NAME, LEGAL_ROUTES, LEGAL_UPDATED, ROUTES } from '@/constants';
@@ -22,8 +22,12 @@ export interface LegalShellProps {
  * be linked to rather than described.
  */
 export const LegalShell = ({ title, summary, children }: LegalShellProps) => (
-  <main className="bg-canvas min-h-dvh">
-    <div className="mx-auto flex w-full max-w-[680px] flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
+  <main className="bg-canvas relative isolate min-h-dvh overflow-hidden">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72">
+      <div className="bg-hue-indigo/15 animate-drift absolute -top-24 left-1/4 h-64 w-64 rounded-full blur-3xl" />
+      <div className="bg-hue-pink/15 animate-drift absolute -top-16 right-1/4 h-56 w-56 rounded-full blur-3xl [animation-delay:-5s]" />
+    </div>
+    <div className="animate-rise mx-auto flex w-full max-w-[680px] flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
       <Link
         href={ROUTES.editor}
         className="tap-target text-fg-muted hover:text-fg text-ui-md inline-flex w-fit items-center gap-1.5 font-medium transition"
@@ -33,7 +37,12 @@ export const LegalShell = ({ title, summary, children }: LegalShellProps) => (
       </Link>
 
       <header className="flex flex-col gap-2">
-        <h1 className="text-fg text-2xl font-semibold sm:text-3xl">{title}</h1>
+        <span className="hue-indigo bg-hue-soft text-hue-strong flex h-11 w-11 items-center justify-center rounded-card">
+          <ShieldCheck size={22} aria-hidden="true" />
+        </span>
+        <h1 className="app-gradient-text w-fit text-3xl font-extrabold tracking-tight sm:text-4xl">
+          {title}
+        </h1>
         <p className="text-fg-muted text-ui-lg leading-relaxed">{summary}</p>
         <p className="text-fg-subtle text-ui-xs">
           Last updated{' '}
@@ -75,7 +84,7 @@ export interface LegalSectionProps {
 /** One numbered part of a document, linkable by its own `id`. */
 export const LegalSection = ({ id, heading, children }: LegalSectionProps) => (
   <section id={id} className="flex scroll-mt-6 flex-col gap-2.5">
-    <h2 className="text-fg text-ui-lg font-semibold">{heading}</h2>
+    <h2 className="text-fg text-ui-lg border-primary/40 border-l-4 pl-3 font-bold">{heading}</h2>
     <div className="text-fg-muted text-ui-md flex flex-col gap-2.5 leading-relaxed">{children}</div>
   </section>
 );

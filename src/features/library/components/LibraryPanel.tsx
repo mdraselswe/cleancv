@@ -5,6 +5,7 @@ import {
   Cloud,
   CloudOff,
   Copy,
+  FileText,
   DownloadCloud,
   FolderOpen,
   FolderSync,
@@ -17,7 +18,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-import { Button, Drawer, Input, ModalHeader, SectionLabel } from '@/components/ui';
+import { Button, Drawer, HueIcon, Input, ModalHeader, SectionLabel, type Hue } from '@/components/ui';
 import { AUTH_ROUTES, MAX_DOCUMENTS, REDIRECT_PARAM, ROUTES } from '@/constants';
 import { useAuthSession } from '@/features/auth';
 import { downloadText } from '@/features/export';
@@ -30,6 +31,8 @@ import { useLibraryStore } from '../useLibrary';
 import { useCloudSyncStore } from '../useCloudSync';
 
 const BACKUP_INPUT_ID = 'cv-library-backup-input';
+
+const ROW_HUES: readonly Hue[] = ['indigo', 'pink', 'amber', 'emerald', 'violet', 'sky', 'rose', 'teal'];
 
 export interface LibraryPanelProps {
   open: boolean;
@@ -123,7 +126,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
         </Button>
 
         <ul className="flex flex-col gap-2">
-          {documents.map((document) => {
+          {documents.map((document, index) => {
             const isActive = document.id === activeId;
             const title = document.name || document.personName || 'Untitled CV';
 
@@ -131,8 +134,8 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
               <li
                 key={document.id}
                 className={cn(
-                  'rounded-card border px-3 py-2.5 transition',
-                  isActive ? 'border-primary bg-primary-soft' : 'border-border-base',
+                  `hue-${ROW_HUES[index % ROW_HUES.length]} rounded-card card-lift border px-3 py-2.5 transition`,
+                  isActive ? 'border-hue/60 bg-hue-soft' : 'border-border-base bg-surface',
                 )}
               >
                 {renamingId === document.id ? (
@@ -153,7 +156,10 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <HueIcon hue={ROW_HUES[index % ROW_HUES.length]} solid={isActive}>
+                      <FileText size={16} />
+                    </HueIcon>
                     <button
                       type="button"
                       onClick={() => void actions.open(document.id)}
@@ -215,9 +221,9 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
           {!sessionPending && signedIn ? (
             <div className="border-border-base rounded-card mt-3 border p-3">
               <div className="flex items-start gap-2.5">
-                <span className="bg-primary-soft text-primary rounded-control flex h-8 w-8 flex-none items-center justify-center">
+                <HueIcon hue={cloud.status === 'error' ? 'rose' : 'sky'}>
                   {cloud.status === 'error' ? <CloudOff size={16} /> : <Cloud size={16} />}
-                </span>
+                </HueIcon>
                 <div className="min-w-0 flex-1">
                   <p className="text-fg text-ui font-medium">Cloud sync</p>
                   <p className="text-fg-subtle text-ui-xs mt-0.5">
@@ -267,7 +273,12 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
 
           {workspace.supported ? (
             <div className="border-border-base rounded-card mt-3 border p-3">
-              <p className="text-fg text-ui font-medium">Workspace folder</p>
+              <div className="flex items-center gap-2">
+                <HueIcon hue="amber" size="sm">
+                  <FolderOpen size={14} />
+                </HueIcon>
+                <p className="text-fg text-ui font-medium">Workspace folder</p>
+              </div>
               <p className="text-fg-subtle text-ui-xs mt-0.5">
                 {workspace.folderName
                   ? `Saving every CV into “${workspace.folderName}”. Last write ${formatRelativeTime(workspace.lastSyncedAt)}.`

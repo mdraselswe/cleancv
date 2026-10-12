@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, Type } from 'lucide-react';
+import { useState } from 'react';
 
 import { Badge, ColorPicker, HueIcon, SectionLabel, Select, Slider, Switch } from '@/components/ui';
 import {
@@ -47,10 +48,36 @@ export const DesignSection = () => {
   const actions = useResumeActions();
   const { theme, templateId } = resume.meta;
   const active = getTemplate(templateId);
+  const [filter, setFilter] = useState<'all' | (typeof TEMPLATE_CATEGORIES)[number]>('all');
 
   return (
     <div className="flex flex-col gap-6">
+      <div
+        role="group"
+        aria-label="Filter designs"
+        className="scroll-none -mx-1 flex gap-1.5 overflow-x-auto px-1 py-0.5"
+      >
+        {(['all', ...TEMPLATE_CATEGORIES] as const).map((value) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={filter === value}
+            onClick={() => setFilter(value)}
+            className={cn(
+              'tap-target text-ui flex-none rounded-full border px-3 py-1 font-medium whitespace-nowrap transition',
+              filter === value
+                ? 'app-gradient-bg border-transparent text-white shadow-sm'
+                : 'border-border-base bg-surface text-fg-muted hover:border-primary/40 hover:text-fg',
+            )}
+          >
+            {value === 'all' ? 'All designs' : TEMPLATE_CATEGORY_LABEL[value]}
+          </button>
+        ))}
+      </div>
+
       {TEMPLATE_CATEGORIES.map((category) => {
+        if (filter !== 'all' && filter !== category) return null;
+
         const templates = getTemplatesByCategory(category);
         if (templates.length === 0) return null;
 
@@ -73,10 +100,10 @@ export const DesignSection = () => {
                     aria-pressed={selected}
                     title={meta.description}
                     className={cn(
-                      'group rounded-card flex flex-col overflow-hidden border text-left transition',
+                      'group card-lift rounded-card flex flex-col overflow-hidden border text-left',
                       selected
                         ? 'border-primary ring-primary/30 ring-2'
-                        : 'border-border-base hover:border-border-strong',
+                        : 'border-border-base hover:border-primary/40',
                     )}
                   >
                     <span className="bg-canvas relative flex justify-center overflow-hidden p-2">
