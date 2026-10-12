@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { MAX_DOCUMENTS, ROUTES, type TemplateId } from '@/constants';
@@ -34,8 +34,16 @@ export const useHome = () => {
 
   const [renaming, setRenaming] = useState<DocumentMeta | null>(null);
   const [deleting, setDeleting] = useState<DocumentMeta | null>(null);
-  /** The blank document an import is being written into, until it is applied. */
-  const [importTarget, setImportTarget] = useState<string | null>(null);
+  /*
+   * The blank document an import is being written into, until it is applied.
+   *
+   * A ref beside the flag, not state alone: the dialog calls `onApply` and then
+   * `onClose` in the same tick, and `onClose` would otherwise still see the
+   * target from the render before the apply and delete the document the import
+   * had just filled in — which is how an import landed on an empty page.
+   */
+  const importTarget = useRef<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const atLimit = documents.length >= MAX_DOCUMENTS;
 
@@ -119,24 +127,28 @@ export const useHome = () => {
     if (!guardLimit()) return;
 
     await actions.createNew('');
-    setImportTarget(useLibraryStore.getState().activeId);
+    importTarget.current = useLibraryStore.getState().activeId;
+    setImporting(true);
   }, [actions, guardLimit]);
 
   const applyImport = useCallback(
     (next: Resume) => {
       resumeActions.replaceResume(next);
-      setImportTarget(null);
+      // Cleared before the dialog's own `onClose` runs, so it is not treated as a cancel.
+      importTarget.current = null;
+      setImporting(false);
       goToEditor();
     },
     [goToEditor, resumeActions],
   );
 
   const cancelImport = useCallback(async () => {
-    const target = importTarget;
+    const target = importTarget.current;
 
-    setImportTarget(null);
+    importTarget.current = null;
+    setImporting(false);
     if (target) await actions.remove(target);
-  }, [actions, importTarget]);
+  }, [actions]);
 
   const restoreBackup = useCallback(
     async (file: File) => {
@@ -177,7 +189,7 @@ export const useHome = () => {
     setRenaming,
     deleting,
     setDeleting,
-    importing: importTarget !== null,
+    importing,
     createBlank,
     createFromSample,
     createFromTemplate,
