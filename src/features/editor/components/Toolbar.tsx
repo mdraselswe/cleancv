@@ -310,8 +310,7 @@ export const Toolbar = ({
               )
             }
           >
-            <span className="hidden sm:inline">Download</span>
-            <span className="sm:hidden">PDF</span>
+            Download
           </Button>
           <Menu
             label="Download options"
