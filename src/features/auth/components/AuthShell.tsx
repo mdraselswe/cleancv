@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { BrandMark } from '@/components/brand';
+import { EmptyIllustration } from '@/components/illustrations';
 import { APP_NAME, LEGAL_ROUTES, ROUTES } from '@/constants';
 
 /**
@@ -21,17 +22,27 @@ export interface AuthShellProps {
 }
 
 export const AuthShell = ({ title, subtitle, children, footer }: AuthShellProps) => (
-  <main className="bg-canvas flex min-h-dvh flex-col items-center justify-center px-4 py-10">
-    <div className="flex w-full max-w-[400px] flex-col gap-5">
+  <main className="bg-canvas relative isolate flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 py-10">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+      <div className="bg-hue-indigo/20 animate-drift absolute -top-20 -left-20 h-72 w-72 rounded-full blur-3xl" />
+      <div className="bg-hue-pink/20 animate-drift absolute -right-16 bottom-0 h-72 w-72 rounded-full blur-3xl [animation-delay:-6s]" />
+      <div className="bg-dots absolute inset-0 [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]" />
+    </div>
+
+    <div className="animate-rise flex w-full max-w-[400px] flex-col gap-5">
       <Link
         href={ROUTES.editor}
         className="tap-target text-fg-muted hover:text-fg text-ui-md mx-auto inline-flex items-center gap-2 font-semibold transition"
       >
-        <BrandMark className="h-6 w-6" />
-        {APP_NAME}
+        <BrandMark className="h-8 w-8" />
+        <span className="app-gradient-text text-ui-lg font-extrabold tracking-tight">{APP_NAME}</span>
       </Link>
 
-      <div className="border-border-base bg-surface rounded-panel shadow-pop flex flex-col gap-4 border p-5 sm:p-6">
+      <div className="mx-auto -mb-2 w-28">
+        <EmptyIllustration />
+      </div>
+
+      <div className="border-border-base bg-surface rounded-panel shadow-pop flex flex-col gap-4 border p-5 backdrop-blur sm:p-6">
         <header className="flex flex-col gap-1">
           <h1 className="text-fg text-lg font-semibold">{title}</h1>
           {subtitle ? (

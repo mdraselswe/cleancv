@@ -1648,3 +1648,20 @@ uploads a file they know the size of and is told nothing about what became of it
 It is deliberately not the same number as `IMAGE_BUDGET.storedBytes`: `imageSchema` drops an
 over-long data URL to `''`, so lowering that ceiling would quietly delete the photograph out of every
 document saved before the day it changed.
+
+## ADR-051 — Home is `/`, the editor is `/editor`
+
+**Context.** `/` was the editor. A reader with several CVs landed in whichever was open last, the
+toolbar carried fourteen actions to compensate, and the section strip scrolled sideways through twelve
+names with no sense of how much was left.
+
+**Decision.** `/` is a home screen — the reader's CVs drawn as their own first pages, the three ways
+to start one, and the designs. `/editor` is the editor. `ROUTES.home` and `ROUTES.editor` name them;
+sign-in redirects land in the editor. Inside the editor the section list is a vertical rail
+(`SectionRail`, a strip on a phone) that shows what has been written, and the score is a drawer at
+every width with two panes, with its number always in the top bar.
+
+**Consequence.** Nothing in the document model, the library, the templates or the PDF pipeline moved.
+`useHome` is the only new place that talks to the library, through the same actions the library panel
+uses. The visitor tracker counts a session once on either route, and the regression suite's
+pagination spec opens `/editor`. Bookmarks to `/` still work; they now show the CV list first.

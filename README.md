@@ -124,7 +124,7 @@ the render of a long CV.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Editor at `localhost:3000` |
+| `npm run dev` | Home at `localhost:3000`, editor at `localhost:3000/editor` |
 | `npm run build` / `npm start` | Production build and server |
 | `npm run lint` | ESLint, including the layer-boundary rules |
 | `npm run typecheck` | `tsc --noEmit` |

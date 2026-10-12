@@ -19,6 +19,12 @@ const STATUS_CLASS: Record<AtsStatus, string> = {
   error: 'text-danger',
 };
 
+const STATUS_TILE: Record<AtsStatus, string> = {
+  pass: 'bg-success/12',
+  warn: 'bg-warning/12',
+  error: 'bg-danger/12',
+};
+
 export interface RuleRowProps {
   rule: EvaluatedRule;
   /** Jumps the editor to wherever the rule's fix lives. */
@@ -40,7 +46,15 @@ export const RuleRow = ({ rule, onNavigate }: RuleRowProps) => {
 
   return (
     <li className="flex gap-2.5 py-2">
-      <Icon size={15} className={cn('mt-0.5 flex-none', STATUS_CLASS[rule.status])} />
+      <span
+        className={cn(
+          'mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-lg',
+          STATUS_TILE[rule.status],
+          STATUS_CLASS[rule.status],
+        )}
+      >
+        <Icon size={14} />
+      </span>
 
       <div className="min-w-0 flex-1">
         <p className="text-ui text-fg font-medium">{rule.label}</p>

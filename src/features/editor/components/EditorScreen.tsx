@@ -284,19 +284,19 @@ export const EditorScreen = () => {
  * that the boxes fill with words.
  */
 const EditorSkeleton = () => (
-  <div className="flex h-full min-h-0 animate-pulse gap-px" aria-hidden="true">
+  <div className="flex h-full min-h-0 gap-px" aria-hidden="true">
     <div className="bg-surface flex min-w-0 flex-1 flex-col gap-3 p-4 lg:max-w-[520px]">
-      <div className="bg-surface-2 rounded-control h-8 w-full" />
-      <div className="bg-surface-2 mt-2 h-4 w-1/3 rounded-lg" />
-      <div className="bg-surface-2 rounded-control h-9 w-full" />
-      <div className="bg-surface-2 mt-2 h-4 w-1/4 rounded-lg" />
-      <div className="bg-surface-2 rounded-control h-9 w-full" />
-      <div className="bg-surface-2 mt-2 h-4 w-2/5 rounded-lg" />
-      <div className="bg-surface-2 rounded-control h-24 w-full" />
+      <div className="skeleton rounded-panel h-24 w-full" />
+      <div className="skeleton mt-2 h-4 w-1/3 rounded-lg" />
+      <div className="skeleton rounded-control h-9 w-full" />
+      <div className="skeleton mt-2 h-4 w-1/4 rounded-lg" />
+      <div className="skeleton rounded-control h-9 w-full" />
+      <div className="skeleton mt-2 h-4 w-2/5 rounded-lg" />
+      <div className="skeleton rounded-control h-24 w-full" />
     </div>
 
     <div className="bg-canvas hidden min-w-0 flex-1 items-start justify-center p-8 md:flex">
-      <div className="bg-surface shadow-sheet aspect-[210/297] w-full max-w-[420px] rounded-sm" />
+      <div className="skeleton shadow-sheet aspect-[210/297] w-full max-w-[420px] rounded-sm" />
     </div>
   </div>
 );

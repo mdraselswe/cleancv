@@ -1,8 +1,8 @@
 'use client';
 
-import { Check } from 'lucide-react';
+import { Check, Type } from 'lucide-react';
 
-import { Badge, ColorPicker, SectionLabel, Select, Slider, Switch } from '@/components/ui';
+import { Badge, ColorPicker, HueIcon, SectionLabel, Select, Slider, Switch } from '@/components/ui';
 import {
   ACCENT_PRESETS,
   DENSITIES,
@@ -117,8 +117,13 @@ export const DesignSection = () => {
         );
       })}
 
-      <div className="border-border-base flex flex-col gap-4 border-t pt-5">
-        <SectionLabel>Typography and spacing</SectionLabel>
+      <div className="border-border-base bg-surface-2/40 rounded-panel flex flex-col gap-4 border p-4">
+        <div className="hue-violet flex items-center gap-2.5">
+          <HueIcon hue="violet" size="sm">
+            <Type size={15} />
+          </HueIcon>
+          <SectionLabel>Typography and spacing</SectionLabel>
+        </div>
 
         <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
           <label className="flex flex-col gap-1.5">

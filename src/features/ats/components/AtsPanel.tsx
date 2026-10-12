@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { TrophyIllustration } from '@/components/illustrations';
 import { Badge, SectionLabel, ScoreRing, Textarea } from '@/components/ui';
 import {
   ATS_CATEGORY_DESCRIPTION,
@@ -97,9 +98,13 @@ export const AtsPanel = ({
 
       {view === 'issues' ? (
         score.issues.length === 0 ? (
-          <p className="rounded-control bg-success/10 text-ui text-success px-3 py-2.5">
-            Nothing outstanding. Download both PDFs and apply.
-          </p>
+          <div className="hue-emerald bg-hue-soft border-hue/20 rounded-card animate-pop flex flex-col items-center gap-1 border px-4 py-5 text-center">
+            <div className="w-28">
+              <TrophyIllustration />
+            </div>
+            <p className="text-fg text-ui-md font-bold">Nothing outstanding</p>
+            <p className="text-fg-muted text-ui">Download both PDFs and apply.</p>
+          </div>
         ) : (
           <ul className="divide-border-base divide-y">
             {score.issues.map((rule) => (

@@ -147,15 +147,14 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
       </SortableList>
 
       {section.canAdd ? (
-        <Button
-          variant="outline"
-          size="sm"
-          className="self-start"
-          leading={<Plus size={14} />}
+        <button
+          type="button"
           onClick={section.add}
+          className="tap-target border-primary/30 text-primary hover:bg-primary-soft hover:border-primary/60 rounded-card text-ui-md flex w-full items-center justify-center gap-2 border-2 border-dashed px-4 py-3 font-semibold transition active:scale-[0.99]"
         >
+          <Plus size={16} />
           {config.addLabel}
-        </Button>
+        </button>
       ) : null}
     </div>
   );
