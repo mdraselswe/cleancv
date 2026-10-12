@@ -1,6 +1,6 @@
 'use client';
 
-import { Field, Input, Tabs, Textarea } from '@/components/ui';
+import { Field, Input, RichTextEditor, Tabs } from '@/components/ui';
 import {
   CUSTOM_SECTION_LAYOUTS,
   CUSTOM_SECTION_LAYOUT_LABEL,
@@ -74,16 +74,15 @@ export const CustomSectionEditor = ({ slot }: CustomSectionEditorProps) => {
       {section.layout === 'paragraph' ? (
         <Field label="Text">
           {({ id: fieldId, describedBy }) => (
-            <Textarea
+            <RichTextEditor
               id={fieldId}
+              aria-label="Text"
               aria-describedby={describedBy}
               rows={5}
               maxLength={LIMITS.summaryChars}
               value={section.text}
               placeholder="A short paragraph."
-              onChange={(event) =>
-                actions.updateCustomSection(id, { text: event.target.value }, `custom:${id}:text`)
-              }
+              onChange={(text) => actions.updateCustomSection(id, { text }, `custom:${id}:text`)}
             />
           )}
         </Field>

@@ -25,6 +25,7 @@ export {
   type EmptyStateProps,
   type SliderProps,
 } from './Misc';
+export { RichTextEditor, type RichTextEditorProps } from './RichTextEditor';
 export { ScoreRing, type ScoreRingProps, type ScoreTone } from './ScoreRing';
 export { Select, type SelectOption, type SelectProps } from './Select';
 export {

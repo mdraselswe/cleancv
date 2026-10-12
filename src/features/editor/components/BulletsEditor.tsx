@@ -1,11 +1,12 @@
 'use client';
 
-import { GripVertical, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
-import { Button, Textarea } from '@/components/ui';
+import { Button, RichTextEditor } from '@/components/ui';
 import { BULLET_WORD_RANGE, LIMITS, METRIC_PATTERN } from '@/constants';
 import { cn } from '@/lib/cn';
-import { wordCount } from '@/lib/text';
+import { stripEmphasis, wordCount } from '@/lib/text';
 
 export interface BulletsEditorProps {
   value: readonly string[];
@@ -21,6 +22,10 @@ export interface BulletsEditorProps {
  * The counters are the point: a bullet without a number is a duty, not an
  * achievement, and it is far cheaper to fix that here than to read about it in
  * the score panel afterwards.
+ *
+ * Each bullet is a small rich text editor, so the number can be made bold where
+ * it is typed. Enter adds the next bullet and Backspace in an empty one removes
+ * it, which is how a list is written without reaching for the mouse.
  */
 export const BulletsEditor = ({
   value,
@@ -29,10 +34,29 @@ export const BulletsEditor = ({
   max = LIMITS.bulletsPerEntry,
   hint,
 }: BulletsEditorProps) => {
+  // The bullet that should take focus when it mounts, after Enter or a removal.
+  const [focusRequest, setFocusRequest] = useState<{ index: number; token: number } | null>(null);
+  const requestFocus = (index: number) =>
+    setFocusRequest((current) => ({ index, token: (current?.token ?? 0) + 1 }));
+
   const update = (index: number, text: string) =>
     onChange(value.map((item, position) => (position === index ? text : item)));
 
   const remove = (index: number) => onChange(value.filter((_, position) => position !== index));
+
+  const insertAfter = (index: number) => {
+    if (value.length >= max) return;
+
+    const next = [...value];
+    next.splice(index + 1, 0, '');
+    requestFocus(index + 1);
+    onChange(next);
+  };
+
+  const removeAndFocusPrevious = (index: number) => {
+    requestFocus(Math.max(0, index - 1));
+    remove(index);
+  };
 
   const move = (index: number, direction: -1 | 1) => {
     const target = index + direction;
@@ -53,44 +77,59 @@ export const BulletsEditor = ({
       </div>
 
       {value.map((bullet, index) => {
-        const count = wordCount(bullet);
-        const hasMetric = METRIC_PATTERN.test(bullet);
+        const plain = stripEmphasis(bullet);
+        const count = wordCount(plain);
+        const hasMetric = METRIC_PATTERN.test(plain);
         const tooLong = count > BULLET_WORD_RANGE.max;
         const tooShort = count > 0 && count < BULLET_WORD_RANGE.min;
 
         return (
           <div key={index} className="flex items-start gap-1.5">
-            <div className="flex flex-col pt-1.5">
+            <div className="flex flex-col pt-1">
               <button
                 type="button"
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
                 aria-label="Move bullet up"
-                className="text-fg-subtle hover:text-fg transition disabled:opacity-30"
+                className="tap-target text-fg-subtle hover:text-fg flex h-6 w-6 items-center justify-center rounded-md transition disabled:opacity-30"
               >
-                <GripVertical size={14} />
+                <ArrowUp size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => move(index, 1)}
+                disabled={index === value.length - 1}
+                aria-label="Move bullet down"
+                className="tap-target text-fg-subtle hover:text-fg flex h-6 w-6 items-center justify-center rounded-md transition disabled:opacity-30"
+              >
+                <ArrowDown size={14} />
               </button>
             </div>
 
-            <div className="flex-1">
-              <Textarea
+            <div className="min-w-0 flex-1">
+              <RichTextEditor
+                aria-label={`${label} ${index + 1}`}
                 value={bullet}
                 rows={2}
                 maxLength={LIMITS.bulletChars}
                 placeholder="Start with a verb, end with a number."
-                onChange={(event) => update(index, event.target.value)}
-              />
-              <div className="text-ui-2xs mt-1 flex flex-wrap items-center gap-2">
-                <span className={cn(tooLong || tooShort ? 'text-warning' : 'text-fg-subtle')}>
-                  {count} words
-                </span>
-                {count > 0 && !hasMetric ? (
-                  <span className="text-warning">
-                    No number yet — what changed, and by how much?
+                autoFocus={focusRequest?.index === index}
+                focusToken={focusRequest?.token}
+                onChange={(text) => update(index, text)}
+                onEnter={() => insertAfter(index)}
+                onBackspaceEmpty={() => removeAndFocusPrevious(index)}
+                footer={
+                  <span className="text-ui-2xs flex flex-wrap items-center justify-end gap-x-2">
+                    {count > 0 && !hasMetric ? (
+                      <span className="text-warning">No number yet — what changed, by how much?</span>
+                    ) : null}
+                    {tooLong ? <span className="text-warning">Trim to two lines.</span> : null}
+                    <span className={cn(tooLong || tooShort ? 'text-warning' : 'text-fg-subtle')}>
+                      {count} words
+                    </span>
                   </span>
-                ) : null}
-                {tooLong ? <span className="text-warning">Trim to two lines.</span> : null}
-              </div>
+                }
+              />
             </div>
 
             <button
@@ -111,7 +150,10 @@ export const BulletsEditor = ({
           variant="ghost"
           className="self-start"
           leading={<Plus size={14} />}
-          onClick={() => onChange([...value, ''])}
+          onClick={() => {
+            requestFocus(value.length);
+            onChange([...value, '']);
+          }}
         >
           Add bullet
         </Button>

@@ -1698,3 +1698,19 @@ needs no mail and hands over an address it has verified, so nothing is left to c
 **Consequence.** Turn it back on by verifying a domain in Resend, setting `EMAIL_FROM` on it and
 `EMAIL_AUTH_ENABLED=true`. Existing password accounts are untouched in the database; they cannot sign
 in with a password while it is off, and linking by verified Google address reaches the same account.
+
+## ADR-054 — Rich text is edited where it is shown, and stays a flat string
+
+**Context.** Bold had been in the grammar since ADR-010, but the only way to produce it was to type
+`**` by hand around the words, in a plain textarea. Nobody did.
+
+**Decision.** `lib/emphasis.ts` owns the grammar — `**bold**`, `_italic_`, both nested — and the
+editor, the templates and the score all read through it. `RichTextEditor` is a contenteditable with
+Bold / Italic / Clear, `Ctrl+B` / `Ctrl+I`, and plain-text paste. The stored value is the same flat
+marker string as before: no schema change, JSON export still readable. The DOM is the source of truth
+while focused and the string follows it, so the caret never jumps; the DOM is rebuilt only for an
+external change and once on blur. Enter adds the next bullet and Backspace in an empty one removes it.
+
+**Consequence.** Intra-word underscores never open emphasis, so identifiers and URLs are safe; an
+unpaired marker is text. Entry notes now render through `RichText` (they printed markers literally
+before). Underline and links are deliberately absent: neither survives the ATS-safe export well.

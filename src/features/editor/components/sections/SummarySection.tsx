@@ -1,11 +1,11 @@
 'use client';
 
-import { Field, Tabs, Textarea } from '@/components/ui';
+import { Field, RichTextEditor, Tabs } from '@/components/ui';
 import { LIMITS, SUMMARY_MODES, SUMMARY_MODE_LABEL, SUMMARY_WORD_RANGE } from '@/constants';
 import type { SummaryMode } from '@/constants';
 import { useResume } from '@/features/resume';
 import { cn } from '@/lib/cn';
-import { wordCount } from '@/lib/text';
+import { stripEmphasis, wordCount } from '@/lib/text';
 
 import { useResumeEdit } from '../../hooks/useResumeEdit';
 
@@ -22,7 +22,7 @@ export const SummarySection = () => {
   const { summary } = useResume();
   const { patch } = useResumeEdit();
 
-  const count = wordCount(summary.text);
+  const count = wordCount(stripEmphasis(summary.text));
   const outOfRange = count > 0 && (count < SUMMARY_WORD_RANGE.min || count > SUMMARY_WORD_RANGE.max);
 
   return (
@@ -41,14 +41,15 @@ export const SummarySection = () => {
         adornment={<span className={cn(outOfRange && 'text-warning')}>{count} words</span>}
       >
         {({ id, describedBy }) => (
-          <Textarea
+          <RichTextEditor
             id={id}
+            aria-label={SUMMARY_MODE_LABEL[summary.mode]}
             aria-describedby={describedBy}
             rows={5}
             maxLength={LIMITS.summaryChars}
             value={summary.text}
             placeholder="Senior Frontend Engineer with 8+ years of experience…"
-            onChange={(event) => patch('summary', { text: event.target.value })}
+            onChange={(text) => patch('summary', { text })}
           />
         )}
       </Field>

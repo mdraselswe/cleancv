@@ -5,6 +5,7 @@ import { isBlank } from '@/lib/text';
 
 import { CategoryIcon } from '../CategoryIcon';
 import { CalendarIcon, PinIcon } from '../Icons';
+import { RichText } from '../RichText';
 
 /**
  * The one entry shape every section and every template uses.
@@ -137,7 +138,11 @@ export const EntryShell = ({
         })}
       </p>
     ) : null}
-    {!isBlank(note) ? <p className="rz-entry__note rz-muted">{note}</p> : null}
+    {!isBlank(note) ? (
+      <p className="rz-entry__note rz-muted">
+        <RichText value={note ?? ''} />
+      </p>
+    ) : null}
 
     {children ? <div className="rz-entry__body">{children}</div> : null}
   </article>

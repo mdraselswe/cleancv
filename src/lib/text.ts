@@ -51,10 +51,7 @@ export const toFileStem = (value: string, fallback = 'resume'): string => {
 };
 
 /**
- * Drops `**bold**` markers, leaving the words.
- *
- * Emphasis is presentation: everything that reasons about the *content* of a
- * resume — word counts, keyword matching, weak-phrase checks — must not see it.
+ * Drops `**bold**` and `_italic_` markers, leaving the words. The grammar lives
+ * in `lib/emphasis.ts`; this is re-exported because callers reach for it here.
  */
-export const stripEmphasis = (value: string): string =>
-  value.replace(/\*\*([^*\n]+)\*\*/g, '$1');
+export { stripEmphasis } from './emphasis';

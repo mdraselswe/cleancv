@@ -1,6 +1,6 @@
 'use client';
 
-import { Field, Input, MonthInput, Select, Textarea, TagInput } from '@/components/ui';
+import { Field, Input, MonthInput, RichTextEditor, Select, TagInput } from '@/components/ui';
 import type { DateRange } from '@/features/resume';
 import { cn } from '@/lib/cn';
 
@@ -64,14 +64,15 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
           adornment={field.max ? `${value.length}/${field.max}` : undefined}
         >
           {({ id, describedBy }) => (
-            <Textarea
+            <RichTextEditor
               id={id}
+              aria-label={field.label}
               aria-describedby={describedBy}
               rows={field.rows ?? 3}
               maxLength={field.max}
               placeholder={field.placeholder}
               value={value}
-              onChange={(event) => onChange(field.key, event.target.value)}
+              onChange={(next) => onChange(field.key, next)}
             />
           )}
         </Field>
