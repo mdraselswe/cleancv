@@ -53,7 +53,7 @@ beforeAll(async () => {
   // A fresh profile boots an empty document; the sample is the shared fixture.
   await page.evaluate(() => {
     const button = [...document.querySelectorAll('button')].find(
-      (element) => (element.textContent ?? '').trim() === 'Load the sample',
+      (element) => (element.textContent ?? '').trim() === 'Fill with example data',
     );
     button?.click();
   });

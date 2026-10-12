@@ -368,6 +368,12 @@ body {
   cursor: text;
 }
 
+.rte a {
+  color: var(--app-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .rte:empty::before {
   content: attr(data-placeholder);
   color: var(--app-fg-subtle);

@@ -88,24 +88,47 @@ export const EditorPane = ({
           <div className="w-44">
             <EmptyIllustration />
           </div>
-          <h2 className="text-fg text-xl font-extrabold tracking-tight">Start your resume</h2>
-          <p className="text-fg-muted text-ui-md max-w-sm leading-relaxed">
-            Fill in the form, or load a worked example to see how a finished resume is put
-            together.
-          </p>
-          <div className="mt-2 flex flex-wrap justify-center gap-2">
-            <Button variant="primary" onClick={actions.loadSample} leading={<Sparkles size={14} />}>
-              Load the sample
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                onStartBlank?.();
-                setActive({ kind: 'section', key: 'contact' });
-              }}
-            >
-              Start blank
-            </Button>
+          <h2 className="text-fg text-xl font-extrabold tracking-tight">
+            How do you want to begin?
+          </h2>
+          <div className="mt-1 flex w-full flex-col gap-3 text-left">
+            <div className="border-border-base bg-surface/70 rounded-card flex flex-col gap-2 border p-3.5">
+              <div>
+                <p className="text-fg text-ui-md font-bold">Write my own CV</p>
+                <p className="text-fg-muted text-ui mt-0.5 leading-snug">
+                  The form opens empty and you type your own details. This is the right choice if
+                  you are making your real CV.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                className="self-start"
+                onClick={() => {
+                  onStartBlank?.();
+                  setActive({ kind: 'section', key: 'contact' });
+                }}
+              >
+                Start with an empty form
+              </Button>
+            </div>
+
+            <div className="border-border-base bg-surface/70 rounded-card flex flex-col gap-2 border p-3.5">
+              <div>
+                <p className="text-fg text-ui-md font-bold">See an example first</p>
+                <p className="text-fg-muted text-ui mt-0.5 leading-snug">
+                  Fills in a made-up CV so you can see how a finished one looks. You can change or
+                  clear every line afterwards.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                className="self-start"
+                onClick={actions.loadSample}
+                leading={<Sparkles size={14} />}
+              >
+                Fill with example data
+              </Button>
+            </div>
           </div>
         </div>
       </div>

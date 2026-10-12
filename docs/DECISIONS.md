@@ -1714,3 +1714,10 @@ external change and once on blur. Enter adds the next bullet and Backspace in an
 **Consequence.** Intra-word underscores never open emphasis, so identifiers and URLs are safe; an
 unpaired marker is text. Entry notes now render through `RichText` (they printed markers literally
 before). Underline and links are deliberately absent: neither survives the ATS-safe export well.
+
+**Amendment — underline and links.** The grammar gained `~~underline~~` and `[label](https://…)`.
+Underline is `~~` rather than `__` because `__x__` cannot be told apart from italic nested in bold
+(`**_x_**`), and not `++` because a CV says "C++, Java, C++". A link exists only for `http(s)` and
+`mailto:`, so a stored string can never render `javascript:`. In the designed PDF a link prints its
+label; the ATS design un-hides the address after it (`.atp .rz-link__url`), because a plain-text
+parser reads only what is drawn. The editor never binds Ctrl+K — the library owns it.

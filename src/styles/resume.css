@@ -237,3 +237,27 @@
   font-style: italic;
   color: inherit;
 }
+
+.rz-u {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+/* A link in body text reads as text, not as chrome: same colour, underlined. */
+.resume-root .rz-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+/*
+ * The address behind a link is printed only by the ATS design. A parser reads
+ * what is drawn, and the designed export has the label for people.
+ */
+.rz-link__url {
+  display: none;
+}
+
+.atp .rz-link__url {
+  display: inline;
+}

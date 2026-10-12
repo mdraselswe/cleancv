@@ -71,7 +71,7 @@ export const HeroSection = ({ onCreate, onSample, onImport, disabled }: HeroSect
             disabled={disabled}
             leading={<Wand2 size={17} />}
           >
-            Try with a sample
+            See an example CV
           </Button>
         </div>
 

@@ -7,12 +7,12 @@ const roundTrip = (value: string) => serializeEmphasis(parseEmphasis(value));
 describe('parseEmphasis', () => {
   it('reads bold, italic and both', () => {
     expect(parseEmphasis('a **b** _c_ **_d_**')).toEqual([
-      { text: 'a ', bold: false, italic: false },
-      { text: 'b', bold: true, italic: false },
-      { text: ' ', bold: false, italic: false },
-      { text: 'c', bold: false, italic: true },
-      { text: ' ', bold: false, italic: false },
-      { text: 'd', bold: true, italic: true },
+      { text: 'a ', bold: false, italic: false, underline: false },
+      { text: 'b', bold: true, italic: false, underline: false },
+      { text: ' ', bold: false, italic: false, underline: false },
+      { text: 'c', bold: false, italic: true, underline: false },
+      { text: ' ', bold: false, italic: false, underline: false },
+      { text: 'd', bold: true, italic: true, underline: false },
     ]);
   });
 
@@ -49,9 +49,9 @@ describe('serializeEmphasis', () => {
   it('keeps edge whitespace outside the markers so the pair stays valid', () => {
     expect(
       serializeEmphasis([
-        { text: 'go ', bold: false, italic: false },
-        { text: 'fast ', bold: true, italic: false },
-        { text: 'now', bold: false, italic: false },
+        { text: 'go ', bold: false, italic: false, underline: false },
+        { text: 'fast ', bold: true, italic: false, underline: false },
+        { text: 'now', bold: false, italic: false, underline: false },
       ]),
     ).toBe('go **fast** now');
   });
@@ -59,9 +59,50 @@ describe('serializeEmphasis', () => {
   it('merges neighbouring spans of one style', () => {
     expect(
       serializeEmphasis([
-        { text: 'a', bold: true, italic: false },
-        { text: 'b', bold: true, italic: false },
+        { text: 'a', bold: true, italic: false, underline: false },
+        { text: 'b', bold: true, italic: false, underline: false },
       ]),
     ).toBe('**ab**');
+  });
+});
+
+describe('underline and links', () => {
+  it('reads underline as ~~', () => {
+    expect(parseEmphasis('a ~~b~~ c')[1]).toEqual({
+      text: 'b',
+      bold: false,
+      italic: false,
+      underline: true,
+    });
+  });
+
+  it('does not let C++ swallow a line', () => {
+    expect(stripEmphasis('C++, Java and C++')).toBe('C++, Java and C++');
+  });
+
+  it('reads a link and keeps only the label for scoring', () => {
+    const spans = parseEmphasis('see [my site](https://example.com) now');
+
+    expect(spans[1]).toMatchObject({ text: 'my site', href: 'https://example.com' });
+    expect(stripEmphasis('see [my site](https://example.com) now')).toBe('see my site now');
+  });
+
+  it('refuses an address that is not http, https or mailto', () => {
+    const value = 'x [bad](javascript:alert(1)) y';
+
+    expect(parseEmphasis(value).some((span) => span.href)).toBe(false);
+    expect(stripEmphasis(value)).toBe(value);
+  });
+
+  it('carries bold inside a link and round-trips it', () => {
+    const value = 'a [**Docs**](https://example.com/d) b';
+
+    expect(parseEmphasis(value)[1]).toMatchObject({ text: 'Docs', bold: true, href: 'https://example.com/d' });
+    expect(roundTrip(value)).toBe(value);
+  });
+
+  it('round-trips underline', () => {
+    expect(roundTrip('a ~~b~~ c')).toBe('a ~~b~~ c');
+    expect(roundTrip('a **~~_b_~~** c')).toBe('a **~~_b_~~** c');
   });
 });

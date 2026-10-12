@@ -103,7 +103,7 @@ export const HomeScreen = () => {
             </div>
           ) : (
             <ul className="stagger grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
-              <li>
+              <li className="relative">
                 <button
                   type="button"
                   onClick={() => void home.createBlank()}
@@ -119,7 +119,13 @@ export const HomeScreen = () => {
               </li>
 
               {home.documents.map((meta, index) => (
-                <li key={meta.id}>
+                <li
+                  key={meta.id}
+                  // The entrance animation gives each item its own stacking
+                  // context, so a menu open in one has to raise the item itself
+                  // or the next card paints over it.
+                  className="relative has-[[aria-expanded=true]]:z-30"
+                >
                   <DocumentCard
                     meta={meta}
                     resume={home.resumes[meta.id]}

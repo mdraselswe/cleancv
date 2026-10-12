@@ -36,6 +36,10 @@ export const useKeyboardShortcuts = (shortcuts: readonly ShortcutHandler[]): voi
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      // Browser autofill and some input methods dispatch a keydown with no
+      // `key` at all; there is nothing to match against and nothing to do.
+      if (typeof event.key !== 'string') return;
+
       const key = event.key.toLowerCase();
       const meta = event.metaKey || event.ctrlKey;
 

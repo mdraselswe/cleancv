@@ -3,7 +3,8 @@ import { Fragment } from 'react';
 import { parseEmphasis, stripEmphasis } from '@/lib/emphasis';
 
 /**
- * Emphasis inside body text, written as `**bold**` and `_italic_`.
+ * Inline formatting inside body text: `**bold**`, `_italic_`, `~~underline~~`
+ * and `[label](https://…)`.
  *
  * The reference document bolds the metric in every bullet — "achieving a **40%
  * improvement**" — and that is most of what makes a dense CV scannable. Storing
@@ -18,6 +19,11 @@ import { parseEmphasis, stripEmphasis } from '@/lib/emphasis';
  * The reference document has exactly this defect. Splitting on whole words —
  * never mid-word — keeps the damage to a missing space rather than a mangled
  * term, and the release gate asserts the bullet text still extracts intact.
+ *
+ * A link prints as its label. The address after it is part of the markup but
+ * hidden by default; the ATS design un-hides it (`.atp .rz-link__url`), because
+ * a plain-text parser sees only what is drawn and an address it cannot read is
+ * an address it cannot follow.
  */
 
 export interface RichTextProps {
@@ -25,7 +31,7 @@ export interface RichTextProps {
 }
 
 export const RichText = ({ value }: RichTextProps) => {
-  if (!value.includes('**') && !value.includes('_')) return <>{value}</>;
+  if (!/[*_[~]/.test(value)) return <>{value}</>;
 
   return (
     <>
@@ -33,7 +39,21 @@ export const RichText = ({ value }: RichTextProps) => {
         let node = <>{span.text}</>;
 
         if (span.italic) node = <em className="rz-em">{node}</em>;
+        if (span.underline) node = <u className="rz-u">{node}</u>;
         if (span.bold) node = <strong className="rz-strong">{node}</strong>;
+
+        if (span.href) {
+          const showsAddress = span.text.trim() !== span.href.replace(/^mailto:/i, '');
+
+          node = (
+            <a href={span.href} className="rz-link" target="_blank" rel="noopener noreferrer">
+              {node}
+              {showsAddress ? (
+                <span className="rz-link__url">{` (${span.href.replace(/^mailto:/i, '')})`}</span>
+              ) : null}
+            </a>
+          );
+        }
 
         return <Fragment key={index}>{node}</Fragment>;
       })}
