@@ -1682,3 +1682,19 @@ was changed in the same commit.
 **Also.** `cn()` now tells `tailwind-merge` the app's own `text-ui-*`, `rounded-*` and `shadow-*`
 names. Unknown to it, `text-ui-lg` read as a colour and erased `text-primary-fg`, so every primary
 button rendered dark text on blue. `tests/unit/cn.spec.ts` pins it.
+
+## ADR-053 — Google is the way in; email-and-password is off until mail can reach anyone
+
+**Context.** Resend's sandbox sender only delivers to the account owner. Every other address got a
+sign-up that answered 200, said "check your inbox", and sent nothing — so nobody but the owner could
+confirm an account, and since downloads need one (ADR-052), nobody could download.
+
+**Decision.** Email-and-password accounts are an opt-in (`EMAIL_AUTH_ENABLED=true`, plus a Resend key
+and sender), checked by `isEmailAuthEnabled()`. Off, Better Auth's `emailAndPassword.enabled` is false
+so the endpoints refuse, the forms show Google only, forgot/reset password redirect to sign-in, and
+the privacy policy and terms drop the sentences about passwords and the email processor. Google
+needs no mail and hands over an address it has verified, so nothing is left to confirm.
+
+**Consequence.** Turn it back on by verifying a domain in Resend, setting `EMAIL_FROM` on it and
+`EMAIL_AUTH_ENABLED=true`. Existing password accounts are untouched in the database; they cannot sign
+in with a password while it is off, and linking by verified Google address reaches the same account.

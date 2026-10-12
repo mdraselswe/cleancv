@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 
 import { TOKEN_PARAM } from '@/constants';
 import { AuthShell, ResetPasswordForm, readParam, type SearchParams } from '@/features/auth';
-import { isAuthConfigured } from '@/server/env';
+import { redirect } from 'next/navigation';
+
+import { AUTH_ROUTES } from '@/constants';
+import { isAuthConfigured, isEmailAuthEnabled } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
@@ -24,6 +27,7 @@ export default async function ResetPasswordPage({
   searchParams: Promise<SearchParams>;
 }) {
   if (!isAuthConfigured()) return <AuthUnavailable />;
+  if (!isEmailAuthEnabled()) redirect(AUTH_ROUTES.signIn);
 
   const token = readParam(await searchParams, TOKEN_PARAM);
 

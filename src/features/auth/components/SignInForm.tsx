@@ -16,6 +16,8 @@ export interface SignInFormProps {
   /** Already reduced to an app-relative path by the page. */
   redirectTo: string;
   googleEnabled: boolean;
+  /** False where mail cannot be sent: Google is then the only way in. */
+  emailEnabled: boolean;
 }
 
 /**
@@ -29,7 +31,7 @@ export interface SignInFormProps {
  * wrong box or nothing at all, and the reader types a long password by hand on
  * a phone, which is where they give up.
  */
-export const SignInForm = ({ redirectTo, googleEnabled }: SignInFormProps) => {
+export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFormProps) => {
   const {
     values,
     errors,
@@ -43,6 +45,17 @@ export const SignInForm = ({ redirectTo, googleEnabled }: SignInFormProps) => {
   } = useSignIn(redirectTo);
 
   const signUpHref = `${AUTH_ROUTES.signUp}?${REDIRECT_PARAM}=${encodeURIComponent(redirectTo)}`;
+
+  if (!emailEnabled) {
+    return (
+      <div className="flex flex-col gap-4">
+        {googleEnabled ? <GoogleButton callbackURL={redirectTo} /> : null}
+        <p className="text-fg-subtle text-ui-md text-center leading-relaxed">
+          New here? The same button creates your account. There is no password to remember.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 
 import { AuthShell, ForgotPasswordForm } from '@/features/auth';
-import { isAuthConfigured } from '@/server/env';
+import { redirect } from 'next/navigation';
+
+import { AUTH_ROUTES } from '@/constants';
+import { isAuthConfigured, isEmailAuthEnabled } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
@@ -17,6 +20,8 @@ export const dynamic = 'force-dynamic';
  */
 export default function ForgotPasswordPage() {
   if (!isAuthConfigured()) return <AuthUnavailable />;
+  // Nothing to reset where there are no passwords, and no mail to send the link by.
+  if (!isEmailAuthEnabled()) redirect(AUTH_ROUTES.signIn);
 
   return (
     <AuthShell

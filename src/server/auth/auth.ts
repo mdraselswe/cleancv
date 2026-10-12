@@ -17,7 +17,13 @@ import {
 
 import { db } from '../db';
 import { authSchema } from '../db/schema';
-import { appUrl, assertAuthConfigured, isGoogleConfigured, serverEnv } from '../env';
+import {
+  appUrl,
+  assertAuthConfigured,
+  isEmailAuthEnabled,
+  isGoogleConfigured,
+  serverEnv,
+} from '../env';
 import { sendEmail } from '../email/send';
 import { resetPasswordEmail, verifyEmail } from '../email/templates';
 
@@ -56,7 +62,12 @@ const createAuth = () => {
     }),
 
     emailAndPassword: {
-      enabled: true,
+      /*
+       * Switched off in the server, not only hidden in the form: with it off the
+       * email endpoints refuse, so nobody can create an unconfirmable account
+       * by calling them directly.
+       */
+      enabled: isEmailAuthEnabled(),
       minPasswordLength: PASSWORD_MIN,
       maxPasswordLength: PASSWORD_MAX,
       /*

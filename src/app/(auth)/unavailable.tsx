@@ -14,14 +14,14 @@ import { AuthNotice, AuthShell } from '@/features/auth';
  */
 export const AuthUnavailable = () => (
   <AuthShell
-    title="Accounts are not set up here"
-    subtitle="This install has no database configured, so there is nothing to sign in to."
+    title="Sign-in is not available here"
+    subtitle="This install has no way to sign in configured, so there is nothing to sign in to."
   >
     <div className="flex flex-col gap-4">
       <AuthNotice tone="info">
-        Set <code className="font-mono">DATABASE_URL</code> and{' '}
-        <code className="font-mono">BETTER_AUTH_SECRET</code>, then restart. See{' '}
-        <code className="font-mono">.env.example</code>.
+        Set <code className="font-mono">DATABASE_URL</code>,{' '}
+        <code className="font-mono">BETTER_AUTH_SECRET</code> and Google credentials, then restart.
+        See <code className="font-mono">.env.example</code>.
       </AuthNotice>
 
       <Link

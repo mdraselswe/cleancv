@@ -25,7 +25,12 @@ const Mail = () => (
   </a>
 );
 
-export const PrivacyPolicy = () => (
+export interface PrivacyPolicyProps {
+  /** Whether email-and-password accounts are on; the policy states only what is true. */
+  emailAuth: boolean;
+}
+
+export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
   <LegalShell
     title="Privacy Policy"
     summary={`How ${APP_NAME} handles your CV, optional cloud sync, and your account.`}
@@ -113,11 +118,21 @@ export const PrivacyPolicy = () => (
       <p>When you create an account, our database holds:</p>
       <LegalList
         items={[
-          'Your name and email address, as you entered them.',
-          'A scrypt hash of your password. The password itself is never stored and cannot be recovered from the hash — that is why a forgotten password is reset rather than looked up.',
+          emailAuth
+            ? 'Your name and email address, as you entered them.'
+            : 'Your name and email address, as Google reports them.',
+          ...(emailAuth
+            ? [
+                'A scrypt hash of your password. The password itself is never stored and cannot be recovered from the hash — that is why a forgotten password is reset rather than looked up.',
+              ]
+            : []),
           'If you signed in with Google: the account identifier Google gives us, and the tokens Google issues for it. We ask Google for your name, email address and profile picture, and nothing else.',
           'One row per active session, holding a session token, the IP address and browser user-agent it was created from, and when it expires. This is what lets you stay signed in, and what makes it possible to sign every other browser out when you reset your password.',
-          'Short-lived tokens for confirming your email address and resetting your password. Each is deleted once it is used, and expires within an hour either way.',
+          ...(emailAuth
+            ? [
+                'Short-lived tokens for confirming your email address and resetting your password. Each is deleted once it is used, and expires within an hour either way.',
+              ]
+            : []),
           'Counters keyed by IP address, used to rate-limit sign-in attempts.',
           'The CV documents you sync, their names and timestamps, and deletion markers for CVs removed on another device.',
         ]}
@@ -166,7 +181,7 @@ export const PrivacyPolicy = () => (
     </LegalSection>
 
     <LegalSection id="processors" heading="Who else touches this data">
-      <p>Four services, each doing one job:</p>
+      <p>{emailAuth ? 'Four' : 'Three'} services, each doing one job:</p>
       <LegalList
         items={[
           <>
@@ -177,11 +192,15 @@ export const PrivacyPolicy = () => (
             <strong className="text-fg font-semibold">Neon</strong> hosts the database that holds
             accounts, sessions and signed-in users&apos; synced CVs.
           </>,
-          <>
-            <strong className="text-fg font-semibold">Resend</strong> sends the two emails this
-            service sends: confirm your address, and reset your password. It receives your email
-            address in order to deliver them.
-          </>,
+          ...(emailAuth
+            ? [
+                <>
+                  <strong className="text-fg font-semibold">Resend</strong> sends the two emails
+                  this service sends: confirm your address, and reset your password. It receives
+                  your email address in order to deliver them.
+                </>,
+              ]
+            : []),
           <>
             <strong className="text-fg font-semibold">Google</strong>, if and only if you choose to
             sign in with Google.
@@ -190,7 +209,7 @@ export const PrivacyPolicy = () => (
       />
       <p>
         Vercel receives CV content briefly when rendering a PDF, and Neon stores synced CVs for
-        signed-in users. Resend and Google are not sent CV content. We do not sell personal data.
+        signed-in users. {emailAuth ? 'Resend and Google are' : 'Google is'} not sent CV content. We do not sell personal data.
       </p>
     </LegalSection>
 

@@ -27,6 +27,12 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string().min(1).optional(),
   /** `CleanCV <hello@example.com>`, or a bare address. */
   EMAIL_FROM: z.string().min(3).optional(),
+  /**
+   * `true` turns on email-and-password accounts. Off by default: they need a
+   * mail provider that can reach any address, which means a verified sending
+   * domain, and Google sign-in needs none of that.
+   */
+  EMAIL_AUTH_ENABLED: z.enum(['true', 'false']).optional(),
 
   /** The only account allowed to open the private usage dashboard. */
   ADMIN_EMAIL: z.email().optional(),
@@ -97,6 +103,20 @@ export const assertAuthConfigured = (): void => {
   throw new Error(
     'Auth is not configured. Set DATABASE_URL and BETTER_AUTH_SECRET (see .env.example).',
   );
+};
+
+/**
+ * Email-and-password accounts, offered only where mail can actually be sent.
+ *
+ * Three things have to be true: the operator asked for them, a provider key
+ * exists, and a sender address exists. A sign-up form on a deployment whose
+ * mail provider only delivers to its owner takes the reader's details, sends
+ * nothing, and says "check your inbox" — worse than not offering it.
+ */
+export const isEmailAuthEnabled = (): boolean => {
+  const env = serverEnv();
+
+  return env.EMAIL_AUTH_ENABLED === 'true' && Boolean(env.RESEND_API_KEY && env.EMAIL_FROM);
 };
 
 /** Google sign-in is offered only where credentials for it exist. */

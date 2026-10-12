@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { GATE_REASON } from '@/constants';
 import { AuthShell, SignInForm, readRedirect, type SearchParams } from '@/features/auth';
 import { getSessionUser } from '@/server/auth/session';
-import { isAuthConfigured, isGoogleConfigured } from '@/server/env';
+import { isAuthConfigured, isEmailAuthEnabled, isGoogleConfigured } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
@@ -26,7 +26,9 @@ interface AuthPageProps {
  * they were going.
  */
 export default async function SignInPage({ searchParams }: AuthPageProps) {
-  if (!isAuthConfigured()) return <AuthUnavailable />;
+  if (!isAuthConfigured() || (!isGoogleConfigured() && !isEmailAuthEnabled())) {
+    return <AuthUnavailable />;
+  }
 
   const next = readRedirect(await searchParams);
 
@@ -34,7 +36,11 @@ export default async function SignInPage({ searchParams }: AuthPageProps) {
 
   return (
     <AuthShell title="Sign in" subtitle={GATE_REASON}>
-      <SignInForm redirectTo={next} googleEnabled={isGoogleConfigured()} />
+      <SignInForm
+        redirectTo={next}
+        googleEnabled={isGoogleConfigured()}
+        emailEnabled={isEmailAuthEnabled()}
+      />
     </AuthShell>
   );
 }

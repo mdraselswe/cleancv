@@ -15,6 +15,8 @@ import { PasswordInput } from './PasswordInput';
 export interface SignUpFormProps {
   redirectTo: string;
   googleEnabled: boolean;
+  /** False where mail cannot be sent: Google is then the only way to join. */
+  emailEnabled: boolean;
 }
 
 /**
@@ -28,12 +30,29 @@ export interface SignUpFormProps {
  * the address is confirmed — so the success state is a sentence naming the
  * inbox, not a redirect into the app.
  */
-export const SignUpForm = ({ redirectTo, googleEnabled }: SignUpFormProps) => {
+export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFormProps) => {
   const { values, errors, formError, pending, setField, submit, sentTo } = useSignUp(
     AUTH_ROUTES.verifyEmail,
   );
 
   const signInHref = `${AUTH_ROUTES.signIn}?${REDIRECT_PARAM}=${encodeURIComponent(redirectTo)}`;
+
+  if (!emailEnabled) {
+    return (
+      <div className="flex flex-col gap-4">
+        {googleEnabled ? (
+          <GoogleButton callbackURL={redirectTo} label="Sign up with Google" />
+        ) : null}
+        <p className="text-fg-subtle text-ui-md text-center leading-relaxed">
+          Accounts are made with Google: one click, no password, and nothing to confirm. We only
+          ask Google for your name, email address and picture.{' '}
+          <Link href={signInHref} className="tap-target text-fg underline">
+            Already have an account?
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   if (sentTo) {
     return (

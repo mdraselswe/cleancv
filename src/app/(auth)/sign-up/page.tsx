@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { AuthShell, SignUpForm, readRedirect, type SearchParams } from '@/features/auth';
 import { getSessionUser } from '@/server/auth/session';
-import { isAuthConfigured, isGoogleConfigured } from '@/server/env';
+import { isAuthConfigured, isEmailAuthEnabled, isGoogleConfigured } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
@@ -15,7 +15,9 @@ export default async function SignUpPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  if (!isAuthConfigured()) return <AuthUnavailable />;
+  if (!isAuthConfigured() || (!isGoogleConfigured() && !isEmailAuthEnabled())) {
+    return <AuthUnavailable />;
+  }
 
   const next = readRedirect(await searchParams);
 
@@ -26,7 +28,11 @@ export default async function SignUpPage({
       title="Create an account"
       subtitle="A free account unlocks PDF downloads and syncs your CVs across devices."
     >
-      <SignUpForm redirectTo={next} googleEnabled={isGoogleConfigured()} />
+      <SignUpForm
+        redirectTo={next}
+        googleEnabled={isGoogleConfigured()}
+        emailEnabled={isEmailAuthEnabled()}
+      />
     </AuthShell>
   );
 }

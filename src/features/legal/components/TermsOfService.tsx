@@ -24,7 +24,12 @@ const Mail = () => (
   </a>
 );
 
-export const TermsOfService = () => (
+export interface TermsOfServiceProps {
+  /** Whether email-and-password accounts are on; the terms state only what is true. */
+  emailAuth: boolean;
+}
+
+export const TermsOfService = ({ emailAuth }: TermsOfServiceProps) => (
   <LegalShell
     title="Terms of Service"
     summary={`The rules for using ${APP_NAME}. Using the service means you accept them.`}
@@ -49,15 +54,20 @@ export const TermsOfService = () => (
       </p>
       <LegalList
         items={[
-          'Use a real email address you control. You will be asked to confirm it before the account works, and it is the only way back in if you forget your password.',
-          `Choose a password of at least ${PASSWORD_MIN} characters, and do not reuse one from somewhere else.`,
+          ...(emailAuth
+            ? [
+                'Use a real email address you control. You will be asked to confirm it before the account works, and it is the only way back in if you forget your password.',
+                `Choose a password of at least ${PASSWORD_MIN} characters, and do not reuse one from somewhere else.`,
+              ]
+            : ['Sign in with a Google account you control. There is no separate password.']),
           'Keep it to yourself. Anything done from your account is treated as done by you.',
           'One account per person. Do not create one under somebody else’s name or address.',
         ]}
       />
       <p>
-        Tell us at <Mail /> if you think somebody else has got into your account. Resetting your
-        password signs every other browser out, which is usually the fastest fix.
+        Tell us at <Mail /> if you think somebody else has got into your account. {emailAuth
+          ? 'Resetting your password signs every other browser out, which is usually the fastest fix.'
+          : 'Signing out of Google on a shared device is the fastest fix.'}
       </p>
     </LegalSection>
 
