@@ -6,10 +6,13 @@
  * One constant, because both documents print it and Google's consent screen
  * quotes it — three copies of an address is two that go stale.
  */
-export const LEGAL_CONTACT_EMAIL = 'rrasel141@gmail.com';
+export const LEGAL_CONTACT_EMAIL = 'mdraselswe@gmail.com';
 
 /** The person or entity behind the service, as named in both documents. */
 export const LEGAL_ENTITY = 'Muhammad Rasel';
+
+/** Where the credit line in the footer points. */
+export const AUTHOR_LINKEDIN_URL = 'https://linkedin.com/in/mdraselswe';
 
 /**
  * When these last changed, in ISO form.
@@ -18,7 +21,7 @@ export const LEGAL_ENTITY = 'Muhammad Rasel';
  * never moves tells a reader it has never been reviewed, which is either untrue
  * or worth knowing.
  */
-export const LEGAL_UPDATED = '2026-08-31';
+export const LEGAL_UPDATED = '2026-10-13';
 
 export const LEGAL_ROUTES = {
   privacy: '/privacy',

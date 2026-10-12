@@ -71,8 +71,8 @@ const buildGroups = (): Group[] => {
         },
         {
           icon: UserRound,
-          title: 'No account needed',
-          body: 'Write, design, score, import and download without signing in. An account only adds cloud sync.',
+          title: 'A free account to download',
+          body: 'Write, design, score and import without signing in. Downloading a PDF needs a free account, which also syncs your CVs across devices.',
         },
       ],
     },
@@ -133,7 +133,7 @@ const buildGroups = (): Group[] => {
         {
           icon: FileDown,
           title: 'No limit on how many you download',
-          body: `The only guard is fair use: up to ${PDF_RATE_LIMIT.max} PDFs every ${rateMinutes} minutes from one connection. Each render is a real browser, so this stops scripts, not people.`,
+          body: `Sign in once and download as often as you need. The only guard is fair use: up to ${PDF_RATE_LIMIT.max} PDFs every ${rateMinutes} minutes from one connection.`,
         },
         {
           icon: Database,
@@ -160,8 +160,8 @@ const buildGroups = (): Group[] => {
         },
         {
           icon: Cloud,
-          title: 'Optional free cloud sync',
-          body: 'Sign in and your CVs are copied to your account so they follow you to other devices. The copy in your browser stays either way.',
+          title: 'Free cloud sync with your account',
+          body: 'Once you are signed in, your CVs are copied to your account so they follow you to other devices. The copy in your browser stays either way.',
         },
         {
           icon: HardDrive,

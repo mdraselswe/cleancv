@@ -43,7 +43,10 @@ export const TermsOfService = () => (
     </LegalSection>
 
     <LegalSection id="account" heading="Your account">
-      <p>An account is optional and adds cross-device sync. Downloads and editing work without one.</p>
+      <p>
+        A free account is required to download a PDF, and it adds cross-device sync. Editing and
+        everything else works without one.
+      </p>
       <LegalList
         items={[
           'Use a real email address you control. You will be asked to confirm it before the account works, and it is the only way back in if you forget your password.',

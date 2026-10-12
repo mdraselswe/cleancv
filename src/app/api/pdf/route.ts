@@ -1,7 +1,12 @@
 import { createElement } from 'react';
 import { eq } from 'drizzle-orm';
 
-import { ATS_EXPORT_TEMPLATE_ID, PDF_RATE_LIMIT, type TemplateId } from '@/constants';
+import {
+  ATS_EXPORT_TEMPLATE_ID,
+  PDF_RATE_LIMIT,
+  SIGN_IN_REQUIRED,
+  type TemplateId,
+} from '@/constants';
 import { normalizeResume } from '@/features/resume';
 import { getTemplate, resolvePageBleed } from '@/features/templates';
 import { attachResume } from '@/lib/pdf/attachResume';
@@ -9,7 +14,8 @@ import { renderPdf } from '@/lib/pdf/renderPdf';
 import { toFileStem } from '@/lib/text';
 import { db } from '@/server/db';
 import { rateLimit } from '@/server/db/schema';
-import { isAuthConfigured } from '@/server/env';
+import { getSessionUser } from '@/server/auth/session';
+import { isAuthConfigured, isProduction } from '@/server/env';
 
 /**
  * POST a resume, get a PDF back.
@@ -48,7 +54,58 @@ const readPageBreaks = (value: unknown): number[] =>
 const badRequest = (message: string) => Response.json({ error: message }, { status: 400 });
 
 
-/** Keeps the now-public headless-browser endpoint useful without leaving it unbounded. */
+/**
+ * The gate.
+ *
+ * Here rather than on the button, because a hidden button is a suggestion. The
+ * request that renders the PDF is the thing worth an account, and this is the
+ * only place that request is served. See ADR-048.
+ *
+ * A deployment with no auth configured is refused rather than waved through:
+ * in development that is a machine with no database, and the gate opens; in
+ * production it is a misconfiguration, and opening would quietly turn the gate
+ * off for everyone.
+ */
+const requireDownloadAccess = async (request: Request): Promise<Response | null> => {
+  if (!isAuthConfigured()) {
+    if (!isProduction()) return null;
+
+    return Response.json(
+      { error: 'Downloads are unavailable: this deployment has no auth configured.' },
+      { status: 503 },
+    );
+  }
+
+  /*
+   * "Nobody is signed in" and "the session could not be checked" are different
+   * answers and get different ones back. Reporting a database outage as
+   * `sign_in_required` would send somebody who *is* signed in to a sign-in page
+   * that works, to come back and be refused again.
+   */
+  let user: Awaited<ReturnType<typeof getSessionUser>>;
+
+  try {
+    // From the database, not the cookie's cached copy: this check gates work,
+    // and a revoked session must stop working the moment it is revoked.
+    user = await getSessionUser(request.headers, { fresh: true });
+  } catch (error) {
+    console.error('[pdf] session lookup failed', error);
+
+    return Response.json(
+      { error: 'Could not check your sign-in just now. Try again in a moment.' },
+      { status: 503 },
+    );
+  }
+
+  if (user) return null;
+
+  return Response.json(
+    { error: SIGN_IN_REQUIRED.message, code: SIGN_IN_REQUIRED.code },
+    { status: 401 },
+  );
+};
+
+/** Keeps the headless-browser endpoint useful without leaving it unbounded. */
 const checkPdfRateLimit = async (request: Request): Promise<Response | null> => {
   if (!isAuthConfigured()) return null;
 
@@ -93,6 +150,9 @@ const checkPdfRateLimit = async (request: Request): Promise<Response | null> => 
 };
 
 export async function POST(request: Request) {
+  const denied = await requireDownloadAccess(request);
+  if (denied) return denied;
+
   const limited = await checkPdfRateLimit(request);
   if (limited) return limited;
 

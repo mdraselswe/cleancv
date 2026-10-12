@@ -7,7 +7,7 @@ import { AuthNotice, AuthShell } from '@/features/auth';
  * What the sign-in pages show on an install with no auth configured.
  *
  * A fresh clone has no database and no secret, while the local editor and PDF
- * downloads work without either. Throwing a stack trace at that reader would say
+ * downloads open without either (in development only). Throwing a stack trace at that reader would say
  * the app is broken, when what is true is that this one door has not been
  * fitted yet. In production the same condition is a hard error instead — see
  * `assertAuthConfigured`.

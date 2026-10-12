@@ -1665,3 +1665,20 @@ every width with two panes, with its number always in the top bar.
 `useHome` is the only new place that talks to the library, through the same actions the library panel
 uses. The visitor tracker counts a session once on either route, and the regression suite's
 pagination spec opens `/editor`. Bookmarks to `/` still work; they now show the CV list first.
+
+## ADR-052 — Downloads need an account again; the merger learns the app's scale
+
+**Context.** Cloud sync (16b1832) opened `/api/pdf` to everyone and put a rate limit in its place.
+The product decision since is that a PDF costs a render and is worth a free account; editing, the
+designs, import, the score and backups stay open.
+
+**Decision.** `/api/pdf` checks the session first, with `{ fresh: true }`, and answers
+`401 { code: 'sign_in_required' }`. The export hook keeps that apart from every other failure and the
+editor opens `SignInRequiredDialog`. The rate limit stays behind it. A deployment without auth is
+open in development and a 503 in production, as in ADR-048. Every sentence that said downloads were
+open without an account — the banner, the features page, both legal documents, the library drawer —
+was changed in the same commit.
+
+**Also.** `cn()` now tells `tailwind-merge` the app's own `text-ui-*`, `rounded-*` and `shadow-*`
+names. Unknown to it, `text-ui-lg` read as a colour and erased `text-primary-fg`, so every primary
+button rendered dark text on blue. `tests/unit/cn.spec.ts` pins it.

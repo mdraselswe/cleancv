@@ -57,5 +57,20 @@ export const AUTH_RATE_LIMIT = {
   forgotPassword: { window: 60 * 10, max: 4 },
 } as const;
 
-/** The benefit described on the sign-in page. */
-export const GATE_REASON = 'Sign in to keep your CVs synced across browsers and devices.';
+/**
+ * What the PDF route says when nobody is signed in.
+ *
+ * A machine-readable code beside the sentence: the export hook opens the
+ * sign-in dialog on the code, and shows the sentence if anything else fails.
+ */
+export const SIGN_IN_REQUIRED = {
+  code: 'sign_in_required',
+  message: 'Sign in to download your PDF. Everything else stays open.',
+} as const;
+
+/**
+ * Why the gate exists, in the words the dialog and the sign-in pages use, so
+ * the two cannot drift into telling the reader different stories.
+ */
+export const GATE_REASON =
+  'Downloads need a free account. Writing, designs and the ATS score do not.';

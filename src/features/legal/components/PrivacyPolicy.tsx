@@ -107,8 +107,8 @@ export const PrivacyPolicy = () => (
 
     <LegalSection id="account" heading="What an account stores">
       <p>
-        Accounts are optional and provide cloud sync. Writing, designs, ATS scoring, imports,
-        backups, the document library, and PDF downloads all work without an account.
+        A free account is required to download a PDF, and it also provides cloud sync. Writing,
+        designs, ATS scoring, imports, backups and the document library work without an account.
       </p>
       <p>When you create an account, our database holds:</p>
       <LegalList

@@ -3,6 +3,10 @@ export { AuthShell, type AuthShellProps } from './components/AuthShell';
 export { ForgotPasswordForm } from './components/ForgotPasswordForm';
 export { ResetPasswordForm, type ResetPasswordFormProps } from './components/ResetPasswordForm';
 export { SignInForm, type SignInFormProps } from './components/SignInForm';
+export {
+  SignInRequiredDialog,
+  type SignInRequiredDialogProps,
+} from './components/SignInRequiredDialog';
 export { SignUpForm, type SignUpFormProps } from './components/SignUpForm';
 export { UserMenu } from './components/UserMenu';
 export { useAuthSession, useSignOut, type AuthSession } from './hooks/useAuthSession';

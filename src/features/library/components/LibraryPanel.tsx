@@ -262,8 +262,8 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
             <div className="border-border-base rounded-card mt-3 border p-3">
               <p className="text-fg text-ui font-medium">Use your CVs on every device</p>
               <p className="text-fg-subtle text-ui-xs mt-0.5">
-                Sign in for free cloud sync. Downloads and every editor feature remain free without
-                an account.
+                A free account is needed to download PDFs, and it also syncs your CVs across
+                devices. Editing stays open to everyone.
               </p>
               <Button
                 size="sm"
