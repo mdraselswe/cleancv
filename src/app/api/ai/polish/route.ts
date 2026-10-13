@@ -15,7 +15,7 @@ import { isAiAllowed, serverEnv } from '@/server/env';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+export const maxDuration = 45;
 
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 const API = 'https://generativelanguage.googleapis.com/v1beta';
@@ -34,7 +34,14 @@ const PREFERRED = [
   'gemini-2.0-flash-001',
   'gemini-flash-latest',
   'gemini-1.5-flash',
+  // Lighter models have their own quota and are rarely the ones under load.
+  'gemini-2.5-flash-lite',
+  'gemini-2.0-flash-lite',
+  'gemini-flash-lite-latest',
 ];
+
+/** Answers that mean "not this model, not right now" rather than "not you". */
+const TRY_NEXT = new Set([404, 429, 500, 503]);
 
 /** `gemini-2.5-flash`, `gemini-3-flash`: a plain numbered Flash and nothing exotic. */
 const PLAIN_FLASH = /^gemini-\d+(?:\.\d+)?-flash$/i;
@@ -162,7 +169,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
       body: requestBody,
-      signal: AbortSignal.timeout(25_000),
+      signal: AbortSignal.timeout(9_000),
     });
 
   const configured = normaliseModel(env.GEMINI_MODEL ?? DEFAULT_MODEL);
@@ -173,19 +180,24 @@ export async function POST(request: Request) {
     response = await generate(model);
 
     /*
-     * A wrong name answers 404 and a model with no free quota answers 429, and
-     * both are per model. Try the models this key can really see, a few at
-     * most, before telling anyone the quota is gone.
+     * A wrong name answers 404, a model with no free quota 429, and a busy one
+     * 503 — each per model. Move to the models this key can really see, a few
+     * at most, before telling anyone it cannot be done.
      */
-    if (response.status === 404 || response.status === 429) {
+    if (TRY_NEXT.has(response.status)) {
+      working = null;
+
       const tried = new Set([model]);
-      const options = (await listCandidates(key)).filter((name) => !tried.has(name)).slice(0, 3);
+      const options = (await listCandidates(key)).filter((name) => !tried.has(name)).slice(0, 4);
 
       for (const option of options) {
+        // Overload is usually a few hundred milliseconds old; a breath is enough.
+        if (response.status === 503) await new Promise((resolve) => setTimeout(resolve, 600));
+
         model = option;
         response = await generate(option);
 
-        if (response.ok || (response.status !== 404 && response.status !== 429)) break;
+        if (response.ok || !TRY_NEXT.has(response.status)) break;
       }
     }
 
@@ -208,7 +220,9 @@ export async function POST(request: Request) {
       response.status === 429 ? 429 : 502,
       response.status === 429
         ? 'The free AI quota is used up for now. Try again later.'
-        : 'The AI service could not rewrite that.',
+        : response.status === 503
+          ? 'Google’s AI is busy right now. Try again in a minute.'
+          : 'The AI service could not rewrite that.',
       response.status === 429 ? 'ai_quota' : undefined,
     );
   }
