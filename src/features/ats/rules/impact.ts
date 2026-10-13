@@ -1,10 +1,10 @@
 import {
   BULLET_WORD_RANGE,
   FIRST_PERSON_TOKENS,
-  METRIC_PATTERN,
   STRONG_ACTION_VERBS,
   WEAK_PHRASES,
 } from '@/constants';
+import { hasMetric } from '@/lib/metrics';
 import { findPhrases, firstWord, wordCount, words } from '@/lib/text';
 
 import { collectBullets } from '../utils/collect';
@@ -63,7 +63,7 @@ export const rules: AtsRule[] = [
         return { status: 'error', message: 'No bullets to measure.', targets: ['experience'] };
       }
 
-      const withMetric = bullets.filter((bullet) => METRIC_PATTERN.test(bullet.text));
+      const withMetric = bullets.filter((bullet) => hasMetric(bullet.text));
       const ratio = percent(withMetric.length, bullets.length);
       const status = gradeRatio(ratio);
 

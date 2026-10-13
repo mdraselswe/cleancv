@@ -99,10 +99,6 @@ export const STRONG_ACTION_VERBS = [
   'transformed', 'tripled', 'unified', 'upgraded',
 ] as const;
 
-/** Matches a quantified outcome: 40%, $2M, 3x, 15k, "12 engineers". */
-export const METRIC_PATTERN =
-  /(\d+(?:[.,]\d+)?\s*(?:%|percent|x|k\b|m\b|bn\b|hrs?\b|hours?\b|days?\b|weeks?\b|months?\b))|([$€£\u09F3]\s*\d)|(\b\d{2,}\b)/i;
-
 /** Unicode Private Use Area — where icon fonts hide, and where ATS text extraction breaks. */
 export const PUA_PATTERN = /[\uE000-\uF8FF]/;
 

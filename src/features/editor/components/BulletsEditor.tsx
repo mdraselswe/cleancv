@@ -6,8 +6,9 @@ import { useState } from 'react';
 import { Button, RichTextEditor } from '@/components/ui';
 import { AiPolish } from '@/features/ai';
 import { useResume } from '@/features/resume';
-import { BULLET_WORD_RANGE, LIMITS, METRIC_PATTERN } from '@/constants';
+import { BULLET_WORD_RANGE, LIMITS } from '@/constants';
 import { cn } from '@/lib/cn';
+import { hasMetric } from '@/lib/metrics';
 import { stripEmphasis, wordCount } from '@/lib/text';
 
 export interface BulletsEditorProps {
@@ -85,7 +86,7 @@ export const BulletsEditor = ({
       {value.map((bullet, index) => {
         const plain = stripEmphasis(bullet);
         const count = wordCount(plain);
-        const hasMetric = METRIC_PATTERN.test(plain);
+        const measured = hasMetric(plain);
         const tooLong = count > BULLET_WORD_RANGE.max;
         const tooShort = count > 0 && count < BULLET_WORD_RANGE.min;
 
@@ -126,7 +127,7 @@ export const BulletsEditor = ({
                 onBackspaceEmpty={() => removeAndFocusPrevious(index)}
                 footer={
                   <span className="text-ui-2xs flex flex-wrap items-center justify-end gap-x-2">
-                    {count > 0 && !hasMetric ? (
+                    {count > 0 && !measured ? (
                       <span className="text-warning">No number yet — what changed, by how much?</span>
                     ) : null}
                     {tooLong ? <span className="text-warning">Trim to two lines.</span> : null}
