@@ -42,6 +42,13 @@ describe('hasMetric', () => {
   });
 });
 
+describe('hasMetric counted things', () => {
+  it('counts templates, formats and rules', () => {
+    expect(hasMetric('Implemented client-side CV import for 3 file formats')).toBe(true);
+    expect(hasMetric('Shipped 10 templates and a 31-rule score')).toBe(true);
+  });
+});
+
 describe('hasOutcome', () => {
   it('counts a before and after or a change beside a figure', () => {
     expect(hasOutcome('Cut page load from 4.2s to 1.8s')).toBe(true);
