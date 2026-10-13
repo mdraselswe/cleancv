@@ -72,25 +72,44 @@ interface PreviewState {
   startsPage2: string | null;
 }
 
-const showTemplate = async (id: string): Promise<PreviewState> => {
-  await page.evaluate((templateId) => {
-    const select = document.querySelector('select');
-    if (!select) return;
-    const setter = Object.getOwnPropertyDescriptor(
-      window.HTMLSelectElement.prototype,
-      'value',
-    )?.set;
-    setter?.call(select, templateId);
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-  }, id);
+/**
+ * Switches design the way a person does: Design in the section rail, then the
+ * design's card. (It used to set a toolbar `<select>`, which the revamp removed
+ * — and a spec that finds no control and does nothing still passes, so for a
+ * while this tested one design ten times.) The card's text is the design's name.
+ */
+const showTemplate = async (id: string, name: string): Promise<PreviewState> => {
+  const switched = await page.evaluate((designName) => {
+    const rail = [...document.querySelectorAll('nav[aria-label="Resume sections"] button')].find(
+      (element) => (element.getAttribute('title') ?? '') === 'Design',
+    ) as HTMLElement | undefined;
+    rail?.click();
+
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        const card = [...document.querySelectorAll('button[aria-pressed]')].find((element) =>
+          (element.textContent ?? '').includes(designName),
+        ) as HTMLElement | undefined;
+
+        card?.click();
+        resolve(Boolean(card));
+      }, 800);
+    });
+  }, name);
+
+  // A spec that cannot find the control must fail, not quietly test the default.
+  if (!switched) throw new Error(`Could not find the "${name}" design card to switch to ${id}.`);
+
   await new Promise((resolve) => setTimeout(resolve, 2500));
 
   return page.evaluate((selector) => {
-    const root = document.querySelector('.resume-root') as HTMLElement | null;
+    // The preview pane only: the Design panel draws a thumbnail of every design.
+    const pane = document.querySelector('.app-preview-canvas') ?? document;
+    const root = pane.querySelector('.resume-root') as HTMLElement | null;
     if (!root) return { pages: 0, startsPage2: null };
 
     // Each sheet renders the whole document, shifted to its own page offset.
-    const sheets = [...document.querySelectorAll('.resume-root')].map(
+    const sheets = [...pane.querySelectorAll('.resume-root')].map(
       (element) => element.parentElement?.parentElement as HTMLElement,
     );
     const offset = sheets[1]
@@ -160,7 +179,7 @@ const flatten = (value: string) => value.replace(/[^a-z0-9]/gi, '').toLowerCase(
 
 describe.each(getAvailableTemplates().map(({ meta }) => meta))('$name ($id)', (meta) => {
   it('breaks the downloaded pages where the preview did', async () => {
-    const preview = await showTemplate(meta.id);
+    const preview = await showTemplate(meta.id, meta.name);
     const exported = await captureExport();
 
     expect(exported).toBeTruthy();
