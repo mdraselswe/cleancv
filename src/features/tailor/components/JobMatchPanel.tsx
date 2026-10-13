@@ -92,11 +92,11 @@ export const JobMatchPanel = () => {
             <Target size={16} aria-hidden="true" />
           </span>
           <div>
-            <p className="text-fg text-ui-md font-bold">Tailor a copy to this job</p>
+            <p className="text-fg text-ui-md font-bold">Tailor this CV to the job</p>
             <p className="text-fg-muted text-ui-xs mt-0.5 leading-snug">
-              Makes a new CV with the matching skills and bullets first and the posting&apos;s own
-              words in bold. Your original is not changed, and nothing is added that you do not
-              tick.
+              Puts the matching skills and bullets first and the posting&apos;s own words in bold.
+              Nothing is added that you do not tick, and one undo reverts it. Prefer to keep this
+              CV as it is? Choose &quot;Save as a new copy&quot;.
             </p>
           </div>
         </div>
@@ -108,7 +108,7 @@ export const JobMatchPanel = () => {
           leading={<Wand2 size={15} />}
           onClick={() => setDialogOpen(true)}
         >
-          Tailor a copy
+          Tailor this CV
         </Button>
       </div>
 

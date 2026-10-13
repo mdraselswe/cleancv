@@ -2,10 +2,15 @@
 
 import { Check, Loader2, Sparkles, Wand2 } from 'lucide-react';
 
-import { Button, Input, Modal, ModalHeader, Select, Switch } from '@/components/ui';
+import { Button, Input, Modal, ModalHeader, Select, Switch, Tabs } from '@/components/ui';
 import { cn } from '@/lib/cn';
 
-import { useTailor } from '../hooks/useTailor';
+import { useTailor, type TailorMode } from '../hooks/useTailor';
+
+const MODE_TABS = [
+  { value: 'update' as const, label: 'Update this CV' },
+  { value: 'copy' as const, label: 'Save as a new copy' },
+];
 
 export interface TailorDialogProps {
   open: boolean;
@@ -38,8 +43,12 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
   return (
     <Modal label="Tailor to this job" onClose={busy ? () => undefined : onClose} className="max-w-[620px]">
       <ModalHeader
-        title="Tailor a copy to this job"
-        subtitle="Your original is never changed. This makes a new CV."
+        title="Tailor to this job"
+        subtitle={
+          tailor.mode === 'update'
+            ? 'Changes this CV. One undo puts everything back.'
+            : 'This CV stays exactly as it is. A new CV is added.'
+        }
         onClose={busy ? () => undefined : onClose}
       />
 
@@ -51,6 +60,14 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
           </p>
         ) : (
           <>
+            <Tabs
+              items={MODE_TABS}
+              value={tailor.mode}
+              onChange={(mode: TailorMode) => tailor.setMode(mode)}
+              ariaLabel="Where to put the result"
+              className="self-start"
+            />
+
             <section aria-label="How well it matches">
               <p className="text-fg text-ui-md font-semibold">
                 Your CV already covers {analysis.matched.length} of {analysis.keywords.length} key
@@ -163,20 +180,22 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
                   checked={tailor.polishWithAi}
                   onChange={tailor.setPolishWithAi}
                   label="Also polish the 6 most relevant bullets with AI"
-                  description="Uses your AI quota. It rewrites wording only and cannot add numbers; the copy is separate, so you can discard it."
+                  description="Uses your AI quota. It rewrites wording only and cannot add numbers. Undo reverts it with the rest."
                 />
               </section>
             ) : null}
 
-            <label className="flex flex-col gap-1.5">
-              <span className="text-ui text-fg-muted font-medium">Name of the new CV</span>
-              <Input
-                value={tailor.name}
-                placeholder={tailor.defaultName}
-                maxLength={120}
-                onChange={(event) => tailor.setName(event.target.value)}
-              />
-            </label>
+            {tailor.mode === 'copy' ? (
+              <label className="flex flex-col gap-1.5">
+                <span className="text-ui text-fg-muted font-medium">Name of the new CV</span>
+                <Input
+                  value={tailor.name}
+                  placeholder={tailor.defaultName}
+                  maxLength={120}
+                  onChange={(event) => tailor.setName(event.target.value)}
+                />
+              </label>
+            ) : null}
           </>
         )}
       </div>
@@ -197,7 +216,7 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
             }
             onClick={() => void tailor.create()}
           >
-            Create tailored copy
+            {tailor.mode === 'copy' ? 'Create tailored copy' : 'Tailor this CV'}
           </Button>
         </div>
       </div>

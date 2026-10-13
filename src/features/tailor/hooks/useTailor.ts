@@ -19,6 +19,15 @@ import {
   type TailorOptions,
 } from '../engine';
 
+/**
+ * What making the result does to the library.
+ *
+ * `update` changes this CV in place and can be undone; it adds no file, which is
+ * what most readers want — a posting a week is a posting a week of copies
+ * otherwise. `copy` keeps this CV as it is and adds a new one.
+ */
+export type TailorMode = 'update' | 'copy';
+
 /** How many of the most relevant bullets the AI pass rewrites. The quota is shared. */
 const AI_BULLETS = 6;
 
@@ -38,12 +47,16 @@ export const useTailor = (onDone: () => void) => {
   const resumeActions = useResumeActions();
   const libraryActions = useLibraryActions();
   const documentCount = useLibraryStore((state) => state.documents.length);
+  // The stored array itself: a selector that builds a new one would re-render forever.
+  const documents = useLibraryStore((state) => state.documents);
+  const documentNames = useMemo(() => documents.map((entry) => entry.name), [documents]);
   const activeDocument = useActiveDocument();
   const aiAvailable = useAiStatus();
 
   const jobDescription = resume.meta.targetJobDescription;
   const [options, setOptions] = useState<TailorOptions>(DEFAULT_TAILOR_OPTIONS);
   const [polishWithAi, setPolishWithAi] = useState(false);
+  const [mode, setMode] = useState<TailorMode>('update');
   const [name, setName] = useState('');
   const [busy, setBusy] = useState('');
 
@@ -69,7 +82,20 @@ export const useTailor = (onDone: () => void) => {
 
   const baseName =
     activeDocument?.name || activeDocument?.personName || resume.basics.fullName || 'CV';
-  const defaultName = `${baseName} — ${suggestJobName(jobDescription) || 'tailored'}`.slice(0, 120);
+  // A second tailoring for the same posting must not be indistinguishable from the first.
+  const defaultName = useMemo(() => {
+    const stem = `${baseName} — ${suggestJobName(jobDescription) || 'tailored'}`.slice(0, 112);
+    const taken = new Set(documentNames.map((entry) => entry.toLowerCase()));
+
+    if (!taken.has(stem.toLowerCase())) return stem;
+
+    for (let n = 2; n < 100; n += 1) {
+      const candidate = `${stem} (${n})`;
+      if (!taken.has(candidate.toLowerCase())) return candidate;
+    }
+
+    return stem;
+  }, [baseName, jobDescription, documentNames]);
 
   const patch = useCallback(
     (next: Partial<TailorOptions>) => setOptions((current) => ({ ...current, ...next })),
@@ -142,13 +168,13 @@ export const useTailor = (onDone: () => void) => {
   };
 
   const create = async () => {
-    if (documentCount >= MAX_DOCUMENTS) {
+    if (mode === 'copy' && documentCount >= MAX_DOCUMENTS) {
       toast.error(`You can keep ${MAX_DOCUMENTS} CVs. Delete one to make room.`);
 
       return;
     }
 
-    setBusy('Creating your copy…');
+    setBusy(mode === 'copy' ? 'Creating your copy…' : 'Updating your CV…');
 
     try {
       const { resume: tailored, stats } = applyTailor(resume, jobDescription, options);
@@ -157,8 +183,14 @@ export const useTailor = (onDone: () => void) => {
       if (polishWithAi && aiAvailable) polished = await polishBullets(tailored);
 
       setBusy('Saving…');
-      await libraryActions.createNew((name.trim() || defaultName).slice(0, 120));
-      resumeActions.replaceResume(tailored, { resetHistory: true });
+
+      if (mode === 'copy') {
+        await libraryActions.createNew((name.trim() || defaultName).slice(0, 120));
+        resumeActions.replaceResume(tailored, { resetHistory: true });
+      } else {
+        // In place, and into the undo history: one Ctrl+Z puts it all back.
+        resumeActions.replaceResume(tailored);
+      }
 
       const parts = [
         stats.bulletsMoved > 0 ? `${stats.bulletsMoved} bullets reordered` : '',
@@ -167,8 +199,13 @@ export const useTailor = (onDone: () => void) => {
         polished > 0 ? `${polished} bullets polished by AI` : '',
       ].filter(Boolean);
 
-      toast.success('Tailored copy created', {
-        description: parts.length > 0 ? `${parts.join(' · ')}. Your original is unchanged.` : 'Your original is unchanged.',
+      toast.success(mode === 'copy' ? 'Tailored copy created' : 'CV tailored to this job', {
+        description:
+          mode === 'copy'
+            ? `${parts.join(' · ') || 'No changes were needed'}. Your original is unchanged.`
+            : parts.join(' · ') || 'No changes were needed.',
+        action:
+          mode === 'update' ? { label: 'Undo', onClick: () => resumeActions.undo() } : undefined,
       });
       onDone();
     } finally {
@@ -191,6 +228,8 @@ export const useTailor = (onDone: () => void) => {
     name,
     setName,
     defaultName,
+    mode,
+    setMode,
     busy,
     create,
   };

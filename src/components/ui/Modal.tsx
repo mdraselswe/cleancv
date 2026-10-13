@@ -1,7 +1,8 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useSyncExternalStore, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 import { cn } from '@/lib/cn';
 
@@ -19,6 +20,24 @@ const useEscape = (onClose: () => void) => {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 };
+
+const subscribeNothing = () => () => undefined;
+
+/**
+ * Where an overlay is drawn: the end of `<body>`, not where it was declared.
+ *
+ * A dialog opened from inside a pane that is animating or transformed is
+ * trapped in that pane's stacking context, so a button elsewhere in the page
+ * paints over its own footer — "Next: Design" over "Create". Rendering at the
+ * body is the only place nothing can sit between an overlay and the viewport.
+ * Null until the client has mounted, so the server never has a body to draw to.
+ */
+const useOverlayRoot = (): HTMLElement | null =>
+  useSyncExternalStore(
+    subscribeNothing,
+    () => document.body,
+    () => null,
+  );
 
 export interface ModalHeaderProps {
   title: string;
@@ -64,8 +83,11 @@ export interface ModalProps {
  */
 export const Modal = ({ onClose, label, children, className }: ModalProps) => {
   useEscape(onClose);
+  const root = useOverlayRoot();
 
-  return (
+  if (!root) return null;
+
+  return createPortal(
     <>
       <button
         type="button"
@@ -88,7 +110,8 @@ export const Modal = ({ onClose, label, children, className }: ModalProps) => {
           {children}
         </div>
       </div>
-    </>
+    </>,
+    root,
   );
 };
 
@@ -108,8 +131,11 @@ export interface DrawerProps {
  */
 export const Drawer = ({ onClose, label, children, className }: DrawerProps) => {
   useEscape(onClose);
+  const root = useOverlayRoot();
 
-  return (
+  if (!root) return null;
+
+  return createPortal(
     <>
       <button
         type="button"
@@ -128,6 +154,7 @@ export const Drawer = ({ onClose, label, children, className }: DrawerProps) => 
       >
         {children}
       </aside>
-    </>
+    </>,
+    root,
   );
 };
