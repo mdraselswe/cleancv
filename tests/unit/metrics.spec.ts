@@ -46,6 +46,8 @@ describe('hasMetric counted things', () => {
   it('counts templates, formats and rules', () => {
     expect(hasMetric('Implemented client-side CV import for 3 file formats')).toBe(true);
     expect(hasMetric('Shipped 10 templates and a 31-rule score')).toBe(true);
+    expect(hasMetric('Supporting 4+ major browsers including legacy versions')).toBe(true);
+    expect(hasMetric('Built 20 responsive routes for the storefront')).toBe(true);
   });
 });
 

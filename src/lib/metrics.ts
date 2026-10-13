@@ -59,6 +59,14 @@ const COUNTED_THINGS = [
   'features',
   'languages',
   'pipelines',
+  'browsers',
+  'routes',
+  'models',
+  'roles',
+  'files',
+  'commits',
+  'migrations',
+  'databases',
 ].join('|');
 
 const COUNTED = new RegExp(
