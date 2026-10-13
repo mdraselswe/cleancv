@@ -289,3 +289,37 @@ describe('body text size', () => {
     expect(error?.fixHint).toContain('120%');
   });
 });
+
+describe('content ceiling', () => {
+  it('holds a clean document with no outcomes below what its content earns', () => {
+    const resume = createSampleResume();
+
+    for (const entry of [...resume.experience, ...resume.projects]) {
+      entry.bullets = entry.bullets.map(() => 'Worked on the application for the team');
+    }
+
+    const score = evaluateResume(resume, context());
+
+    expect(score.readability).toBeGreaterThan(score.content);
+    expect(score.cappedBy).toBe('content');
+    expect(score.total).toBeLessThanOrEqual(score.ceiling);
+    expect(score.total).toBeLessThan(score.uncapped);
+    expect(score.total).toBeLessThan(75);
+  });
+
+  it('does not cap a document whose bullets state results', () => {
+    const score = evaluateResume(createSampleResume(), context());
+
+    expect(score.cappedBy).toBeNull();
+    expect(score.total).toBe(score.uncapped);
+  });
+
+  it('exposes readability and content as 0-100 numbers', () => {
+    const score = evaluateResume(createSampleResume(), context());
+
+    for (const value of [score.readability, score.content, score.ceiling]) {
+      expect(value).toBeGreaterThanOrEqual(0);
+      expect(value).toBeLessThanOrEqual(100);
+    }
+  });
+});

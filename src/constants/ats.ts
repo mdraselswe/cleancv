@@ -50,6 +50,17 @@ export const ATS_SCORE_BANDS = [
   { min: 0, label: 'At risk', tone: 'poor' },
 ] as const;
 
+/**
+ * How far weak content holds the whole score down.
+ *
+ * A CV can be flawless to a machine — one column, clean text layer, every
+ * heading standard — and still say nothing a recruiter can use. Additive
+ * scoring let that read as 92. The overall number is therefore also capped by
+ * how much the content proves: with no evidence at all it stops at `floor`,
+ * and it rises by `slope` points for each point of content strength.
+ */
+export const ATS_CONTENT_CEILING = { floor: 50, slope: 0.5 } as const;
+
 export type AtsScoreTone = (typeof ATS_SCORE_BANDS)[number]['tone'];
 
 /** Bullets outside this word range read as either thin or bloated. */

@@ -52,17 +52,44 @@ export const AtsPanel = ({
 
   return (
     <div className="flex flex-col gap-5 p-4">
-      <div className="border-primary/15 bg-gradient-to-br from-primary-soft via-surface to-accent-soft rounded-card flex items-center gap-4 border p-3.5 shadow-sm">
-        <ScoreRing score={score.total} tone={score.tone} label={score.band} />
+      <div className="border-primary/15 bg-gradient-to-br from-primary-soft via-surface to-accent-soft rounded-card flex flex-col gap-3.5 border p-3.5 shadow-sm">
+        <div className="flex items-center gap-4">
+          <ScoreRing score={score.total} tone={score.tone} label={score.band} />
 
-        <div className="min-w-0">
-          <p className="text-ui-md text-fg font-semibold">ATS score</p>
-          <p className="text-ui-xs text-fg-subtle mt-0.5 leading-snug">
-            {score.issues.length === 0
-              ? 'Every check passes. Send it.'
-              : `${score.issues.length} check${score.issues.length === 1 ? '' : 's'} to look at, worst first.`}
-          </p>
+          <div className="min-w-0">
+            <p className="text-ui-md text-fg font-semibold">Overall score</p>
+            <p className="text-ui-xs text-fg-subtle mt-0.5 leading-snug">
+              {score.issues.length === 0
+                ? 'Every check passes. Send it.'
+                : `${score.issues.length} check${score.issues.length === 1 ? '' : 's'} to look at, worst first.`}
+            </p>
+          </div>
         </div>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <Meter
+            label="Machine readability"
+            hint="Can software read the file?"
+            value={score.readability}
+          />
+          <Meter
+            label="Content strength"
+            hint="Do the words prove anything?"
+            value={score.content}
+          />
+        </div>
+
+        {score.cappedBy === 'content' ? (
+          <p className="bg-warning/10 text-warning rounded-control text-ui-xs px-3 py-2 leading-snug">
+            The file reads as {score.uncapped}, but the score is held at {score.total} because the
+            writing proves little: numbers and outcomes in your bullets are what lift it.
+          </p>
+        ) : null}
+        {score.cappedBy === 'completeness' ? (
+          <p className="bg-warning/10 text-warning rounded-control text-ui-xs px-3 py-2 leading-snug">
+            The score is held at {score.total} until the missing basics are filled in.
+          </p>
+        ) : null}
       </div>
 
       <div className="border-border-base bg-surface/60 rounded-card flex flex-col gap-2 border p-3">
@@ -203,6 +230,32 @@ export const AtsPanel = ({
     </div>
   );
 };
+
+interface MeterProps {
+  label: string;
+  hint: string;
+  value: number;
+}
+
+/** One of the two headline numbers: a label, a bar, and what the number is about. */
+const Meter = ({ label, hint, value }: MeterProps) => (
+  <div className="bg-surface/70 rounded-control border-border-base border p-2.5">
+    <div className="flex items-baseline justify-between gap-2">
+      <span className="text-fg text-ui-xs font-semibold">{label}</span>
+      <span className="text-fg text-ui-md font-bold tabular-nums">{value}</span>
+    </div>
+    <div className="bg-surface-2 mt-1.5 h-1.5 overflow-hidden rounded-full">
+      <div
+        className={cn(
+          'h-full rounded-full transition-[width] duration-500',
+          value >= 75 ? 'bg-success' : value >= 50 ? 'bg-warning' : 'bg-danger',
+        )}
+        style={{ width: `${value}%` }}
+      />
+    </div>
+    <p className="text-fg-subtle text-ui-2xs mt-1.5 leading-snug">{hint}</p>
+  </div>
+);
 
 interface CategoryBarProps {
   category: AtsCategory;

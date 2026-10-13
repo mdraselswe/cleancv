@@ -53,9 +53,21 @@ export interface CategoryScore {
   rules: EvaluatedRule[];
 }
 
+/** What, if anything, is holding the overall number below the sum of its parts. */
+export type AtsCap = 'content' | 'completeness' | null;
+
 export interface AtsScore {
-  /** 0-100. */
+  /** 0-100. Never higher than `ceiling`. */
   total: number;
+  /** The sum of the categories before any cap; what formatting alone would say. */
+  uncapped: number;
+  /** 0-100: can a machine read this document — parse, completeness, formatting. */
+  readability: number;
+  /** 0-100: does the writing prove anything — outcomes, scale, specificity. */
+  content: number;
+  cappedBy: AtsCap;
+  /** The highest total the content allows. */
+  ceiling: number;
   tone: AtsScoreTone;
   band: string;
   categories: CategoryScore[];
