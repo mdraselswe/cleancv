@@ -24,12 +24,24 @@ interface CloudSyncState {
 }
 
 let activeSync: Promise<void> | null = null;
+/**
+ * Set when something changed while a sync was already in flight.
+ *
+ * Without it, a CV switched to sync during a running request was dropped: the
+ * request in flight had read its documents before the switch, nothing asked
+ * for another, and the CV showed as synced on a device that had never sent it.
+ */
+let resyncRequested = false;
 let currentUserId = '';
 let hasPulled = false;
 const uploadedAt = new Map<string, number>();
 
 const runCloudSync = async (forcePull = false): Promise<void> => {
-  if (activeSync) return activeSync;
+  if (activeSync) {
+    resyncRequested = true;
+
+    return activeSync;
+  }
 
   activeSync = (async () => {
     useCloudSyncStore.setState({ status: 'syncing', error: '' });
@@ -98,6 +110,12 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
       });
     } finally {
       activeSync = null;
+
+      // What changed meanwhile still has to go.
+      if (resyncRequested) {
+        resyncRequested = false;
+        setTimeout(() => void runCloudSync(), 0);
+      }
     }
   })();
 
