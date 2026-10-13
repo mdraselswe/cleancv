@@ -6,7 +6,7 @@ import { SECTION_META, isCustomSlot, type SectionSlot } from '@/constants';
 import { getEnabledSections, getSectionHeading, useResume } from '@/features/resume';
 
 /** Panels the editor column can show beyond the resume's own sections. */
-export type EditorPanel = 'design' | 'sections';
+export type EditorPanel = 'design' | 'sections' | 'job';
 
 export type ActiveTarget =
   | { kind: 'section'; key: SectionSlot }
@@ -27,6 +27,10 @@ export interface ActiveSectionController {
 }
 
 const PANEL_META: Record<EditorPanel, { label: string; description: string }> = {
+  job: {
+    label: 'Job match',
+    description: 'Paste a job posting, see how your CV matches it, and make a tailored copy.',
+  },
   design: {
     label: 'Design',
     description: 'Choose a template and tune type, spacing and colour.',
@@ -60,6 +64,7 @@ export const useActiveSection = (): ActiveSectionController => {
           target: { kind: 'section' as const, key: slot },
         })),
       { id: 'sections', label: 'Sections', target: { kind: 'panel', key: 'sections' } },
+      { id: 'job', label: 'Job match', target: { kind: 'panel', key: 'job' } },
       { id: 'design', label: 'Design', target: { kind: 'panel', key: 'design' } },
     ],
     [enabled, resume],

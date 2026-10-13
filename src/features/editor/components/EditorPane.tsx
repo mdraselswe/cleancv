@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 
 import { EmptyIllustration, SectionIllustration } from '@/components/illustrations';
 import { Button } from '@/components/ui';
+import { JobMatchPanel } from '@/features/tailor';
 import { isPanelTarget, panelIdOf, type AtsFixTarget } from '@/constants';
 import { useResume, useResumeActions } from '@/features/resume';
 import { cn } from '@/lib/cn';
@@ -177,6 +178,7 @@ export const EditorPane = ({
         {/* Keyed so each section arrives rather than swaps. */}
         <div key={`${active.kind}:${active.key}`} className="animate-rise flex flex-col gap-4">
           {active.kind === 'panel' && active.key === 'design' ? <DesignSection /> : null}
+          {active.kind === 'panel' && active.key === 'job' ? <JobMatchPanel /> : null}
           {active.kind === 'panel' && active.key === 'sections' ? (
             <div className="flex flex-col gap-6">
               <DocumentNameSection />

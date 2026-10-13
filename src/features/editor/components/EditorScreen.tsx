@@ -145,6 +145,11 @@ export const EditorScreen = () => {
       onOpenLibrary={() => setLibraryOpen(true)}
       onOpenImport={() => setImportOpen(true)}
       onOpenDesign={() => navigateToFix('panel:design')}
+      onOpenJob={() => {
+        layout.dismissScoreOverlay();
+        layout.setTab('edit');
+        section.setActive({ kind: 'panel', key: 'job' });
+      }}
       onOpenShortcuts={() => layout.setShortcutsOpen(true)}
       canUndo={canUndo}
       canRedo={canRedo}

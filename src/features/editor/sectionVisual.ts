@@ -23,6 +23,7 @@ import {
   Users,
   Wrench,
   LayoutList,
+  Target,
   Contact,
   type LucideIcon,
 } from 'lucide-react';
@@ -75,6 +76,7 @@ const CUSTOM_VISUAL: SectionVisual = { Icon: Layers, hue: 'teal', scene: 'story'
 const PANEL_VISUAL: Record<EditorPanel, SectionVisual> = {
   design: { Icon: Palette, hue: 'pink', scene: 'design' },
   sections: { Icon: LayoutList, hue: 'indigo', scene: 'sections' },
+  job: { Icon: Target, hue: 'emerald', scene: 'skills' },
 };
 
 export const getSectionVisual = (slot: SectionSlot): SectionVisual =>

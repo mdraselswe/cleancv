@@ -15,6 +15,7 @@ import {
   MoreHorizontal,
   Palette,
   Redo2,
+  Target,
   Sun,
   Undo2,
   Upload,
@@ -58,6 +59,8 @@ export interface ToolbarProps {
   onOpenImport: () => void;
   /** Jumps the editor to the design panel — the template picker on a phone. */
   onOpenDesign: () => void;
+  /** Jumps to the Job match panel: paste a posting, tailor a copy. */
+  onOpenJob: () => void;
   onOpenShortcuts: () => void;
 
   canUndo: boolean;
@@ -104,6 +107,7 @@ export const Toolbar = ({
   onOpenLibrary,
   onOpenImport,
   onOpenDesign,
+  onOpenJob,
   onOpenShortcuts,
   canUndo,
   canRedo,
@@ -150,6 +154,12 @@ export const Toolbar = ({
       hint: `${cloudUsed} of ${cloudMax}`,
       icon: cloudSynced ? <CloudOff size={15} /> : <Cloud size={15} />,
       onSelect: onToggleCloud,
+    },
+    {
+      id: 'job',
+      label: 'Tailor to a job posting',
+      icon: <Target size={15} />,
+      onSelect: onOpenJob,
     },
     {
       id: 'design',
@@ -313,6 +323,16 @@ export const Toolbar = ({
             <Redo2 size={15} />
           </Button>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onOpenJob}
+          className="hidden xl:inline-flex"
+          leading={<Target size={14} />}
+        >
+          Job match
+        </Button>
 
         <Button
           variant="outline"
