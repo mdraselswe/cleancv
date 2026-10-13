@@ -81,11 +81,14 @@ export const rules: AtsRule[] = [
         };
       }
 
+      const unbacked = skills.filter((skill) => !backed.includes(skill));
+
       return {
         status: 'warn',
         message: `Only ${backed.length} of ${skills.length} skills appear anywhere else on the resume.`,
         fixHint:
-          'A skills list nothing supports reads as a wish list. Name the important ones inside the bullets where you used them.',
+          'Pick the few you most want to be hired for and name each inside a bullet where you used it, e.g. "…built the checkout in Next.js and GraphQL". Delete the ones you cannot defend.',
+        details: [`Not mentioned anywhere else: ${unbacked.slice(0, 14).join(', ')}${unbacked.length > 14 ? `, +${unbacked.length - 14} more` : ''}`],
         targets: ['experience', 'skills'],
       };
     },

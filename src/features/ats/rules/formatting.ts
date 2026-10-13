@@ -1,4 +1,10 @@
-import { BODY_TEXT_PT, MAX_RESUME_PAGES, SUMMARY_WORD_RANGE, panelTarget } from '@/constants';
+import {
+  BODY_TEXT_PT,
+  FONT_SCALE,
+  MAX_RESUME_PAGES,
+  SUMMARY_WORD_RANGE,
+  panelTarget,
+} from '@/constants';
 import { isRangeReversed } from '@/lib/date';
 import { isBlank, wordCount } from '@/lib/text';
 
@@ -117,7 +123,7 @@ export const rules: AtsRule[] = [
     category: 'formatting',
     weight: 3,
     label: 'Text size',
-    evaluate: (_resume, { measuredBodyPt }) => {
+    evaluate: (resume, { measuredBodyPt }) => {
       if (!measuredBodyPt || measuredBodyPt <= 0) {
         return {
           status: 'pass',
@@ -131,13 +137,25 @@ export const rules: AtsRule[] = [
         return { status: 'pass', message: `Body text measures ${pt}pt.` };
       }
 
-      // The slider is a multiplier on the design's own size, so say how much.
-      const needed = Math.min(140, Math.ceil(((BODY_TEXT_PT.warn / measuredBodyPt) * 100) / 5) * 5);
+      /*
+       * The slider multiplies the design's own size, so the new value is the
+       * current one scaled by how far short the printed size falls. Rounded up
+       * to the slider's step so it lands on or just over the line, never under.
+       */
+      const current = resume.meta.theme.fontScale;
+      const exact = (current * BODY_TEXT_PT.warn) / measuredBodyPt;
+      const value = Math.min(FONT_SCALE.max, Math.ceil(exact / FONT_SCALE.step - 1e-9) * FONT_SCALE.step);
+      const rounded = Math.round(value * 100) / 100;
 
       return {
         status: pt < BODY_TEXT_PT.error ? 'error' : 'warn',
         message: `Body text measures about ${pt}pt — small enough to tire a reader.`,
-        fixHint: `Set Text size to about ${needed}% in Design, or pick a design with larger type. It may add a page; trim before you shrink.`,
+        fixHint: `Text size ${Math.round(current * 100)}% → ${Math.round(rounded * 100)}% brings it to ${BODY_TEXT_PT.warn}pt. It can add a page; if it does, trim a bullet or two rather than shrinking again.`,
+        fix: {
+          kind: 'font-scale',
+          value: rounded,
+          label: `Set text size to ${Math.round(rounded * 100)}%`,
+        },
         targets: [panelTarget('design')],
       };
     },

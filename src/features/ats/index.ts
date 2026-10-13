@@ -13,6 +13,7 @@ export { estimatePages } from './utils/pages';
 export type {
   AtsRule,
   AtsRuleContext,
+  AtsQuickFix,
   AtsRuleResult,
   AtsScore,
   CategoryScore,

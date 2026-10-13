@@ -7,7 +7,7 @@ import {
 import { hasMetric } from '@/lib/metrics';
 import { findPhrases, firstWord, wordCount, words } from '@/lib/text';
 
-import { collectBullets } from '../utils/collect';
+import { collectBullets, describeBullet, quoteBullet } from '../utils/collect';
 import type { AtsRule } from '../types';
 
 /**
@@ -67,13 +67,19 @@ export const rules: AtsRule[] = [
       const ratio = percent(withMetric.length, bullets.length);
       const status = gradeRatio(ratio);
 
+      const without = bullets.filter((bullet) => !hasMetric(bullet.text));
+
       return {
         status,
         message: `${withMetric.length} of ${bullets.length} bullets carry a number.`,
         fixHint:
           status === 'pass'
             ? undefined
-            : 'Add scale or outcome: how much, how many, how much faster, for how many people.',
+            : 'For each line below, add the figure a reader could check: how many people used it, how much faster or cheaper it got, how many teams or services it touched. Only use numbers that are true.',
+        details:
+          status === 'pass'
+            ? undefined
+            : without.map((bullet) => `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}`),
         targets: ['experience', 'projects'],
       };
     },
@@ -92,6 +98,7 @@ export const rules: AtsRule[] = [
 
       const verbs = new Set<string>(STRONG_ACTION_VERBS);
       const strong = bullets.filter((bullet) => verbs.has(firstWord(bullet.text)));
+      const weak = bullets.filter((bullet) => !verbs.has(firstWord(bullet.text)));
       const ratio = percent(strong.length, bullets.length);
       const status = gradeRatio(ratio);
 
@@ -101,7 +108,11 @@ export const rules: AtsRule[] = [
         fixHint:
           status === 'pass'
             ? undefined
-            : 'Open with what you did: Built, Led, Cut, Migrated, Shipped — not "Worked on".',
+            : 'Start each line below with what you did, in the past tense: Built, Led, Cut, Migrated, Shipped — not "Worked on" or "Responsible for".',
+        details:
+          status === 'pass'
+            ? undefined
+            : weak.map((bullet) => `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}`),
         targets: ['experience', 'projects'],
       };
     },
@@ -180,6 +191,16 @@ export const rules: AtsRule[] = [
         status: offending > bullets.length / 3 ? 'error' : 'warn',
         message: `${long.length} too long, ${short.length} too thin.`,
         fixHint: 'One or two printed lines each. Longer and it is skimmed past; shorter and it says nothing.',
+        details: [
+          ...long.map(
+            (bullet) =>
+              `Too long (${wordCount(bullet.text)} words) — ${describeBullet(resume, bullet)}: ${quoteBullet(bullet.text, 60)}`,
+          ),
+          ...short.map(
+            (bullet) =>
+              `Too thin (${wordCount(bullet.text)} words) — ${describeBullet(resume, bullet)}: ${quoteBullet(bullet.text, 60)}`,
+          ),
+        ],
         targets: ['experience', 'projects'],
       };
     },
@@ -208,10 +229,16 @@ export const rules: AtsRule[] = [
         return { status: 'pass', message: 'Bullet openings are varied.' };
       }
 
+      const repeatedVerbs = new Set(repeated.map(([verb]) => verb));
+
       return {
         status: 'warn',
         message: `"${repeated[0][0]}" opens ${repeated[0][1]} bullets.`,
-        fixHint: 'Repetition makes distinct achievements read as one.',
+        fixHint:
+          'Keep one of each and give the others a verb that says what was different: Designed, Reduced, Mentored, Automated, Shipped.',
+        details: bullets
+          .filter((bullet) => repeatedVerbs.has(firstWord(bullet.text)))
+          .map((bullet) => `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}`),
         targets: ['experience'],
       };
     },

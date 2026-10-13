@@ -39,6 +39,36 @@ export const collectBullets = (resume: Resume): BulletRef[] => {
   return bullets;
 };
 
+/** Where a bullet lives, in the words the reader would use: "Senior Engineer · Acme". */
+export const describeBullet = (resume: Resume, ref: BulletRef): string => {
+  const pick = (entry: Record<string, unknown> | undefined, keys: string[]): string =>
+    keys
+      .map((key) => (typeof entry?.[key] === 'string' ? (entry[key] as string).trim() : ''))
+      .filter(Boolean)
+      .slice(0, 2)
+      .join(' · ');
+
+  const lists: Record<BulletRef['source'], Array<Record<string, unknown>>> = {
+    experience: resume.experience as unknown as Array<Record<string, unknown>>,
+    education: resume.education as unknown as Array<Record<string, unknown>>,
+    projects: resume.projects as unknown as Array<Record<string, unknown>>,
+    volunteering: resume.volunteering as unknown as Array<Record<string, unknown>>,
+  };
+  const entry = lists[ref.source].find((candidate) => candidate.id === ref.entryId);
+
+  return (
+    pick(entry, ['role', 'degree', 'name', 'company', 'organization']) ||
+    ref.source.charAt(0).toUpperCase() + ref.source.slice(1)
+  );
+};
+
+/** A bullet cut to one readable line for a list of findings. */
+export const quoteBullet = (text: string, max = 78): string => {
+  const flat = text.replace(/\s+/g, ' ').trim();
+
+  return `“${flat.length > max ? `${flat.slice(0, max - 1).trimEnd()}…` : flat}”`;
+};
+
 /** Every skill the user listed, flattened across groups. */
 export const collectSkills = (resume: Resume): string[] =>
   resume.skills.flatMap((group) => group.items).filter((item) => !isBlank(item));

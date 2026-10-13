@@ -183,6 +183,9 @@ export const EditorScreen = () => {
       jobDescription={resume.meta.targetJobDescription}
       onJobDescriptionChange={actions.setJobDescription}
       onNavigate={navigateToFix}
+      onQuickFix={(fix) => {
+        if (fix.kind === 'font-scale') actions.setTheme({ fontScale: fix.value });
+      }}
       onTailor={() => {
         // The score drawer sits over the work; close it so the dialog is the only thing up.
         layout.dismissScoreOverlay();

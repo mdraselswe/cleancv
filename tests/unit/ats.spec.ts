@@ -372,3 +372,43 @@ describe('what a fix is worth', () => {
     expect(score.withContentFixed).toBeGreaterThan(score.total);
   });
 });
+
+describe('fixes say exactly what to do', () => {
+  const rule = (resume: ReturnType<typeof createSampleResume>, id: string, ctx = context()) =>
+    evaluateResume(resume, ctx)
+      .categories.flatMap((category) => category.rules)
+      .find((entry) => entry.id === id);
+
+  it('offers to set the text size, computed from where it is now', () => {
+    const resume = createSampleResume();
+
+    resume.meta.theme.fontScale = 1;
+    const result = rule(resume, 'body-size', context({ measuredBodyPt: 7.6 }));
+
+    expect(result?.fix).toEqual({ kind: 'font-scale', value: 1.2, label: 'Set text size to 120%' });
+
+    // Already at 110% and still 8.4pt: it needs to go further, not back to 120% of 100.
+    resume.meta.theme.fontScale = 1.1;
+    const again = rule(resume, 'body-size', context({ measuredBodyPt: 8.36 }));
+
+    expect(again?.fix?.value).toBeGreaterThan(1.1);
+    expect(again?.fix?.value).toBeLessThanOrEqual(1.4);
+  });
+
+  it('lists the bullets that carry no figure, with where they are', () => {
+    const resume = createSampleResume();
+
+    resume.experience[0].bullets = ['Built the storefront with Next.js 16', 'Cut load time by 40%'];
+
+    const result = rule(resume, 'bullets-have-metrics');
+
+    if (result && result.status !== 'pass') {
+      expect(result.details?.some((line) => line.includes('Built the storefront'))).toBe(true);
+      expect(result.details?.some((line) => line.includes('Cut load time'))).toBe(false);
+    }
+  });
+
+  it('a new CV starts at a size a person can read', () => {
+    expect(createEmptyResume().meta.theme.fontScale).toBeGreaterThan(1);
+  });
+});

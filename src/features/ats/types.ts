@@ -17,12 +17,29 @@ export interface AtsRuleContext {
   measuredBodyPt?: number;
 }
 
+/**
+ * A fix the panel can make itself, when there is exactly one right answer.
+ * A setting to change is not a place to be sent: the button does it.
+ */
+export interface AtsQuickFix {
+  kind: 'font-scale';
+  value: number;
+  label: string;
+}
+
 export interface AtsRuleResult {
   status: AtsStatus;
   /** One line stating what is true, not what to do. */
   message: string;
   /** What to change, when there is something to change. */
   fixHint?: string;
+  /**
+   * The exact lines the finding is about, so "3 bullets have no number" comes
+   * with which three. Short, at most a handful.
+   */
+  details?: string[];
+  /** A change the panel can apply on the reader's behalf. */
+  fix?: AtsQuickFix;
   /** Where the fix is: a section of the document, or an editor panel. */
   targets?: AtsFixTarget[];
 }

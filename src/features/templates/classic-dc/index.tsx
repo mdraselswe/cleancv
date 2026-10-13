@@ -1,4 +1,4 @@
-import { SECTION_KEYS } from '@/constants';
+import { DEFAULT_TEMPLATE_FONT_SCALE, SECTION_KEYS } from '@/constants';
 import { getSectionHeading, getVisibleSections, isSectionVisible } from '@/features/resume';
 import { isBlank } from '@/lib/text';
 
@@ -36,6 +36,7 @@ export const meta: TemplateMeta = {
     accent: '#2563eb',
     font: 'sans',
     density: 'normal',
+    fontScale: DEFAULT_TEMPLATE_FONT_SCALE,
     marginMm: 11,
     photoRadius: 50,
   },

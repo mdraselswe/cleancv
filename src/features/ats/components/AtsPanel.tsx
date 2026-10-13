@@ -12,7 +12,7 @@ import {
 } from '@/constants';
 import { cn } from '@/lib/cn';
 
-import type { AtsScore, KeywordMatch } from '../types';
+import type { AtsQuickFix, AtsScore, KeywordMatch } from '../types';
 import { RuleRow } from './RuleRow';
 
 export interface AtsPanelProps {
@@ -21,6 +21,8 @@ export interface AtsPanelProps {
   jobDescription: string;
   onJobDescriptionChange: (text: string) => void;
   onNavigate?: (target: AtsFixTarget) => void;
+  /** Applies a change a rule offers to make itself, like a text size. */
+  onQuickFix?: (fix: AtsQuickFix) => void;
   /** Opens the dialog that makes a tailored copy from the pasted job description. */
   onTailor?: () => void;
 }
@@ -46,6 +48,7 @@ export const AtsPanel = ({
   jobDescription,
   onJobDescriptionChange,
   onNavigate,
+  onQuickFix,
   onTailor,
 }: AtsPanelProps) => {
   const [view, setView] = useState<View>('issues');
@@ -83,7 +86,8 @@ export const AtsPanel = ({
           <p className="bg-warning/10 text-warning rounded-control text-ui-xs px-3 py-2 leading-snug">
             The file reads as {score.uncapped}, but the score is held at {score.total} because the
             writing proves little. Fixing the content checks alone would lift it to{' '}
-            {score.withContentFixed}: numbers and outcomes in your bullets are what do it.
+            {score.withContentFixed}. Start with the issues marked <strong>+ pts</strong> below:
+            formatting fixes will not move the total until those are done.
           </p>
         ) : null}
         {score.cappedBy === 'completeness' ? (
@@ -139,7 +143,7 @@ export const AtsPanel = ({
         ) : (
           <ul className="divide-border-base divide-y">
             {score.issues.map((rule) => (
-              <RuleRow key={rule.id} rule={rule} onNavigate={onNavigate} />
+              <RuleRow key={rule.id} rule={rule} onNavigate={onNavigate} onQuickFix={onQuickFix} />
             ))}
           </ul>
         )
@@ -154,7 +158,7 @@ export const AtsPanel = ({
               </p>
               <ul className="divide-border-base divide-y">
                 {category.rules.map((rule) => (
-                  <RuleRow key={rule.id} rule={rule} onNavigate={onNavigate} />
+                  <RuleRow key={rule.id} rule={rule} onNavigate={onNavigate} onQuickFix={onQuickFix} />
                 ))}
               </ul>
             </div>
