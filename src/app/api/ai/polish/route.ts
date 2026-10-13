@@ -23,45 +23,62 @@ const API = 'https://generativelanguage.googleapis.com/v1beta';
 /** `models/gemini-x` and `gemini-x` both mean the same model; the URL wants the second. */
 const normaliseModel = (name: string): string => name.trim().replace(/^models\//, '');
 
-/** Names a person would not choose for rewriting text: previews, image and speech models. */
-const UNWANTED = /preview|exp|latest|tts|image|live|audio|embedding|thinking|lite|learn/i;
+/**
+ * Models known to take plain text, in the order they are worth trying. Names are
+ * retired and renamed faster than a deployment is edited, so these are matched
+ * against what the key can actually see rather than assumed.
+ */
+const PREFERRED = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-001',
+  'gemini-flash-latest',
+  'gemini-1.5-flash',
+];
+
+/** `gemini-2.5-flash`, `gemini-3-flash`: a plain numbered Flash and nothing exotic. */
+const PLAIN_FLASH = /^gemini-\d+(?:\.\d+)?-flash$/i;
+
+/** Remembered for the life of the instance once one of them has answered. */
+let working: string | null = null;
+let candidates: string[] | null = null;
 
 /**
- * A model this key can actually call, asked of the API instead of guessed.
+ * The models this key can call, best first.
  *
- * Model names are retired and renamed faster than a deployment is edited, and a
- * wrong one answers 404 for every request. On a 404 the list is read once and
- * the first stable Gemini Flash that supports `generateContent` is used, then
- * remembered for the life of the instance.
+ * Asked of the API on the first failure instead of guessed: the same key sees
+ * different models in different projects, and some listed models (multimodal,
+ * experimental, preview) have no free quota at all and answer 429 to everything.
  */
-let discovered: string | null = null;
-
-const discoverModel = async (key: string): Promise<string | null> => {
-  if (discovered) return discovered;
+const listCandidates = async (key: string): Promise<string[]> => {
+  if (candidates) return candidates;
 
   try {
     const response = await fetch(`${API}/models?pageSize=200`, {
       headers: { 'x-goog-api-key': key },
       signal: AbortSignal.timeout(10_000),
     });
-    if (!response.ok) return null;
+
+    if (!response.ok) return [];
 
     const body = (await response.json()) as {
       models?: Array<{ name?: string; supportedGenerationMethods?: string[] }>;
     };
-    const names = (body.models ?? [])
+    const available = (body.models ?? [])
       .filter((model) => model.supportedGenerationMethods?.includes('generateContent'))
-      .map((model) => normaliseModel(model.name ?? ''))
-      .filter((name) => /^gemini-.*flash/i.test(name) && !UNWANTED.test(name))
-      // Newest generation first: gemini-2.5-flash before gemini-2.0-flash.
+      .map((model) => normaliseModel(model.name ?? ''));
+
+    const preferred = PREFERRED.filter((name) => available.includes(name));
+    const others = available
+      .filter((name) => PLAIN_FLASH.test(name) && !preferred.includes(name))
       .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
 
-    discovered = names[0] ?? null;
+    candidates = [...preferred, ...others];
   } catch {
-    discovered = null;
+    candidates = [];
   }
 
-  return discovered;
+  return candidates;
 };
 
 const bodySchema = z.object({
@@ -148,21 +165,31 @@ export async function POST(request: Request) {
       signal: AbortSignal.timeout(25_000),
     });
 
-  let model = discovered ?? normaliseModel(env.GEMINI_MODEL ?? DEFAULT_MODEL);
+  const configured = normaliseModel(env.GEMINI_MODEL ?? DEFAULT_MODEL);
+  let model = working ?? configured;
   let response: Response;
 
   try {
     response = await generate(model);
 
-    // A model name that no longer exists answers 404 to everything.
-    if (response.status === 404) {
-      const alternative = await discoverModel(key);
+    /*
+     * A wrong name answers 404 and a model with no free quota answers 429, and
+     * both are per model. Try the models this key can really see, a few at
+     * most, before telling anyone the quota is gone.
+     */
+    if (response.status === 404 || response.status === 429) {
+      const tried = new Set([model]);
+      const options = (await listCandidates(key)).filter((name) => !tried.has(name)).slice(0, 3);
 
-      if (alternative && alternative !== model) {
-        model = alternative;
-        response = await generate(model);
+      for (const option of options) {
+        model = option;
+        response = await generate(option);
+
+        if (response.ok || (response.status !== 404 && response.status !== 429)) break;
       }
     }
+
+    if (response.ok) working = model;
   } catch {
     return fail(502, 'The AI service did not answer. Try again in a moment.');
   }
