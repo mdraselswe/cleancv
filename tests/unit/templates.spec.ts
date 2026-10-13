@@ -39,6 +39,13 @@ describe('template metadata', () => {
     expect(typeof meta.defaultTheme.marginMm).toBe('number');
   });
 
+  it.each(templates.map(({ meta }) => meta))('$id states its text size', (meta) => {
+    // A switch applies the design's theme over the current one, so a design that
+    // is silent inherits the last design's scale — a 7.6pt design's 120% on a
+    // 10pt design prints at 12pt.
+    expect(typeof meta.defaultTheme.fontScale).toBe('number');
+  });
+
   it.each(templates.map(({ meta }) => meta))('$id says whether it draws icons', (meta) => {
     // The editor reads this to tell the user a picked icon will not be drawn,
     // rather than letting the control do nothing.

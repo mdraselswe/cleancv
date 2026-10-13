@@ -26,7 +26,7 @@ export const meta: TemplateMeta = {
   supportedSections: SECTION_KEYS,
   // Every design states its margin: without one, switching to it silently
   // keeps whatever the previous template chose.
-  defaultTheme: { font: 'sans', density: 'compact', accent: '#000000', marginMm: 14 },
+  defaultTheme: { fontScale: 1, font: 'sans', density: 'compact', accent: '#000000', marginMm: 14 },
 };
 
 export const Template = ({ resume, print }: TemplateProps) => (

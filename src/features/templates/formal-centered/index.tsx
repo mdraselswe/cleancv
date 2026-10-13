@@ -42,6 +42,9 @@ export const meta: TemplateMeta = {
    * is only where the design starts.
    */
   defaultTheme: {
+    // Stated for every design: a switch applies it over the current theme, so a
+    // design that says nothing would inherit the previous design's text size.
+    fontScale: 1,
     accent: '#5b7183',
     font: 'humanist',
     density: 'normal',

@@ -24,6 +24,9 @@ export const meta: TemplateMeta = {
   },
   supportedSections: SECTION_KEYS,
   defaultTheme: {
+    // Stated for every design: a switch applies it over the current theme, so a
+    // design that says nothing would inherit the previous design's text size.
+    fontScale: 1,
     accent: '#1f2937',
     font: 'serif',
     density: 'relaxed',

@@ -38,6 +38,9 @@ export const meta: TemplateMeta = {
   supportedSections: SECTION_KEYS,
   // Measured off the reference: 15 mm margins and its heading blue.
   defaultTheme: {
+    // Stated for every design: a switch applies it over the current theme, so a
+    // design that says nothing would inherit the previous design's text size.
+    fontScale: 1,
     accent: '#1d6bc4',
     font: 'sans',
     density: 'compact',
