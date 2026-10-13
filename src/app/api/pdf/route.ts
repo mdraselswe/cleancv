@@ -7,7 +7,7 @@ import {
   SIGN_IN_REQUIRED,
   type TemplateId,
 } from '@/constants';
-import { normalizeResume } from '@/features/resume';
+import { normalizeResume, withoutHiddenEntries } from '@/features/resume';
 import { getTemplate, resolvePageBleed } from '@/features/templates';
 import { attachResume } from '@/lib/pdf/attachResume';
 import { renderPdf } from '@/lib/pdf/renderPdf';
@@ -241,7 +241,7 @@ export async function POST(request: Request) {
    * the rule is not about.
    */
   const { renderToStaticMarkup } = await import('react-dom/server');
-  const markup = renderToStaticMarkup(createElement(Template, { resume, print: true }));
+  const markup = renderToStaticMarkup(createElement(Template, { resume: withoutHiddenEntries(resume), print: true }));
 
   // Puppeteer talks to this same app, so the request's own origin is the right
   // base — no env var to keep in sync across environments.

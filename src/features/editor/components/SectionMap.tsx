@@ -22,7 +22,12 @@ import { useState } from 'react';
 
 import { Modal, ModalHeader } from '@/components/ui';
 import type { SectionSlot } from '@/constants';
-import { getSectionHeading, useResume, useResumeActions } from '@/features/resume';
+import {
+  getSectionHeading,
+  useResume,
+  useResumeActions,
+  withoutHiddenEntries,
+} from '@/features/resume';
 import { getTemplate } from '@/features/templates';
 import { cn } from '@/lib/cn';
 
@@ -268,7 +273,7 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
         style={{ left: -10_000, width: flowWidth }}
       >
         <div ref={measureRef}>
-          <Template resume={resume} />
+          <Template resume={withoutHiddenEntries(resume)} />
         </div>
       </div>
     </>

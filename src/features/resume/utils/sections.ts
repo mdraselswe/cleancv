@@ -13,6 +13,7 @@ import {
 import { isBlank } from '@/lib/text';
 
 import type { CustomSection, Resume } from '../schema';
+import { ENTRY_LIST_KEYS } from './entryLists';
 
 /**
  * Section visibility.
@@ -174,4 +175,26 @@ export const applyPresetToOrder = (
   next.splice(closingSlotIndex(next), 0, ...custom);
 
   return next;
+};
+
+/**
+ * The resume as it is printed: entries the reader has hidden are gone.
+ *
+ * One function, called wherever the document is rendered or scored, so a hidden
+ * entry cannot appear in the preview yet be counted by the score, or reach the
+ * PDF while missing from the preview. Returns the same object when nothing is
+ * hidden, which keeps memoised consumers from re-running.
+ */
+export const withoutHiddenEntries = (resume: Resume): Resume => {
+  const hidden = resume.meta.hiddenEntries;
+  if (!hidden || hidden.length === 0) return resume;
+
+  const skip = new Set(hidden);
+  const next = { ...resume } as Record<string, unknown>;
+
+  for (const key of ENTRY_LIST_KEYS) {
+    next[key] = (resume[key] as Array<{ id: string }>).filter((entry) => !skip.has(entry.id));
+  }
+
+  return next as unknown as Resume;
 };

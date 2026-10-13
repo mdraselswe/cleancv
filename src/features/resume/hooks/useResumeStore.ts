@@ -65,6 +65,8 @@ export interface ResumeActions {
   removeEntry: (key: EntryListKey, id: string) => void;
   moveEntry: (key: EntryListKey, from: number, to: number) => void;
   duplicateEntry: (key: EntryListKey, id: string) => void;
+  /** Keeps an entry in the document but leaves it off the page, or brings it back. */
+  setEntryHidden: (id: string, hidden: boolean) => void;
 
   /**
    * `themeDefaults` come from the template's own meta. They are passed in rather
@@ -180,6 +182,13 @@ export const useResumeStore = create<ResumeStore>()((set, get) => {
         const index = list.findIndex((entry) => entry.id === id);
         if (index === -1) return;
         list.splice(index, 1);
+        draft.meta.hiddenEntries = (draft.meta.hiddenEntries ?? []).filter((item) => item !== id);
+      }),
+
+    setEntryHidden: (id, hidden) =>
+      commit((draft) => {
+        const rest = (draft.meta.hiddenEntries ?? []).filter((item) => item !== id);
+        draft.meta.hiddenEntries = hidden ? [...rest, id] : rest;
       }),
 
     moveEntry: (key, from, to) =>

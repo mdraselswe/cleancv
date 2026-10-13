@@ -293,6 +293,7 @@ export const createEmptyResume = (): Resume => ({
     sectionOrder: [...DEFAULT_SECTION_ORDER],
     sections: createDefaultSectionSettings(),
     columns: {},
+    hiddenEntries: [],
     targetJobDescription: '',
     documentName: '',
   },

@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 
 import { DEBOUNCE_MS } from '@/constants';
-import { useResume } from '@/features/resume';
+import { useResume, withoutHiddenEntries } from '@/features/resume';
 import { getTemplate } from '@/features/templates';
 import { useDebouncedValue } from '@/hooks';
 
@@ -41,7 +41,9 @@ export const useAtsScore = ({
   measuredBodyPt = 0,
 }: UseAtsScoreOptions): AtsScoreResult => {
   const resume = useResume();
-  const debounced = useDebouncedValue(resume, DEBOUNCE_MS.atsScore);
+  const debouncedFull = useDebouncedValue(resume, DEBOUNCE_MS.atsScore);
+  // What is scored is what is printed: a hidden entry is not on the page.
+  const debounced = useMemo(() => withoutHiddenEntries(debouncedFull), [debouncedFull]);
 
   const estimatedPages = useMemo(
     () => (measuredPages > 0 ? measuredPages : estimatePages(debounced)),
@@ -69,5 +71,5 @@ export const useAtsScore = ({
     [debounced, jobKeywords],
   );
 
-  return { score, keywords, stale: debounced !== resume };
+  return { score, keywords, stale: debouncedFull !== resume };
 };

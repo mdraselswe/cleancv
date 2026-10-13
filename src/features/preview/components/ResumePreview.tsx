@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { PAGE_SIZE_PX, PX_PER_MM } from '@/constants';
-import type { Resume } from '@/features/resume';
+import { withoutHiddenEntries, type Resume } from '@/features/resume';
 import { getTemplate, resolvePageBleed } from '@/features/templates';
 import { pageBleedBackground } from '@/lib/pageBleed';
 
@@ -58,6 +58,7 @@ export const ResumePreview = ({
 }: ResumePreviewProps) => {
   const { Template, meta } = getTemplate(resume.meta.templateId);
   const { marginMm } = resume.meta.theme;
+  const printed = useMemo(() => withoutHiddenEntries(resume), [resume]);
   /*
    * Painted on the sheet rather than inside the document: a design's band has to
    * reach past the page margins, and nothing in the flow can. See ADR-036.
@@ -171,7 +172,7 @@ export const ResumePreview = ({
                 <div style={{ transform: `translateY(${-offset}px)` }}>
                   {/* Only the first copy is measured; they are all identical. */}
                   <div ref={index === 0 ? contentRef : undefined}>
-                    <Template resume={resume} />
+                    <Template resume={printed} />
                   </div>
                 </div>
               </div>

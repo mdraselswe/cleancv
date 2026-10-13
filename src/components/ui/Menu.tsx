@@ -1,6 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+} from 'react';
+import { createPortal } from 'react-dom';
 
 import { cn } from '@/lib/cn';
 
@@ -22,12 +31,25 @@ export interface MenuSeparator {
 
 export type MenuEntry = MenuItem | MenuSeparator;
 
+const subscribeNothing = () => () => undefined;
+
+/** `document.body`, or null before the client has mounted. Same idea as the Modal overlay root. */
+const useOverlayRoot = (): HTMLElement | null =>
+  useSyncExternalStore(
+    subscribeNothing,
+    () => document.body,
+    () => null,
+  );
+
+/** Room the panel is assumed to need before it opens below its trigger. */
+const PANEL_ROOM = 260;
+
 const isSeparator = (entry: MenuEntry): entry is MenuSeparator => 'separator' in entry;
 
 export interface MenuProps {
   /** The control that opens the menu. Receives the props it must spread. */
   trigger: (props: {
-    onClick: () => void;
+    onClick: (event: MouseEvent<HTMLElement>) => void;
     'aria-expanded': boolean;
     'aria-haspopup': 'menu';
   }) => ReactNode;
@@ -59,15 +81,47 @@ export interface MenuProps {
  */
 export const Menu = ({ trigger, entries, header, align = 'end', label, className }: MenuProps) => {
   const [open, setOpen] = useState(false);
+  /*
+   * Where the panel is drawn, in viewport pixels. Measured when the menu opens
+   * rather than in an effect: the panel lives on <body>, because a menu inside
+   * a card with `overflow: hidden` - every row of an entry list - was cut off
+   * at the edge of that card.
+   */
+  const [place, setPlace] = useState<CSSProperties>({});
+  const overlayRoot = useOverlayRoot();
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+
+  const toggle = (event: MouseEvent<HTMLElement>) => {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+
+    const box = event.currentTarget.getBoundingClientRect();
+    const below = window.innerHeight - box.bottom;
+    const flip = below < PANEL_ROOM && box.top > below;
+    setPlace({
+      position: 'fixed',
+      ...(flip ? { bottom: window.innerHeight - box.top + 6 } : { top: box.bottom + 6 }),
+      ...(align === 'end'
+        ? { right: Math.max(8, window.innerWidth - box.right) }
+        : { left: Math.max(8, box.left) }),
+    });
+
+    setOpen(true);
+  };
 
   useEffect(() => {
     if (!open) return;
 
     const onPointerDown = (event: PointerEvent) => {
-      if (!root.current?.contains(event.target as Node)) setOpen(false);
+      const target = event.target as Node;
+      if (!root.current?.contains(target) && !panel.current?.contains(target)) setOpen(false);
     };
+
+    // The panel is fixed to where the trigger was; once the page moves it is stale.
+    const close = () => setOpen(false);
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -95,69 +149,76 @@ export const Menu = ({ trigger, entries, header, align = 'end', label, className
 
     document.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', close);
+    window.addEventListener('scroll', close, true);
 
     return () => {
       document.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', close);
+      window.removeEventListener('scroll', close, true);
     };
   }, [open]);
 
   return (
     <div ref={root} className={cn('relative', className)}>
       {trigger({
-        onClick: () => setOpen((current) => !current),
+        onClick: toggle,
         'aria-expanded': open,
         'aria-haspopup': 'menu',
       })}
 
-      {open ? (
-        <div
-          ref={panel}
-          role="menu"
-          aria-label={label}
-          className={cn(
-            'border-border-base bg-surface shadow-pop animate-pop absolute top-[calc(100%+6px)] z-50',
-            'rounded-card min-w-52 overflow-hidden border p-1',
-            align === 'end' ? 'right-0' : 'left-0',
-          )}
-        >
-          {header ? (
-            <div className="border-border-base mb-1 border-b px-2.5 py-2">{header}</div>
-          ) : null}
+      {open && overlayRoot
+        ? createPortal(
+            <div
+              ref={panel}
+              role="menu"
+              aria-label={label}
+              style={place}
+              className={cn(
+                'border-border-base bg-surface shadow-pop animate-pop z-[60]',
+                'rounded-card min-w-52 overflow-hidden border p-1',
+              )}
+            >
+              {header ? (
+                <div className="border-border-base mb-1 border-b px-2.5 py-2">{header}</div>
+              ) : null}
 
-          {entries.map((entry) =>
-            isSeparator(entry) ? (
-              <div key={entry.id} role="separator" className="bg-border-base my-1 h-px" />
-            ) : (
-              <button
-                key={entry.id}
-                type="button"
-                role="menuitem"
-                disabled={entry.disabled}
-                onClick={() => {
-                  setOpen(false);
-                  entry.onSelect();
-                }}
-                className={cn(
-                  'text-ui flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left font-medium transition',
-                  'disabled:pointer-events-none disabled:opacity-40',
-                  entry.danger
-                    ? 'text-danger hover:bg-danger/10'
-                    : 'text-fg-muted hover:bg-surface-2 hover:text-fg',
-                )}
-              >
-                {entry.icon ? <span className="flex-none">{entry.icon}</span> : null}
-                <span className="min-w-0 flex-1 truncate">{entry.label}</span>
-                {entry.hint ? (
-                  <span className="text-fg-subtle text-ui-2xs flex-none tabular-nums">
-                    {entry.hint}
-                  </span>
-                ) : null}
-              </button>
-            ),
-          )}
-        </div>
-      ) : null}
+              {entries.map((entry) =>
+                isSeparator(entry) ? (
+                  <div key={entry.id} role="separator" className="bg-border-base my-1 h-px" />
+                ) : (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    role="menuitem"
+                    disabled={entry.disabled}
+                    onClick={() => {
+                      setOpen(false);
+                      entry.onSelect();
+                    }}
+                    className={cn(
+                      'text-ui flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left font-medium transition',
+                      'disabled:pointer-events-none disabled:opacity-40',
+                      entry.danger
+                        ? 'text-danger hover:bg-danger/10'
+                        : 'text-fg-muted hover:bg-surface-2 hover:text-fg',
+                    )}
+                  >
+                    {entry.icon ? <span className="flex-none">{entry.icon}</span> : null}
+                    <span className="min-w-0 flex-1 truncate">{entry.label}</span>
+                    {entry.hint ? (
+                      <span className="text-fg-subtle text-ui-2xs flex-none tabular-nums">
+                        {entry.hint}
+                      </span>
+                    ) : null}
+                  </button>
+                ),
+              )}
+            </div>,
+            overlayRoot,
+          )
+        : null}
     </div>
   );
 };

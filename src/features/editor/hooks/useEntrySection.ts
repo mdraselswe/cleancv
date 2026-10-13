@@ -14,6 +14,8 @@ export interface EntrySectionController {
   update: (id: string, key: string, value: unknown) => void;
   remove: (id: string) => void;
   duplicate: (id: string) => void;
+  isHidden: (id: string) => boolean;
+  setHidden: (id: string, hidden: boolean) => void;
   move: (from: number, to: number) => void;
   isExpanded: (id: string) => boolean;
   setExpanded: (id: string, open: boolean) => void;
@@ -32,6 +34,10 @@ export const useEntrySection = (key: EntryListKey): EntrySectionController => {
 
   const entries = resume[key] as unknown as Array<Record<string, unknown>>;
   const { meta } = getTemplate(resume.meta.templateId);
+  const hiddenIds = useMemo(
+    () => new Set(resume.meta.hiddenEntries),
+    [resume.meta.hiddenEntries],
+  );
 
   const add = useCallback(() => {
     const id = actions.addEntry(key);
@@ -54,11 +60,13 @@ export const useEntrySection = (key: EntryListKey): EntrySectionController => {
       update,
       remove: (id: string) => actions.removeEntry(key, id),
       duplicate: (id: string) => actions.duplicateEntry(key, id),
+      isHidden: (id: string) => hiddenIds.has(id),
+      setHidden: (id: string, hidden: boolean) => actions.setEntryHidden(id, hidden),
       move: (from: number, to: number) => actions.moveEntry(key, from, to),
       isExpanded,
       setExpanded: setItemExpanded,
       template: { name: meta.name, icons: meta.supports.icons },
     }),
-    [entries, add, update, actions, key, isExpanded, setItemExpanded, meta],
+    [entries, add, update, actions, key, isExpanded, setItemExpanded, meta, hiddenIds],
   );
 };

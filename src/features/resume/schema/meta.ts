@@ -108,6 +108,15 @@ export const resumeMetaSchema = z.object({
     .default([...DEFAULT_SECTION_ORDER]),
   sections: sectionSettingsSchema,
   columns: sectionColumnsSchema,
+  /**
+   * Ids of entries kept in the document but left off the page.
+   *
+   * Hiding is not deleting: a project that does not suit this application is
+   * one tap to bring back, and the score, the preview and the PDF all read the
+   * resume without these entries. Kept as ids in `meta`, beside the section
+   * toggles, so no entry schema changes.
+   */
+  hiddenEntries: z.array(z.string()).catch([]).default([]),
   /** Pasted job description used by the keyword-match rules. Never rendered. */
   targetJobDescription: optionalText(20000),
   /** Filename stem for exports; falls back to the person's name. */

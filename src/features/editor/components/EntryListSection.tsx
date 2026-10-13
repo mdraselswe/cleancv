@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Copy, MoreVertical, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Copy, Eye, EyeOff, MoreVertical, Plus, Trash2 } from 'lucide-react';
 
 import {
   Button,
@@ -72,7 +72,13 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                       ? `Untitled ${config.addLabel.replace(/^Add /, '')}`
                       : String(title)
                   }
-                  subtitle={isBlank(subtitle as string) ? undefined : String(subtitle)}
+                  subtitle={
+                    section.isHidden(id)
+                      ? `Hidden from your CV${isBlank(subtitle as string) ? '' : ` · ${String(subtitle)}`}`
+                      : isBlank(subtitle as string)
+                        ? undefined
+                        : String(subtitle)
+                  }
                   actions={
                     <>
                       {handle}
@@ -105,6 +111,12 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                             label: 'Duplicate',
                             icon: <Copy size={15} />,
                             onSelect: () => section.duplicate(id),
+                          },
+                          {
+                            id: 'hide',
+                            label: section.isHidden(id) ? 'Show on CV' : 'Hide from CV',
+                            icon: section.isHidden(id) ? <Eye size={15} /> : <EyeOff size={15} />,
+                            onSelect: () => section.setHidden(id, !section.isHidden(id)),
                           },
                           { id: 'sep', separator: true },
                           {
