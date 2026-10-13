@@ -88,3 +88,58 @@ const hasStandaloneFigure = (text: string): boolean => {
 
 export const hasMetric = (text: string): boolean =>
   WITH_UNIT.test(text) || MONEY.test(text) || COUNTED.test(text) || hasStandaloneFigure(text);
+
+/** Words that say something got better or worse, as opposed to just being done. */
+const CHANGE =
+  /\b(?:reduc|cut|decreas|lower|shorten|improv|increas|boost|rais|grew|grow|doubl|tripl|sav|accelerat|speed|eliminat|halv|fewer|faster|slower|from)\w*/i;
+
+/** "from 9 days to 4", "from 4.2s to 1.8s". */
+const BEFORE_AFTER = /\bfrom\b[^;]{0,40}\d[^;]{0,40}\bto\b[^;]{0,25}\d/i;
+
+/**
+ * Whether a line says what changed, with a figure: a before and after, or a
+ * change word beside a measured number. "Mentored 3+ engineers" is measured
+ * but states no change, so it is a scale, not an outcome.
+ */
+export const hasOutcome = (text: string): boolean =>
+  BEFORE_AFTER.test(text) || (hasMetric(text) && CHANGE.test(text));
+
+/** A figure counting people, users, products or money — how big the work was. */
+const LARGE_FIGURE = /\b\d[\d,.]*\+?\s*(?:k|m|million|thousand|billion)\b/i;
+
+/** Whether a line says how large the work was. */
+export const hasScale = (text: string): boolean =>
+  COUNTED.test(text) || MONEY.test(text) || LARGE_FIGURE.test(text);
+
+/**
+ * The question that gets a number out of this line, from what the line says.
+ * Never a number itself: a made-up figure is worse than none.
+ */
+export const metricPrompt = (text: string): string => {
+  const t = text.toLowerCase();
+  const has = (pattern: RegExp) => pattern.test(t);
+
+  if (has(/\b(mentor|coach|led|lead|guid|manag|train)/)) {
+    return 'How many people, over how long, and what did they ship or grow into?';
+  }
+  if (has(/\b(perform|speed|fast|latency|load|render|ssr|ssg|isr|cach|optimi[sz]|bundle|re-render)/)) {
+    return 'By how much: load time before → after, Lighthouse score, or bundle size?';
+  }
+  if (has(/\b(deploy|pipeline|ci\b|cd\b|build|release|automat)/)) {
+    return 'How long did it take before and after, or how many releases or deploys does it run?';
+  }
+  if (has(/\b(test|lint|quality|bug|incident|production issue|static analysis)/)) {
+    return 'How many bugs or incidents fewer, or what test coverage did it reach?';
+  }
+  if (has(/\b(compon|librar|reusable|standardi[sz]|pattern|storybook|documentation|polyfill)/)) {
+    return 'How many screens, products or teams use it, or how much faster did a new page ship?';
+  }
+  if (has(/\b(integrat|api|third-party|service|sync|workflow)/)) {
+    return 'How many services, requests or users go through it?';
+  }
+  if (has(/\b(develop|built|build|launch|feature|platform|app|application|erp|e-commerce)/)) {
+    return 'How many users, orders or pages does it serve, or how much time did it save?';
+  }
+
+  return 'What number would prove this: users, time saved, percent change or a count?';
+};

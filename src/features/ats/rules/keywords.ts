@@ -40,6 +40,10 @@ export const rules: AtsRule[] = [
         status: coverage >= KEYWORD_MATCH_TARGET / 2 ? 'warn' : 'error',
         message: `Only ${percent}% of the posting's key terms appear.`,
         fixHint: `Missing: ${missing.slice(0, 8).join(', ')}. Use the posting's own spellings where they are honestly true of you.`,
+        details: [
+          `Not on your CV: ${missing.slice(0, 16).join(', ')}`,
+          'Where to put them: the headline and summary opening for the role-level terms, one skills group for tools, and a bullet that proves each. Only the ones that are true.',
+        ],
         targets: ['skills', 'summary', 'experience'],
       };
     },

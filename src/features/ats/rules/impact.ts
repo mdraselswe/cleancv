@@ -4,7 +4,7 @@ import {
   STRONG_ACTION_VERBS,
   WEAK_PHRASES,
 } from '@/constants';
-import { hasMetric } from '@/lib/metrics';
+import { hasMetric, hasOutcome, hasScale, metricPrompt } from '@/lib/metrics';
 import { findPhrases, firstWord, wordCount, words } from '@/lib/text';
 
 import { collectBullets, describeBullet, quoteBullet } from '../utils/collect';
@@ -79,8 +79,84 @@ export const rules: AtsRule[] = [
         details:
           status === 'pass'
             ? undefined
-            : without.map((bullet) => `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}`),
+            : without.map(
+                (bullet) =>
+                  `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}
+→ ${metricPrompt(bullet.text)}`,
+              ),
         targets: ['experience', 'projects'],
+      };
+    },
+  },
+
+  {
+    id: 'bullets-have-outcomes',
+    category: 'impact',
+    weight: 5,
+    label: 'Outcomes, not duties',
+    evaluate: (resume) => {
+      const bullets = collectBullets(resume);
+      if (bullets.length === 0) {
+        return { status: 'error', message: 'No bullets to check.', targets: ['experience'] };
+      }
+
+      const withOutcome = bullets.filter((bullet) => hasOutcome(bullet.text));
+      const needed = Math.max(3, Math.ceil(bullets.length * 0.2));
+      const status =
+        withOutcome.length >= needed ? 'pass' : withOutcome.length > 0 ? 'warn' : 'error';
+
+      if (status === 'pass') {
+        return {
+          status,
+          message: `${withOutcome.length} of ${bullets.length} bullets state what changed.`,
+        };
+      }
+
+      const without = bullets.filter((bullet) => !hasOutcome(bullet.text));
+
+      return {
+        status,
+        message: `${withOutcome.length} of ${bullets.length} bullets state what changed; ${needed} is the aim.`,
+        fixHint:
+          'Pick your three strongest achievements and finish each with the result: "cut page load from 4.2s to 1.8s", "reduced re-renders by 40%". A before and after is the single most persuasive line on a resume.',
+        details: without
+          .slice(0, 6)
+          .map(
+            (bullet) =>
+              `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}
+→ End with the result: from ___ to ___, or ___% faster / fewer / more.`,
+          ),
+        targets: ['experience', 'projects'],
+      };
+    },
+  },
+
+  {
+    id: 'bullets-show-scale',
+    category: 'impact',
+    weight: 3,
+    label: 'Scale and scope',
+    evaluate: (resume) => {
+      const bullets = collectBullets(resume);
+      if (bullets.length === 0) {
+        return { status: 'error', message: 'No bullets to check.', targets: ['experience'] };
+      }
+
+      const scaled = bullets.filter((bullet) => hasScale(bullet.text));
+
+      if (scaled.length >= 2) {
+        return { status: 'pass', message: `${scaled.length} bullets say how big the work was.` };
+      }
+
+      return {
+        status: scaled.length === 1 ? 'warn' : 'error',
+        message:
+          scaled.length === 1
+            ? 'Only one bullet says how big the work was.'
+            : 'Nothing says how big the work was — no team size, users, budget or volume.',
+        fixHint:
+          'In your current and most senior role, add the size of what you ran: team size, monthly users or orders, number of products or markets, budget. A recruiter reads scale as seniority.',
+        targets: ['experience'],
       };
     },
   },

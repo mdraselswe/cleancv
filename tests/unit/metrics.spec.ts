@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { hasMetric } from '@/lib/metrics';
+import { hasMetric, hasOutcome, hasScale, metricPrompt } from '@/lib/metrics';
 
 describe('hasMetric', () => {
   it('counts a figure with a unit', () => {
@@ -39,5 +39,37 @@ describe('hasMetric', () => {
 
   it('does not count a sentence with no number at all', () => {
     expect(hasMetric('Improved performance through caching strategies')).toBe(false);
+  });
+});
+
+describe('hasOutcome', () => {
+  it('counts a before and after or a change beside a figure', () => {
+    expect(hasOutcome('Cut page load from 4.2s to 1.8s')).toBe(true);
+    expect(hasOutcome('Reduced re-renders by 40% after moving state to Context')).toBe(true);
+  });
+
+  it('does not count a figure that states no change', () => {
+    expect(hasOutcome('Mentored 3+ frontend engineers through code reviews')).toBe(false);
+    expect(hasOutcome('Built a reusable component library')).toBe(false);
+  });
+});
+
+describe('hasScale', () => {
+  it('counts people, users and money', () => {
+    expect(hasScale('Mentored 3+ frontend engineers')).toBe(true);
+    expect(hasScale('Served 50,000 users across 4 products')).toBe(true);
+    expect(hasScale('Managed a $2M budget')).toBe(true);
+  });
+
+  it('does not count a version number', () => {
+    expect(hasScale('Built it with Next.js 16 and React 19')).toBe(false);
+  });
+});
+
+describe('metricPrompt', () => {
+  it('asks the question that fits the line, never invents a figure', () => {
+    expect(metricPrompt('Mentored engineers through code reviews')).toMatch(/how many people/i);
+    expect(metricPrompt('Optimized rendering and caching')).toMatch(/load time/i);
+    expect(metricPrompt('Did a thing')).toMatch(/what number/i);
   });
 });

@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { AlertTriangle, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
 
 import type { AtsFixTarget, AtsStatus } from '@/constants';
@@ -39,6 +41,7 @@ export interface RuleRowProps {
  */
 export const RuleRow = ({ rule, onNavigate, onQuickFix }: RuleRowProps) => {
   const Icon = STATUS_ICON[rule.status];
+  const [showAll, setShowAll] = useState(false);
   /*
    * Nothing to fix on a rule that passes. The link used to render anyway,
    * because `targets` is returned whatever the outcome — the same returns
@@ -85,13 +88,21 @@ export const RuleRow = ({ rule, onNavigate, onQuickFix }: RuleRowProps) => {
 
         {rule.details && rule.details.length > 0 && rule.status !== 'pass' ? (
           <ul className="border-border-base bg-surface-2/60 rounded-control mt-1.5 flex flex-col gap-1 border p-2">
-            {rule.details.slice(0, 5).map((line) => (
-              <li key={line} className="text-fg-muted text-ui-2xs leading-snug">
+            {rule.details.slice(0, showAll ? undefined : 5).map((line) => (
+              <li key={line} className="text-fg-muted text-ui-2xs leading-snug whitespace-pre-line">
                 {line}
               </li>
             ))}
             {rule.details.length > 5 ? (
-              <li className="text-fg-subtle text-ui-2xs">+{rule.details.length - 5} more</li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setShowAll((value) => !value)}
+                  className="text-primary text-ui-2xs font-medium"
+                >
+                  {showAll ? 'Show fewer' : `Show all ${rule.details.length}`}
+                </button>
+              </li>
             ) : null}
           </ul>
         ) : null}
