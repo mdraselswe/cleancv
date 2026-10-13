@@ -46,3 +46,6 @@ next-env.d.ts
 /cookies-*.txt
 /*.pdf
 .env*
+
+# Local preview server config for the editor sessions
+.claude/launch.json

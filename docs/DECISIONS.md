@@ -1780,3 +1780,17 @@ guard.
 
 **Consequence.** It cannot rewrite a weak bullet and does not try; that is what the AI polish is for.
 The preview is the result, so there is nothing to reconcile after the click.
+
+## ADR-058 — PDF limits are per account first, per address second
+
+**Context.** The render limit was 20 per ten minutes per network address. Downloads already need an
+account, so the address was the wrong unit: a campus or an office on one address shared twenty
+renders between everyone, and a person with two networks had forty.
+
+**Decision.** The counter is keyed by user id (`pdf:user:<id>`, 20 per window) and, behind it, by
+address at 80 per window so many accounts from one place cannot be used to get round it. The window is
+fixed from its first request, which is what lets a refused reader be told an honest wait. A refusal
+carries `code: 'rate_limited'` and `Retry-After`.
+
+**Consequence.** One person is limited the same on any network, and a shared network is not. The
+number in the banner and on the features page is the per-account one, read from the same constant.

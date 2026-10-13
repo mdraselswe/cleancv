@@ -91,11 +91,21 @@ export const IMPORT_MIME = {
 export const IMPORT_ACCEPT = `${IMPORT_MIME.pdf},${IMPORT_MIME.docx},image/*`;
 
 /**
- * PDF renders allowed per connection in one window. The render is a real
+ * PDF renders allowed per account in one window. The render is a real
  * browser and expensive, so this is the one fair-use limit the app has — and
  * the home and features pages quote it from here rather than from memory.
  */
-export const PDF_RATE_LIMIT = { windowMs: 10 * 60 * 1000, max: 20 } as const;
+export const PDF_RATE_LIMIT = {
+  windowMs: 10 * 60 * 1000,
+  /** Per signed-in account. */
+  max: 20,
+  /**
+   * Per network address, across every account on it. Well above `max` so a
+   * household or a campus on one address is untouched; it exists to stop one
+   * address spinning up accounts to get around the per-account limit.
+   */
+  maxPerAddress: 80,
+} as const;
 
 export const ROUTES = {
   /** What the app includes, and what it does not. */

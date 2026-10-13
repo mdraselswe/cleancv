@@ -66,14 +66,24 @@ const badRequest = (message: string) => Response.json({ error: message }, { stat
  * production it is a misconfiguration, and opening would quietly turn the gate
  * off for everyone.
  */
-const requireDownloadAccess = async (request: Request): Promise<Response | null> => {
-  if (!isAuthConfigured()) {
-    if (!isProduction()) return null;
+interface Access {
+  /** Set when the request is refused. */
+  denied: Response | null;
+  /** Who is downloading; empty where auth is switched off (development). */
+  userId: string;
+}
 
-    return Response.json(
-      { error: 'Downloads are unavailable: this deployment has no auth configured.' },
-      { status: 503 },
-    );
+const requireDownloadAccess = async (request: Request): Promise<Access> => {
+  if (!isAuthConfigured()) {
+    if (!isProduction()) return { denied: null, userId: '' };
+
+    return {
+      denied: Response.json(
+        { error: 'Downloads are unavailable: this deployment has no auth configured.' },
+        { status: 503 },
+      ),
+      userId: '',
+    };
   }
 
   /*
@@ -91,56 +101,97 @@ const requireDownloadAccess = async (request: Request): Promise<Response | null>
   } catch (error) {
     console.error('[pdf] session lookup failed', error);
 
-    return Response.json(
-      { error: 'Could not check your sign-in just now. Try again in a moment.' },
-      { status: 503 },
-    );
+    return {
+      denied: Response.json(
+        { error: 'Could not check your sign-in just now. Try again in a moment.' },
+        { status: 503 },
+      ),
+      userId: '',
+    };
   }
 
-  if (user) return null;
+  if (user) return { denied: null, userId: user.id };
 
-  return Response.json(
-    { error: SIGN_IN_REQUIRED.message, code: SIGN_IN_REQUIRED.code },
-    { status: 401 },
-  );
+  return {
+    denied: Response.json(
+      { error: SIGN_IN_REQUIRED.message, code: SIGN_IN_REQUIRED.code },
+      { status: 401 },
+    ),
+    userId: '',
+  };
 };
 
-/** Keeps the headless-browser endpoint useful without leaving it unbounded. */
-const checkPdfRateLimit = async (request: Request): Promise<Response | null> => {
+/**
+ * Spends one render from a counter, or says how long until there is room.
+ *
+ * In the database because every serverless invocation has its own memory, so an
+ * in-process counter would restart at zero often enough to be no limit at all.
+ */
+const spend = async (key: string, max: number): Promise<number | null> => {
+  const now = Date.now();
+  const { windowMs } = PDF_RATE_LIMIT;
+
+  const existing = await db().query.rateLimit.findFirst({ where: eq(rateLimit.key, key) });
+  const inside = existing && now - existing.lastRequest < windowMs;
+
+  if (inside && existing.count >= max) {
+    return Math.ceil((windowMs - (now - existing.lastRequest)) / 1000);
+  }
+
+  await db()
+    .insert(rateLimit)
+    .values({ id: key, key, count: 1, lastRequest: now })
+    .onConflictDoUpdate({
+      target: rateLimit.key,
+      set: { count: inside ? existing.count + 1 : 1, lastRequest: inside ? existing.lastRequest : now },
+    });
+
+  return null;
+};
+
+const tooMany = (message: string, retryAfter: number) =>
+  Response.json(
+    { error: message, code: 'rate_limited' },
+    { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+  );
+
+/**
+ * Keeps the headless-browser endpoint useful without leaving it unbounded.
+ *
+ * Counted per account first — a shared network is not one person — and per
+ * address second, at a higher ceiling, so many accounts from one place cannot
+ * be used to get round it. The window is fixed from its first request rather
+ * than sliding, which is what lets a waiting reader be told an honest time.
+ */
+const checkPdfRateLimit = async (request: Request, userId: string): Promise<Response | null> => {
   if (!isAuthConfigured()) return null;
 
   const address =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     request.headers.get('x-real-ip');
-  if (!address) return null;
-
-  const key = `pdf:${address}`;
-  const now = Date.now();
 
   try {
-    const existing = await db().query.rateLimit.findFirst({
-      where: eq(rateLimit.key, key),
-    });
-    const insideWindow = existing && now - existing.lastRequest < PDF_RATE_LIMIT.windowMs;
+    if (userId) {
+      const wait = await spend(`pdf:user:${userId}`, PDF_RATE_LIMIT.max);
 
-    if (insideWindow && existing.count >= PDF_RATE_LIMIT.max) {
-      const retryAfter = Math.ceil(
-        (PDF_RATE_LIMIT.windowMs - (now - existing.lastRequest)) / 1000,
-      );
-
-      return Response.json(
-        { error: 'Too many PDF downloads from this connection. Try again in a few minutes.' },
-        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
-      );
+      if (wait !== null) {
+        return tooMany(
+          `You have made ${PDF_RATE_LIMIT.max} PDFs in ${PDF_RATE_LIMIT.windowMs / 60000} minutes. Try again in about ${Math.ceil(wait / 60)} minute(s).`,
+          wait,
+        );
+      }
     }
 
-    await db()
-      .insert(rateLimit)
-      .values({ id: key, key, count: 1, lastRequest: now })
-      .onConflictDoUpdate({
-        target: rateLimit.key,
-        set: { count: insideWindow ? existing.count + 1 : 1, lastRequest: now },
-      });
+    if (address) {
+      const wait = await spend(`pdf:${address}`, PDF_RATE_LIMIT.maxPerAddress);
+
+      if (wait !== null) {
+        return tooMany(
+          'Too many PDFs from this network. Try again in a few minutes.',
+          wait,
+        );
+      }
+    }
   } catch (error) {
     // PDF export remains available if the optional account database is down.
     console.error('[pdf] rate-limit lookup failed', error);
@@ -150,10 +201,10 @@ const checkPdfRateLimit = async (request: Request): Promise<Response | null> => 
 };
 
 export async function POST(request: Request) {
-  const denied = await requireDownloadAccess(request);
+  const { denied, userId } = await requireDownloadAccess(request);
   if (denied) return denied;
 
-  const limited = await checkPdfRateLimit(request);
+  const limited = await checkPdfRateLimit(request, userId);
   if (limited) return limited;
 
   let body: PdfRequestBody;

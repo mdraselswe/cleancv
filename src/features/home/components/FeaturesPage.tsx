@@ -134,7 +134,7 @@ const buildGroups = (): Group[] => {
         {
           icon: FileDown,
           title: 'No limit on how many you download',
-          body: `Sign in once and download as often as you need. The only guard is fair use: up to ${PDF_RATE_LIMIT.max} PDFs every ${rateMinutes} minutes from one connection.`,
+          body: `Sign in once and download as often as you need. The only guard is fair use: up to ${PDF_RATE_LIMIT.max} PDFs every ${rateMinutes} minutes per account.`,
         },
         {
           icon: Database,
