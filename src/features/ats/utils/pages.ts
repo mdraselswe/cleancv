@@ -8,6 +8,7 @@ import {
   type SectionSlot,
 } from '@/constants';
 import { getVisibleSections, type Resume } from '@/features/resume';
+import { getTemplate } from '@/features/templates';
 import { isBlank } from '@/lib/text';
 
 /**
@@ -101,11 +102,12 @@ export const estimatePages = (resume: Resume): number => {
 
   // A smaller type scale and a denser layout both fit more lines on a page; a
   // wider margin leaves less height to fill.
+  const designScale = getTemplate(resume.meta.templateId).meta.baseScale ?? 1;
   const marginFactor =
     (PAGE_SIZE_MM.height - 2 * theme.marginMm) /
     (PAGE_SIZE_MM.height - 2 * PAGE_MARGIN_MM.default);
   const capacity =
-    (LINES_PER_PAGE / theme.fontScale / DENSITY_SCALE[theme.density]) * marginFactor;
+    (LINES_PER_PAGE / (theme.fontScale * designScale) / DENSITY_SCALE[theme.density]) * marginFactor;
 
   return Math.max(1, Math.ceil(lines / capacity));
 };

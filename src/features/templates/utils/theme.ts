@@ -56,7 +56,8 @@ export const resolveTemplateStyle = (
     '--rz-accent': accent,
     '--rz-accent-soft': softenHex(accent),
     '--rz-font': FONT_FAMILY_VAR[theme.font],
-    '--rz-scale': theme.fontScale,
+    // The design's own correction, then the reader's slider on top of it.
+    '--rz-scale': theme.fontScale * (meta.baseScale ?? 1),
     '--rz-density': DENSITY_SCALE[theme.density],
     '--rz-margin': `${theme.marginMm}mm`,
     // A percentage of the photo's own square box: 0 square, 50 circle.

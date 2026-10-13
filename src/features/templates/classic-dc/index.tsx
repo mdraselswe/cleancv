@@ -1,4 +1,4 @@
-import { DEFAULT_TEMPLATE_FONT_SCALE, SECTION_KEYS } from '@/constants';
+import { SECTION_KEYS } from '@/constants';
 import { getSectionHeading, getVisibleSections, isSectionVisible } from '@/features/resume';
 import { isBlank } from '@/lib/text';
 
@@ -30,13 +30,16 @@ export const meta: TemplateMeta = {
     columns: 2,
   },
   supportedSections: SECTION_KEYS,
+  // The stylesheet is measured off a reference that sets its body at 7.6pt;
+  // 1.2 prints it at 9.1pt, which is what 100% on the slider should mean.
+  baseScale: 1.2,
   // Measured off the reference document: 11 mm margins, and the blue it uses
   // for the headline, company names and section glyphs.
   defaultTheme: {
     accent: '#2563eb',
     font: 'sans',
     density: 'normal',
-    fontScale: DEFAULT_TEMPLATE_FONT_SCALE,
+    fontScale: 1,
     marginMm: 11,
     photoRadius: 50,
   },

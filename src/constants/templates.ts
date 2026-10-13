@@ -94,16 +94,6 @@ export const DEFAULT_ACCENT = ACCENT_PRESETS[1].value;
 export const FONT_SCALE = { min: 0.8, max: 1.4, step: 0.05, default: 1 } as const;
 
 /**
- * The text size the default design is set at.
- *
- * Classic Timeline's own base is 7.6pt, matched to the reference document, and
- * at 100% that prints below what a person reads comfortably. Setting the
- * design's *default* scale — not its stylesheet — to 1.2 gives 9.1pt for
- * everyone who starts from it, without moving a CV that was already saved.
- */
-export const DEFAULT_TEMPLATE_FONT_SCALE = 1.2;
-
-/**
  * Photo corner radius, as a percentage of the photo's own box.
  *
  * One number rather than a shape enum plus an override: on a square box 0% is a

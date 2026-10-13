@@ -48,6 +48,18 @@ export interface TemplateMeta {
   supportedSections: readonly SectionKey[];
   defaultTheme: Partial<ResumeTheme>;
   /**
+   * A multiplier the design applies to its own size before the reader's Text
+   * size does.
+   *
+   * For a design whose stylesheet is set small — Classic Timeline is matched to a
+   * reference that prints its body at 7.6pt. Putting the correction here, not in
+   * `defaultTheme`, keeps the slider honest: 100% is the size the design
+   * intends and prints readably, a switch between designs never carries one
+   * design's 120% onto another, and the stylesheet stays as it was measured.
+   * Absent means 1.
+   */
+  baseScale?: number;
+  /**
    * Sections the wide column holds when the document does not say otherwise.
    *
    * Two-column designs only, and everything unlisted — including a custom

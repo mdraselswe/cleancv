@@ -66,11 +66,12 @@ export const meta: TemplateMeta = {
     accent: '#63c28d',
     font: 'sans',
     density: 'normal',
-    // 8.8pt at 100%; 1.05 puts it just over the readable line.
-    fontScale: 1.05,
+    fontScale: 1,
     marginMm: 12,
     photoRadius: 50,
   },
+  // 8.8pt in the stylesheet; 1.05 puts it just over the readable line.
+  baseScale: 1.05,
 };
 
 /**

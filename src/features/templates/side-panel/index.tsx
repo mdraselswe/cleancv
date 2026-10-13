@@ -48,8 +48,9 @@ export const meta: TemplateMeta = {
   supportedSections: SECTION_KEYS,
   mainSections: MAIN_SECTIONS,
   // Measured off the reference: 9 mm margins and the blue it uses for links.
-  // 7.6pt at 100%, which prints too small to read comfortably; 1.2 gives 9.1pt.
-  defaultTheme: { accent: '#1f7ae0', font: 'sans', density: 'compact', fontScale: 1.2, marginMm: 9 },
+  defaultTheme: { accent: '#1f7ae0', font: 'sans', density: 'compact', fontScale: 1, marginMm: 9 },
+  // 7.6pt in the stylesheet; 1.2 prints it at 9.1pt.
+  baseScale: 1.2,
 };
 
 /**

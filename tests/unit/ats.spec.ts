@@ -17,7 +17,7 @@ import {
   type AtsRuleContext,
 } from '@/features/ats';
 import { createEmptyResume, createSampleResume } from '@/features/resume';
-import { getTemplate } from '@/features/templates';
+import { getTemplate, resolveTemplateStyle } from '@/features/templates';
 
 const context = (overrides: Partial<AtsRuleContext> = {}): AtsRuleContext => ({
   template: getTemplate('classic-dc').meta,
@@ -408,7 +408,12 @@ describe('fixes say exactly what to do', () => {
     }
   });
 
-  it('a new CV starts at a size a person can read', () => {
-    expect(createEmptyResume().meta.theme.fontScale).toBeGreaterThan(1);
+  it('a design set small in its stylesheet prints readably at 100%', () => {
+    const { meta } = getTemplate('classic-dc');
+    const style = resolveTemplateStyle({ ...createEmptyResume().meta.theme, fontScale: 1 }, meta);
+
+    // 7.6pt in the stylesheet times the design's own correction.
+    expect(Number(style['--rz-scale']) * 7.6).toBeGreaterThanOrEqual(9);
+    expect(createEmptyResume().meta.theme.fontScale).toBe(1);
   });
 });
