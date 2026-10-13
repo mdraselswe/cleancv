@@ -4,6 +4,8 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, RichTextEditor } from '@/components/ui';
+import { AiPolish } from '@/features/ai';
+import { useResume } from '@/features/resume';
 import { BULLET_WORD_RANGE, LIMITS, METRIC_PATTERN } from '@/constants';
 import { cn } from '@/lib/cn';
 import { stripEmphasis, wordCount } from '@/lib/text';
@@ -14,6 +16,8 @@ export interface BulletsEditorProps {
   label: string;
   max?: number;
   hint?: string;
+  /** The role and employer these bullets belong to, for the AI's wording. */
+  polishContext?: string;
 }
 
 /**
@@ -33,7 +37,9 @@ export const BulletsEditor = ({
   label,
   max = LIMITS.bulletsPerEntry,
   hint,
+  polishContext,
 }: BulletsEditorProps) => {
+  const jobDescription = useResume().meta.targetJobDescription;
   // The bullet that should take focus when it mounts, after Enter or a removal.
   const [focusRequest, setFocusRequest] = useState<{ index: number; token: number } | null>(null);
   const requestFocus = (index: number) =>
@@ -129,6 +135,13 @@ export const BulletsEditor = ({
                     </span>
                   </span>
                 }
+              />
+              <AiPolish
+                kind="bullet"
+                text={bullet}
+                context={polishContext}
+                jobDescription={jobDescription}
+                onApply={(next) => update(index, next)}
               />
             </div>
 

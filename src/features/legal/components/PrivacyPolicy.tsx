@@ -29,9 +29,11 @@ const Mail = () => (
 export interface PrivacyPolicyProps {
   /** Whether email-and-password accounts are on; the policy states only what is true. */
   emailAuth: boolean;
+  /** Whether AI polish exists on this deployment. */
+  ai?: boolean;
 }
 
-export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
+export const PrivacyPolicy = ({ emailAuth, ai = false }: PrivacyPolicyProps) => (
   <LegalShell
     title="Privacy Policy"
     summary={`How ${APP_NAME} handles your CV, optional cloud sync, and your account.`}
@@ -192,7 +194,7 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
     </LegalSection>
 
     <LegalSection id="processors" heading="Who else touches this data">
-      <p>{emailAuth ? 'Four' : 'Three'} services, each doing one job:</p>
+      <p>{3 + (emailAuth ? 1 : 0) + (ai ? 1 : 0)} services, each doing one job:</p>
       <LegalList
         items={[
           <>
@@ -216,11 +218,27 @@ export const PrivacyPolicy = ({ emailAuth }: PrivacyPolicyProps) => (
             <strong className="text-fg font-semibold">Google</strong>, if and only if you choose to
             sign in with Google.
           </>,
+          ...(ai
+            ? [
+                <>
+                  <strong className="text-fg font-semibold">Google Gemini</strong> rewrites a bullet
+                  or summary when an account on a short invitation list presses{' '}
+                  <em>Polish with AI</em>. Only that text — and the job description, if you pasted
+                  one — is sent, from the server, never from the browser. It is not available to
+                  other accounts.
+                </>,
+              ]
+            : []),
         ]}
       />
       <p>
         Vercel receives CV content briefly when rendering a PDF, and Neon stores synced CVs for
-        signed-in users. {emailAuth ? 'Resend and Google are' : 'Google is'} not sent CV content. We do not sell personal data.
+        signed-in users.{' '}
+        {ai
+          ? 'Google Gemini receives only the text being rewritten, and only for accounts allowed to use AI polish. '
+          : ''}
+        {emailAuth ? 'Resend is sent your email address and no CV content. ' : ''}
+        Google sign-in is sent no CV content. We do not sell personal data.
       </p>
     </LegalSection>
 

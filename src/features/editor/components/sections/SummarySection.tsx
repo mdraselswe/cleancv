@@ -1,6 +1,7 @@
 'use client';
 
 import { Field, RichTextEditor, Tabs } from '@/components/ui';
+import { AiPolish } from '@/features/ai';
 import { LIMITS, SUMMARY_MODES, SUMMARY_MODE_LABEL, SUMMARY_WORD_RANGE } from '@/constants';
 import type { SummaryMode } from '@/constants';
 import { useResume } from '@/features/resume';
@@ -19,7 +20,8 @@ const MODE_TABS = SUMMARY_MODES.map((value) => ({ value, label: SUMMARY_MODE_LAB
  * experienced one.
  */
 export const SummarySection = () => {
-  const { summary } = useResume();
+  const { summary, meta } = useResume();
+  const targetJobDescription = meta.targetJobDescription;
   const { patch } = useResumeEdit();
 
   const count = wordCount(stripEmphasis(summary.text));
@@ -53,6 +55,13 @@ export const SummarySection = () => {
           />
         )}
       </Field>
+
+      <AiPolish
+        kind="summary"
+        text={summary.text}
+        jobDescription={targetJobDescription}
+        onApply={(text) => patch('summary', { text })}
+      />
     </div>
   );
 };

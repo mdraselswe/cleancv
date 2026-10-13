@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import { APP_NAME } from '@/constants';
 import { PrivacyPolicy } from '@/features/legal';
-import { isEmailAuthEnabled } from '@/server/env';
+import { isAiConfigured, isEmailAuthEnabled } from '@/server/env';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-  return <PrivacyPolicy emailAuth={isEmailAuthEnabled()} />;
+  return <PrivacyPolicy emailAuth={isEmailAuthEnabled()} ai={isAiConfigured()} />;
 }

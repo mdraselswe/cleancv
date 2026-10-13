@@ -34,6 +34,16 @@ const envSchema = z.object({
    */
   EMAIL_AUTH_ENABLED: z.enum(['true', 'false']).optional(),
 
+  /** Google AI Studio key for the optional AI polish. Server-side only. */
+  GEMINI_API_KEY: z.string().min(1).optional(),
+  /** Overrides the default model without a code change. */
+  GEMINI_MODEL: z.string().min(1).optional(),
+  /**
+   * Comma-separated emails allowed to use AI polish. Empty means nobody: the
+   * feature is for a handful of named accounts, not a public promise.
+   */
+  AI_ALLOWED_EMAILS: z.string().optional(),
+
   /** The only account allowed to open the private usage dashboard. */
   ADMIN_EMAIL: z.email().optional(),
 
@@ -118,6 +128,20 @@ export const isEmailAuthEnabled = (): boolean => {
 
   return env.EMAIL_AUTH_ENABLED === 'true' && Boolean(env.RESEND_API_KEY && env.EMAIL_FROM);
 };
+
+/** The accounts that may use AI polish, lower-cased. */
+export const aiAllowedEmails = (): string[] =>
+  (serverEnv().AI_ALLOWED_EMAILS ?? '')
+    .split(',')
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+
+/** AI polish exists on this deployment only with a key and at least one named account. */
+export const isAiConfigured = (): boolean =>
+  Boolean(serverEnv().GEMINI_API_KEY) && aiAllowedEmails().length > 0;
+
+export const isAiAllowed = (email: string): boolean =>
+  isAiConfigured() && aiAllowedEmails().includes(email.trim().toLowerCase());
 
 /** Google sign-in is offered only where credentials for it exist. */
 export const isGoogleConfigured = (): boolean => {

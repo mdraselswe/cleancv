@@ -26,6 +26,16 @@ export interface FieldRendererProps {
 const asString = (value: unknown): string => (typeof value === 'string' ? value : '');
 const asArray = (value: unknown): string[] => (Array.isArray(value) ? (value as string[]) : []);
 
+/** Who the bullets are about — a role and an employer — for the AI's wording only. */
+const CONTEXT_KEYS = ['title', 'role', 'position', 'name', 'company', 'organization', 'institute'];
+
+const contextOf = (entry: Record<string, unknown>): string =>
+  CONTEXT_KEYS.map((key) => asString(entry[key]).trim())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' at ')
+    .slice(0, 200);
+
 /**
  * Renders one declared field. Holds no state: the value comes from the entry and
  * every keystroke goes straight to the store, which is what keeps the preview
@@ -140,6 +150,7 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
             label={field.label}
             hint={field.hint}
             max={field.max}
+            polishContext={contextOf(entry)}
             value={asArray(entry[field.key])}
             onChange={(next) => onChange(field.key, next)}
           />

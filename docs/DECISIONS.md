@@ -1743,3 +1743,23 @@ CV in a reader's own browser stay.
 **Consequence.** The cap, the size and the idle period are quoted on the home page, the features
 page, the privacy policy, the terms and the sync controls from the same constants. No warning email
 precedes an idle deletion while mail is limited to Google sign-in; the policy says so.
+
+## ADR-056 — AI polish: a rewriting tool for named accounts, not a promise
+
+**Context.** A free product cannot carry a model bill, and its free quota is shared by everyone who
+uses it. But an owner and a few invited people can use a model for free, and a rewrite of a bullet is
+useful to them.
+
+**Decision.** `/api/ai/polish` calls Gemini from the server with a key that never reaches the
+browser, and only for emails in `AI_ALLOWED_EMAILS` — checked in the route with a fresh session, with
+`/api/ai/status` as a hint for drawing the button. Both the key and a non-empty list must exist for
+the feature to exist at all (`isAiConfigured`), so a deployment without them shows nothing, and the
+privacy policy names Gemini only when it is configured. The model is told to add no fact, number or
+skill, the answer is refused if it contains a number the text did not (`introducesNewNumbers`), and a
+rewrite is a proposal beside the original that applies only on a click. One account gets 40 a hour
+from the shared `rate_limit` table; a 429 from Google is reported as the quota being used up.
+
+**Consequence.** No schema change and no cost to the operator. The cost is that an allowed
+account's bullet or summary — and the pasted job description, if any — goes to Google; that is said
+in the policy, and the list is short enough to say it to each person. Tailoring for everyone else is
+a separate, rule-based feature.
