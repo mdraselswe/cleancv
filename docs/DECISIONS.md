@@ -1794,3 +1794,23 @@ carries `code: 'rate_limited'` and `Retry-After`.
 
 **Consequence.** One person is limited the same on any network, and a shared network is not. The
 number in the banner and on the features page is the per-account one, read from the same constant.
+
+## ADR-059 — The score says two things, and the content holds the total
+
+**Context.** A competitor's checker scored the same CV 31 where ours said 92. Verified against the
+PDF: it was right that the body type printed at 7.6pt and that one bullet in fourteen stated a
+result, and wrong to call skill-group labels "unrecognised headings". Ours was additive, so a file
+that parsed perfectly and proved nothing read as excellent; it also counted "Next.js 16" as a
+measured outcome and never looked at the type size.
+
+**Decision.** `hasMetric` counts units, money and counted people or things, never versions or years.
+The rendered preview reports the body type in points and a `body-size` rule judges it. The panel
+leads with two numbers — *machine readability* (parse, completeness, formatting) and *content
+strength* (the impact category) — and the total is capped at `50 + 0.5 × content`, so a CV with no
+evidence cannot read as excellent; the panel says what is holding it and what fixing the content
+alone would give. Every issue carries `gain`, its effect on the capped total, found by re-assembling
+the score with that rule passing; a fix worth nothing while the cap holds says so (`+N after
+content`). Issues sort by gain.
+
+**Consequence.** Existing CVs may score lower, honestly. A design whose own base size is under 9pt
+(Classic Timeline prints at 7.6pt at 100%) now warns until Text size is raised.

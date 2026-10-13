@@ -75,19 +75,19 @@ export const ResumePreview = ({
   useEffect(() => {
     if (!onBodyPointsChange) return;
 
-    // After the design has laid out with the new theme: one frame is enough.
-    const frame = requestAnimationFrame(() => {
-      const root = contentRef.current?.querySelector<HTMLElement>('.resume-root');
-      if (!root) return;
+    /*
+     * Read straight after commit, not on the next animation frame: a hidden tab
+     * never runs one, and the style is already applied by the time an effect
+     * does. Reading it forces the layout it needs.
+     */
+    const root = contentRef.current?.querySelector<HTMLElement>('.resume-root');
+    if (!root) return;
 
-      // CSS px to pt at 96 dpi. A transform on an ancestor does not change this.
-      const points = (parseFloat(getComputedStyle(root).fontSize) * 72) / 96;
+    // CSS px to pt at 96 dpi. A transform on an ancestor does not change this.
+    const points = (parseFloat(getComputedStyle(root).fontSize) * 72) / 96;
 
-      if (Number.isFinite(points) && points > 0) onBodyPointsChange(points);
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [contentRef, onBodyPointsChange, templateId, theme.fontScale, theme.font, theme.density]);
+    if (Number.isFinite(points) && points > 0) onBodyPointsChange(points);
+  }, [contentRef, onBodyPointsChange, pageCount, templateId, theme.fontScale, theme.font, theme.density]);
 
   /*
    * Only a single-column design has page breaks worth forcing. In one column a
