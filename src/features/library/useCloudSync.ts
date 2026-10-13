@@ -65,6 +65,13 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
 
       clearUnsync(unsync);
 
+      const reported = body.limits as { documents?: unknown; bytes?: unknown } | undefined;
+      if (typeof reported?.documents === 'number' && typeof reported.bytes === 'number') {
+        useLibraryStore
+          .getState()
+          .actions.setCloudLimits({ documents: reported.documents, bytes: reported.bytes });
+      }
+
       await useLibraryStore.getState().actions.reconcileCloud(remoteDocuments, remoteDeleted, {
         unsynced,
         rejected: refused.map((entry) => entry.id),

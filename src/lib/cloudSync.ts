@@ -1,5 +1,16 @@
 import { CLOUD_SYNC } from '@/constants';
 
+/** What an account may keep on the server: how many CVs, and how large each. */
+export interface CloudLimits {
+  documents: number;
+  bytes: number;
+}
+
+export const DEFAULT_CLOUD_LIMITS: CloudLimits = {
+  documents: CLOUD_SYNC.maxDocuments,
+  bytes: CLOUD_SYNC.maxBytes,
+};
+
 /**
  * The rules for what an account may keep on the server, as pure functions.
  *
@@ -21,15 +32,18 @@ export interface CloudCheckInput {
   alreadySynced: boolean;
   /** How many CVs the account keeps on the server right now. */
   syncedCount: number;
+  /** This account's allowance; the standard one when absent. */
+  limits?: CloudLimits;
 }
 
 export const checkCloudDocument = ({
   bytes,
   alreadySynced,
   syncedCount,
+  limits = DEFAULT_CLOUD_LIMITS,
 }: CloudCheckInput): CloudRefusal | null => {
-  if (bytes > CLOUD_SYNC.maxBytes) return 'too_large';
-  if (!alreadySynced && syncedCount >= CLOUD_SYNC.maxDocuments) return 'limit_reached';
+  if (bytes > limits.bytes) return 'too_large';
+  if (!alreadySynced && syncedCount >= limits.documents) return 'limit_reached';
 
   return null;
 };

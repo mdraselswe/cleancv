@@ -43,6 +43,11 @@ const envSchema = z.object({
    * feature is for a handful of named accounts, not a public promise.
    */
   AI_ALLOWED_EMAILS: z.string().optional(),
+  /**
+   * Comma-separated emails whose accounts have no cloud-sync limit. Left unset,
+   * it is the AI list: the same few named accounts the owner trusts.
+   */
+  CLOUD_UNLIMITED_EMAILS: z.string().optional(),
 
   /** The only account allowed to open the private usage dashboard. */
   ADMIN_EMAIL: z.email().optional(),
@@ -142,6 +147,19 @@ export const isAiConfigured = (): boolean =>
 
 export const isAiAllowed = (email: string): boolean =>
   isAiConfigured() && aiAllowedEmails().includes(email.trim().toLowerCase());
+
+/** The accounts exempt from the cloud-sync limit, lower-cased. */
+export const cloudUnlimitedEmails = (): string[] => {
+  const env = serverEnv();
+
+  return (env.CLOUD_UNLIMITED_EMAILS ?? env.AI_ALLOWED_EMAILS ?? '')
+    .split(',')
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
+};
+
+export const isCloudUnlimited = (email: string): boolean =>
+  cloudUnlimitedEmails().includes(email.trim().toLowerCase());
 
 /** Google sign-in is offered only where credentials for it exist. */
 export const isGoogleConfigured = (): boolean => {

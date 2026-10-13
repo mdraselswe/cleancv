@@ -79,6 +79,19 @@ export const CLOUD_SYNC = {
 /** Documents a single browser profile may hold. Beyond this, listing gets unusable. */
 export const MAX_DOCUMENTS = 50;
 
+/**
+ * What a named account may keep on the server instead of `CLOUD_SYNC`.
+ *
+ * Not infinite: a browser holds `MAX_DOCUMENTS`, so the count cannot pass that
+ * anyway, and a size ceiling keeps one runaway document from being a problem
+ * nobody planned for. Which accounts get this is a server setting, never the
+ * client's say.
+ */
+export const CLOUD_SYNC_UNLIMITED = {
+  maxDocuments: MAX_DOCUMENTS,
+  maxBytes: 2 * 1024 * 1024,
+} as const;
+
 /** Upload ceiling for import. A CV past this is not a CV. */
 export const IMPORT_MAX_BYTES = 12 * 1024 * 1024;
 

@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
-import { AUTH_ROUTES, CLOUD_SYNC, REDIRECT_PARAM } from '@/constants';
+import { AUTH_ROUTES, REDIRECT_PARAM } from '@/constants';
 import { useAuthSession } from '@/features/auth';
 import { CLOUD_REFUSAL_MESSAGE } from '@/lib/cloudSync';
 
@@ -24,6 +24,7 @@ export const useCloudToggle = () => {
   const { signedIn } = useAuthSession();
   const setCloud = useLibraryStore((state) => state.actions.setCloud);
   const used = useLibraryStore((state) => state.documents.filter((entry) => entry.cloud).length);
+  const max = useLibraryStore((state) => state.cloudLimits.documents);
 
   const toggle = useCallback(
     async (id: string, enabled: boolean) => {
@@ -55,5 +56,5 @@ export const useCloudToggle = () => {
     [pathname, router, setCloud, signedIn],
   );
 
-  return { used, max: CLOUD_SYNC.maxDocuments, signedIn, toggle };
+  return { used, max, signedIn, toggle };
 };

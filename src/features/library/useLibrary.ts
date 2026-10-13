@@ -4,7 +4,13 @@ import { create } from 'zustand';
 
 import { LIBRARY_SCHEMA_VERSION, MAX_DOCUMENTS } from '@/constants';
 import { createEmptyResume, useResumeStore, type Resume } from '@/features/resume';
-import { checkCloudDocument, documentBytes, type CloudRefusal } from '@/lib/cloudSync';
+import {
+  checkCloudDocument,
+  DEFAULT_CLOUD_LIMITS,
+  documentBytes,
+  type CloudLimits,
+  type CloudRefusal,
+} from '@/lib/cloudSync';
 
 import { queueUnsync } from './cloudQueue';
 import {
@@ -72,6 +78,8 @@ interface LibraryState {
   savedAt: number;
   /** Set when storage itself failed, e.g. a private window with no IndexedDB. */
   error: string;
+  /** What this account may keep on the server; learned from the server, never decided here. */
+  cloudLimits: CloudLimits;
 }
 
 /** Whether a CV could be switched to or from server sync, and why not if it could not. */
@@ -112,6 +120,8 @@ export interface LibraryActions {
   ) => Promise<void>;
   /** Switches one CV on or off for server sync. Opt-in, and capped per account. */
   setCloud: (id: string, enabled: boolean) => Promise<CloudToggleResult>;
+  /** Records the allowance the server reported for the signed-in account. */
+  setCloudLimits: (limits: CloudLimits) => void;
   /** Turns every CV back to this-device-only — when another account signs in here. */
   clearCloudFlags: () => Promise<void>;
 }
@@ -473,6 +483,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
           bytes: documentBytes(stored?.resume),
           alreadySynced: false,
           syncedCount: documents.filter((entry) => entry.cloud).length,
+          limits: get().cloudLimits,
         });
 
         if (refusal) return { ok: false, reason: refusal };
@@ -492,6 +503,8 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
 
       return { ok: true };
     },
+
+    setCloudLimits: (limits) => set({ cloudLimits: limits }),
 
     clearCloudFlags: async () => {
       const { documents } = get();
@@ -601,6 +614,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
     activeId: '',
     workspace: IDLE_WORKSPACE,
     error: '',
+    cloudLimits: DEFAULT_CLOUD_LIMITS,
     actions,
   };
 });

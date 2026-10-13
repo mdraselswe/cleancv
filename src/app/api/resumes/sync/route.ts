@@ -1,7 +1,7 @@
 import { and, eq, inArray, isNull, lte } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { CLOUD_SYNC, MAX_DOCUMENTS } from '@/constants';
+import { CLOUD_SYNC, CLOUD_SYNC_UNLIMITED, MAX_DOCUMENTS } from '@/constants';
 import {
   cvDocumentSchema,
   deletedDocumentSchema,
@@ -11,6 +11,7 @@ import {
 import { checkCloudDocument, documentBytes, type CloudRefusal } from '@/lib/cloudSync';
 import { getSessionUser } from '@/server/auth/session';
 import { db } from '@/server/db';
+import { isCloudUnlimited } from '@/server/env';
 import { cvDocument } from '@/server/db/schema';
 
 export const runtime = 'nodejs';
@@ -64,6 +65,10 @@ export async function POST(request: Request) {
   const database = db();
   const now = Date.now();
 
+  // A few named accounts are exempt; everyone else gets the standard allowance.
+  const allowance = isCloudUnlimited(user.email) ? CLOUD_SYNC_UNLIMITED : CLOUD_SYNC;
+  const limits = { documents: allowance.maxDocuments, bytes: allowance.maxBytes };
+
   // Which CVs hold a place right now. A tombstone holds none.
   const live = new Set(
     (
@@ -92,6 +97,7 @@ export async function POST(request: Request) {
       bytes: documentBytes(resume),
       alreadySynced: live.has(meta.id),
       syncedCount: live.size,
+      limits,
     });
 
     if (refusal) {
@@ -188,6 +194,6 @@ export async function POST(request: Request) {
     unsynced,
     rejected,
     syncedAt: now,
-    limits: { documents: CLOUD_SYNC.maxDocuments, bytes: CLOUD_SYNC.maxBytes },
+    limits,
   });
 }
