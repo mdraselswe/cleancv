@@ -41,6 +41,14 @@ export interface EvaluatedRule extends AtsRuleResult {
   label: string;
   category: AtsCategory;
   weight: number;
+  /**
+   * Present on an issue: how many points the total gains if this one passes,
+   * with the content ceiling applied. Zero is an honest answer while something
+   * else is what holds the score down.
+   */
+  gain?: number;
+  /** The same, before any cap — what the fix is worth once the content catches up. */
+  rawGain?: number;
 }
 
 export interface CategoryScore {
@@ -68,6 +76,8 @@ export interface AtsScore {
   cappedBy: AtsCap;
   /** The highest total the content allows. */
   ceiling: number;
+  /** What the total would be if every content check passed. */
+  withContentFixed: number;
   tone: AtsScoreTone;
   band: string;
   categories: CategoryScore[];

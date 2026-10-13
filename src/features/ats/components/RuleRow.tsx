@@ -57,7 +57,24 @@ export const RuleRow = ({ rule, onNavigate }: RuleRowProps) => {
       </span>
 
       <div className="min-w-0 flex-1">
-        <p className="text-ui text-fg font-medium">{rule.label}</p>
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="text-ui text-fg font-medium">{rule.label}</p>
+          {rule.gain ? (
+            <span
+              className="text-success text-ui-xs flex-none font-bold tabular-nums"
+              title="What the overall score gains if this passes"
+            >
+              +{rule.gain} pts
+            </span>
+          ) : rule.rawGain ? (
+            <span
+              className="text-fg-subtle text-ui-2xs flex-none tabular-nums"
+              title="Worth this much once the content is no longer holding the score down"
+            >
+              +{rule.rawGain} after content
+            </span>
+          ) : null}
+        </div>
         <p className="text-ui-xs text-fg-muted leading-snug">{rule.message}</p>
 
         {rule.fixHint ? (

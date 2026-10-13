@@ -82,7 +82,8 @@ export const AtsPanel = ({
         {score.cappedBy === 'content' ? (
           <p className="bg-warning/10 text-warning rounded-control text-ui-xs px-3 py-2 leading-snug">
             The file reads as {score.uncapped}, but the score is held at {score.total} because the
-            writing proves little: numbers and outcomes in your bullets are what lift it.
+            writing proves little. Fixing the content checks alone would lift it to{' '}
+            {score.withContentFixed}: numbers and outcomes in your bullets are what do it.
           </p>
         ) : null}
         {score.cappedBy === 'completeness' ? (

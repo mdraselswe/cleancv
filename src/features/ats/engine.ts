@@ -50,20 +50,30 @@ const scoreCategory = (
   };
 };
 
-export const evaluateResume = (resume: Resume, context: AtsRuleContext): AtsScore => {
-  const evaluated: EvaluatedRule[] = ATS_RULES.map((rule) => ({
-    id: rule.id,
-    label: rule.label,
-    category: rule.category,
-    weight: rule.weight,
-    ...rule.evaluate(resume, context),
-  }));
+/** What the rules add up to, before they are sorted into a report. */
+interface Assembled {
+  categories: CategoryScore[];
+  raw: number;
+  total: number;
+  readability: number;
+  content: number;
+  ceiling: number;
+  cappedBy: AtsCap;
+}
 
+/**
+ * Turns evaluated rules into the totals.
+ *
+ * Its own function so a rule can be re-scored as if it passed: the gain shown
+ * beside an issue is the difference between two runs of exactly this, which is
+ * what keeps "+6 points" from being a number the engine would not itself give.
+ */
+const assemble = (evaluated: EvaluatedRule[], templateCeiling: number): Assembled => {
   const categories = ATS_CATEGORIES.map((category) =>
     scoreCategory(
       category,
       evaluated.filter((rule) => rule.category === category),
-      context.template.atsBaseline,
+      templateCeiling,
     ),
   );
 
@@ -83,9 +93,9 @@ export const evaluateResume = (resume: Resume, context: AtsRuleContext): AtsScor
    * words. The total is held under what the content earns, so a document that
    * parses perfectly and proves nothing cannot read as excellent.
    */
-  const pointsOf = (names: AtsCategory[]) =>
-    categories.filter((entry) => names.includes(entry.category));
-  const readable = pointsOf(['parseability', 'completeness', 'formatting']);
+  const readable = categories.filter((entry) =>
+    (['parseability', 'completeness', 'formatting'] as AtsCategory[]).includes(entry.category),
+  );
   const readability = Math.round(
     (readable.reduce((sum, entry) => sum + entry.points, 0) /
       readable.reduce((sum, entry) => sum + entry.maxPoints, 0)) *
@@ -96,31 +106,72 @@ export const evaluateResume = (resume: Resume, context: AtsRuleContext): AtsScor
 
   const total = Math.round(Math.min(raw, completenessCap, ceiling));
   const cappedBy: AtsCap =
-    total >= Math.round(raw)
-      ? null
-      : completenessCap <= ceiling
-        ? 'completeness'
-        : 'content';
-  const band = ATS_SCORE_BANDS.find((entry) => total >= entry.min) ?? ATS_SCORE_BANDS.at(-1)!;
+    total >= Math.round(raw) ? null : completenessCap <= ceiling ? 'completeness' : 'content';
 
+  return { categories, raw, total, readability, content, ceiling, cappedBy };
+};
+
+const asPassing = (rule: EvaluatedRule): EvaluatedRule => ({ ...rule, status: 'pass' });
+
+export const evaluateResume = (resume: Resume, context: AtsRuleContext): AtsScore => {
+  const evaluated: EvaluatedRule[] = ATS_RULES.map((rule) => ({
+    id: rule.id,
+    label: rule.label,
+    category: rule.category,
+    weight: rule.weight,
+    ...rule.evaluate(resume, context),
+  }));
+
+  const ceilingOfTemplate = context.template.atsBaseline;
+  const base = assemble(evaluated, ceilingOfTemplate);
+  const band = ATS_SCORE_BANDS.find((entry) => base.total >= entry.min) ?? ATS_SCORE_BANDS.at(-1)!;
+
+  /*
+   * Each failing rule, scored as if it passed. `gain` is what the total would
+   * become, which is zero for a formatting fix while the content is what holds
+   * the score down — that is true, and saying so is the point. `rawGain` is the
+   * same without the cap, so the panel can still say the fix is worth something
+   * once the content catches up.
+   */
   const issues = evaluated
     .filter((rule) => rule.status !== 'pass')
+    .map((rule) => {
+      const fixed = assemble(
+        evaluated.map((entry) => (entry.id === rule.id ? asPassing(entry) : entry)),
+        ceilingOfTemplate,
+      );
+
+      return {
+        ...rule,
+        gain: Math.max(0, fixed.total - base.total),
+        rawGain: Math.max(0, Math.round(fixed.raw) - Math.round(base.raw)),
+      };
+    })
     .sort(
       (a, b) =>
+        b.gain - a.gain ||
         STATUS_ORDER[a.status] - STATUS_ORDER[b.status] ||
+        b.rawGain - a.rawGain ||
         b.weight * ATS_CATEGORY_WEIGHT[b.category] - a.weight * ATS_CATEGORY_WEIGHT[a.category],
     );
 
+  // What the whole document would score if every content check passed.
+  const contentFixed = assemble(
+    evaluated.map((entry) => (entry.category === 'impact' ? asPassing(entry) : entry)),
+    ceilingOfTemplate,
+  );
+
   return {
-    total,
-    uncapped: Math.round(raw),
-    readability,
-    content,
-    cappedBy,
-    ceiling,
+    total: base.total,
+    uncapped: Math.round(base.raw),
+    readability: base.readability,
+    content: base.content,
+    cappedBy: base.cappedBy,
+    ceiling: base.ceiling,
+    withContentFixed: contentFixed.total,
     tone: band.tone,
     band: band.label,
-    categories,
+    categories: base.categories,
     issues,
   };
 };

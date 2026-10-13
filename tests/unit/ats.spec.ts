@@ -59,13 +59,20 @@ describe('evaluateResume', () => {
     expect(maxTotal).toBe(100);
   });
 
-  it('orders issues with errors before warnings', () => {
+  it('orders issues by what fixing them gains, errors first among equals', () => {
     const { issues } = evaluateResume(createEmptyResume(), context());
-    const firstWarnIndex = issues.findIndex((issue) => issue.status === 'warn');
-    const lastErrorIndex = issues.map((issue) => issue.status).lastIndexOf('error');
 
-    if (firstWarnIndex !== -1 && lastErrorIndex !== -1) {
-      expect(lastErrorIndex).toBeLessThan(firstWarnIndex);
+    for (let i = 1; i < issues.length; i += 1) {
+      const previous = issues[i - 1];
+      const current = issues[i];
+
+      expect(previous.gain ?? 0).toBeGreaterThanOrEqual(current.gain ?? 0);
+
+      if ((previous.gain ?? 0) === (current.gain ?? 0)) {
+        const order = { error: 0, warn: 1, pass: 2 } as const;
+
+        expect(order[previous.status]).toBeLessThanOrEqual(order[current.status]);
+      }
     }
   });
 
@@ -321,5 +328,47 @@ describe('content ceiling', () => {
       expect(value).toBeGreaterThanOrEqual(0);
       expect(value).toBeLessThanOrEqual(100);
     }
+  });
+});
+
+describe('what a fix is worth', () => {
+  const unmeasured = () => {
+    const resume = createSampleResume();
+
+    for (const entry of [...resume.experience, ...resume.projects]) {
+      entry.bullets = entry.bullets.map(() => 'Worked on the application for the team');
+    }
+
+    return resume;
+  };
+
+  it('lists the issue that gains the most first', () => {
+    const { issues } = evaluateResume(unmeasured(), context());
+    const gains = issues.map((issue) => issue.gain ?? 0);
+
+    expect(gains).toEqual([...gains].sort((a, b) => b - a));
+  });
+
+  it('never promises more than the total can still gain', () => {
+    const score = evaluateResume(unmeasured(), context());
+
+    for (const issue of score.issues) {
+      expect(score.total + (issue.gain ?? 0)).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('says a formatting fix is worth nothing yet while content holds the score down', () => {
+    const score = evaluateResume(unmeasured(), context({ measuredBodyPt: 7.6 }));
+    const size = score.issues.find((issue) => issue.id === 'body-size');
+
+    expect(score.cappedBy).toBe('content');
+    expect(size?.gain).toBe(0);
+    expect(size?.rawGain).toBeGreaterThan(0);
+  });
+
+  it('reports what fixing every content check would give', () => {
+    const score = evaluateResume(unmeasured(), context());
+
+    expect(score.withContentFixed).toBeGreaterThan(score.total);
   });
 });
