@@ -21,6 +21,8 @@ export interface AtsPanelProps {
   jobDescription: string;
   onJobDescriptionChange: (text: string) => void;
   onNavigate?: (target: AtsFixTarget) => void;
+  /** Opens the dialog that makes a tailored copy from the pasted job description. */
+  onTailor?: () => void;
 }
 
 type View = 'issues' | 'all' | 'target';
@@ -44,6 +46,7 @@ export const AtsPanel = ({
   jobDescription,
   onJobDescriptionChange,
   onNavigate,
+  onTailor,
 }: AtsPanelProps) => {
   const [view, setView] = useState<View>('issues');
 
@@ -141,6 +144,25 @@ export const AtsPanel = ({
               onChange={(event) => onJobDescriptionChange(event.target.value)}
             />
           </label>
+
+          {onTailor ? (
+            <div className="border-primary/20 bg-primary-soft/40 rounded-control flex flex-col gap-2 border p-3">
+              <p className="text-fg text-ui font-semibold">Tailor your CV to this job</p>
+              <p className="text-fg-muted text-ui-xs leading-snug">
+                Makes a new copy with the matching skills and bullets first and the job&apos;s own
+                words in bold. Your original is not changed, and nothing is added that you do not
+                tick.
+              </p>
+              <button
+                type="button"
+                disabled={jobDescription.trim().length === 0}
+                onClick={onTailor}
+                className="app-button-primary glint rounded-control text-ui self-start px-3 py-1.5 font-semibold text-white disabled:opacity-50"
+              >
+                Tailor a copy
+              </button>
+            </div>
+          ) : null}
 
           {keywords.matched.length + keywords.missing.length > 0 ? (
             <>

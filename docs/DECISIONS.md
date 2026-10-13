@@ -1763,3 +1763,20 @@ from the shared `rate_limit` table; a 429 from Google is reported as the quota b
 account's bullet or summary — and the pasted job description, if any — goes to Google; that is said
 in the policy, and the list is short enough to say it to each person. Tailoring for everyone else is
 a separate, rule-based feature.
+
+## ADR-057 — Tailoring is reordering and emphasis; the copy is a new document
+
+**Context.** "Update my CV for this job" is the feature people ask for most, and the one most
+likely to produce a CV that lies. A model asked to match a posting adds what the posting wants.
+
+**Decision.** `features/tailor` is rule-based and writes no sentences. From the pasted job
+description it moves matching skills and bullets first (roles keep their date order), bolds up to
+two of the posting's own terms per bullet, optionally appends "Strong in A, B and C." naming only
+skills the CV already lists, and adds a missing term only when the reader ticked it as really theirs.
+The result is a **new document**; the open CV is never touched. The counts shown beside each switch
+come from the same `applyTailor` that makes the copy. For an allow-listed account an extra switch
+runs the six most relevant bullets through AI polish — into the copy, with the same invented-number
+guard.
+
+**Consequence.** It cannot rewrite a weak bullet and does not try; that is what the AI polish is for.
+The preview is the result, so there is nothing to reconcile after the click.

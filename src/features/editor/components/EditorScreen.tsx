@@ -8,6 +8,7 @@ import { AppShell, Pane, SplitPane } from '@/components/layout';
 import { Drawer, ModalHeader, Tabs, Toaster } from '@/components/ui';
 import type { AtsFixTarget } from '@/constants';
 import { AtsPanel, useAtsScore } from '@/features/ats';
+import { TailorDialog } from '@/features/tailor';
 import { SignInRequiredDialog } from '@/features/auth';
 import { useKeyboardShortcuts, useTheme } from '@/hooks';
 import { IMPORT_INPUT_ID, useExportJson, useExportPdf } from '@/features/export';
@@ -56,6 +57,7 @@ export const EditorScreen = () => {
   const cloud = useCloudToggle();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [tailorOpen, setTailorOpen] = useState(false);
   const actions = useResumeActions();
   const canUndo = useResumeStore((state) => state.past.length > 0);
   const canRedo = useResumeStore((state) => state.future.length > 0);
@@ -174,6 +176,11 @@ export const EditorScreen = () => {
       jobDescription={resume.meta.targetJobDescription}
       onJobDescriptionChange={actions.setJobDescription}
       onNavigate={navigateToFix}
+      onTailor={() => {
+        // The score drawer sits over the work; close it so the dialog is the only thing up.
+        layout.dismissScoreOverlay();
+        setTailorOpen(true);
+      }}
     />
   );
 
@@ -267,6 +274,8 @@ export const EditorScreen = () => {
       />
 
       <LibraryPanel open={libraryOpen} onClose={() => setLibraryOpen(false)} />
+
+      <TailorDialog open={tailorOpen} onClose={() => setTailorOpen(false)} />
 
       <ImportDialog
         open={importOpen}
