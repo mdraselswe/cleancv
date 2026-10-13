@@ -16,6 +16,7 @@ export interface PreviewPaneProps {
   onResetZoom: () => void;
   onPageCountChange?: (pageCount: number) => void;
   onPageBreaksChange?: (anchors: number[]) => void;
+  onBodyPointsChange?: (points: number) => void;
 }
 
 /**
@@ -34,6 +35,7 @@ export const PreviewPane = ({
   onResetZoom,
   onPageCountChange,
   onPageBreaksChange,
+  onBodyPointsChange,
 }: PreviewPaneProps) => {
   const { containerRef, fitZoom } = useFitZoom();
   const effectiveZoom = zoomMode === 'fit' ? fitZoom : zoom;
@@ -45,6 +47,7 @@ export const PreviewPane = ({
         zoom={effectiveZoom}
         onPageCountChange={onPageCountChange}
         onPageBreaksChange={onPageBreaksChange}
+        onBodyPointsChange={onBodyPointsChange}
       />
 
       {/*

@@ -9,6 +9,12 @@ export interface AtsRuleContext {
   jobKeywords: string[];
   /** Estimated page count for the current template and theme. */
   estimatedPages: number;
+  /**
+   * Body text size in points, measured from the preview. 0 or absent when the
+   * preview is not mounted — the phone's Score tab — and the rule then says so
+   * instead of guessing.
+   */
+  measuredBodyPt?: number;
 }
 
 export interface AtsRuleResult {

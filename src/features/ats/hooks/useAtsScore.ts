@@ -26,6 +26,8 @@ export interface UseAtsScoreOptions {
    * stands in, so the length rule reports something true either way.
    */
   measuredPages: number;
+  /** Body text size in points measured from the preview; 0 when it is not mounted. */
+  measuredBodyPt?: number;
 }
 
 /**
@@ -34,7 +36,10 @@ export interface UseAtsScoreOptions {
  * Debounced so scoring never runs on the keystroke path, and memoised on the
  * debounced snapshot so a re-render for any other reason does not re-run 25 rules.
  */
-export const useAtsScore = ({ measuredPages }: UseAtsScoreOptions): AtsScoreResult => {
+export const useAtsScore = ({
+  measuredPages,
+  measuredBodyPt = 0,
+}: UseAtsScoreOptions): AtsScoreResult => {
   const resume = useResume();
   const debounced = useDebouncedValue(resume, DEBOUNCE_MS.atsScore);
 
@@ -54,8 +59,9 @@ export const useAtsScore = ({ measuredPages }: UseAtsScoreOptions): AtsScoreResu
         template: getTemplate(debounced.meta.templateId).meta,
         jobKeywords,
         estimatedPages,
+        measuredBodyPt,
       }),
-    [debounced, jobKeywords, estimatedPages],
+    [debounced, jobKeywords, estimatedPages, measuredBodyPt],
   );
 
   const keywords = useMemo(

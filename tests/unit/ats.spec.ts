@@ -261,3 +261,31 @@ describe('fix targets', () => {
     expect(withGaps.get('standard-headings')?.targets?.[0]).toBe('panel:sections');
   });
 });
+
+describe('body text size', () => {
+  const ruleFor = (measuredBodyPt?: number) =>
+    evaluateResume(createSampleResume(), context({ measuredBodyPt })).categories
+      .flatMap((category) => category.rules)
+      .find((rule) => rule.id === 'body-size');
+
+  it('says so rather than guessing when the preview is not open', () => {
+    expect(ruleFor(0)?.status).toBe('pass');
+    expect(ruleFor(undefined)?.message).toContain('not open');
+  });
+
+  it('passes comfortable type', () => {
+    expect(ruleFor(10.2)?.status).toBe('pass');
+    expect(ruleFor(9)?.status).toBe('pass');
+  });
+
+  it('warns under 9pt and fails under 8pt, naming the setting to change', () => {
+    const warn = ruleFor(8.8);
+    const error = ruleFor(7.6);
+
+    expect(warn?.status).toBe('warn');
+    expect(error?.status).toBe('error');
+    expect(error?.targets).toEqual(['panel:design']);
+    // 7.6pt needs about 120% to reach 9pt.
+    expect(error?.fixHint).toContain('120%');
+  });
+});

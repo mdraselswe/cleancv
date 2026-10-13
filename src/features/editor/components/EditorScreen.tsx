@@ -70,13 +70,15 @@ export const EditorScreen = () => {
   // Measured by the preview when it is mounted; 0 means "not measured yet", and
   // the score hook falls back to a content-based estimate.
   const [pageCount, setPageCount] = useState(0);
+  // Body type size read off the rendered design; 0 until the preview has drawn.
+  const [bodyPt, setBodyPt] = useState(0);
   /*
    * Where the preview put its page breaks. Sent with the export so the PDF
    * breaks in the same places; empty when the preview is not mounted, and the
    * export then falls back to Chrome's own pagination. See ADR-021.
    */
   const [pageBreaks, setPageBreaks] = useState<number[]>([]);
-  const { score, keywords } = useAtsScore({ measuredPages: pageCount });
+  const { score, keywords } = useAtsScore({ measuredPages: pageCount, measuredBodyPt: bodyPt });
 
   // Owned here so the rail and the form agree on which section is open.
   const section = useActiveSection();
@@ -214,6 +216,7 @@ export const EditorScreen = () => {
         onResetZoom={layout.resetZoom}
         onPageCountChange={setPageCount}
         onPageBreaksChange={setPageBreaks}
+        onBodyPointsChange={setBodyPt}
       />
     </Pane>
   );

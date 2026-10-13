@@ -99,6 +99,15 @@ export const STRONG_ACTION_VERBS = [
   'transformed', 'tripled', 'unified', 'upgraded',
 ] as const;
 
+/**
+ * Body type size, in points, on the printed page.
+ *
+ * Below `warn` is small enough that a printout is tiring to read; below `error`
+ * a reader holds it closer. Measured from the rendered design, not guessed from
+ * a setting, because a design's own base size and the Text size slider multiply.
+ */
+export const BODY_TEXT_PT = { warn: 9, error: 8 } as const;
+
 /** Unicode Private Use Area — where icon fonts hide, and where ATS text extraction breaks. */
 export const PUA_PATTERN = /[\uE000-\uF8FF]/;
 

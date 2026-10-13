@@ -22,6 +22,11 @@ export interface ResumePreviewProps {
    * rather than letting Chrome find its own. See ADR-021.
    */
   onPageBreaksChange?: (anchors: number[]) => void;
+  /**
+   * Reports the body text size in points, read off the rendered design. The
+   * score judges what is actually printed, not what a slider says.
+   */
+  onBodyPointsChange?: (points: number) => void;
 }
 
 /** Space between one sheet and the next, in unscaled pixels. */
@@ -49,6 +54,7 @@ export const ResumePreview = ({
   showPageNumbers = true,
   onPageCountChange,
   onPageBreaksChange,
+  onBodyPointsChange,
 }: ResumePreviewProps) => {
   const { Template, meta } = getTemplate(resume.meta.templateId);
   const { marginMm } = resume.meta.theme;
@@ -63,6 +69,25 @@ export const ResumePreview = ({
   useEffect(() => {
     onPageCountChange?.(pageCount);
   }, [pageCount, onPageCountChange]);
+
+  const { templateId, theme } = resume.meta;
+
+  useEffect(() => {
+    if (!onBodyPointsChange) return;
+
+    // After the design has laid out with the new theme: one frame is enough.
+    const frame = requestAnimationFrame(() => {
+      const root = contentRef.current?.querySelector<HTMLElement>('.resume-root');
+      if (!root) return;
+
+      // CSS px to pt at 96 dpi. A transform on an ancestor does not change this.
+      const points = (parseFloat(getComputedStyle(root).fontSize) * 72) / 96;
+
+      if (Number.isFinite(points) && points > 0) onBodyPointsChange(points);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [contentRef, onBodyPointsChange, templateId, theme.fontScale, theme.font, theme.density]);
 
   /*
    * Only a single-column design has page breaks worth forcing. In one column a
