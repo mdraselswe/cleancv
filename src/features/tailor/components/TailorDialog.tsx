@@ -4,6 +4,7 @@ import { Check, Loader2, Sparkles, Wand2 } from 'lucide-react';
 
 import { Button, Input, Modal, ModalHeader, Select, Switch, Tabs } from '@/components/ui';
 import { bn } from '@/lib/bn';
+import { Lang } from '@/i18n';
 import { cn } from '@/lib/cn';
 
 import { useTailor, type TailorMode } from '../hooks/useTailor';
@@ -71,8 +72,10 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
 
             <section aria-label="কতটা মিলেছে">
               <p className="text-fg text-ui-md font-semibold">
-                এই বিজ্ঞপ্তির {bn(analysis.keywords.length)}টি মূল শব্দের মধ্যে আপনার CV-তে আগে
-                থেকেই {bn(analysis.matched.length)}টি আছে।
+                <Lang
+                  bn={`এই বিজ্ঞপ্তির ${bn(analysis.keywords.length)}টি মূল শব্দের মধ্যে আপনার CV-তে আগে থেকেই ${bn(analysis.matched.length)}টি আছে।`}
+                  en={`Your CV already covers ${analysis.matched.length} of ${analysis.keywords.length} key terms in this posting.`}
+                />
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {analysis.matched.slice(0, 18).map((keyword) => (

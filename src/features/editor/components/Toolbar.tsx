@@ -30,6 +30,7 @@ import { IMPORT_INPUT_ID } from '@/features/export';
 import type { SaveState } from '@/features/library';
 import type { ThemePreference } from '@/hooks';
 import { bn } from '@/lib/bn';
+import { LangToggle } from '@/i18n/LangControls';
 import { cn } from '@/lib/cn';
 
 import { SaveStatus } from './SaveStatus';
@@ -397,6 +398,7 @@ export const Toolbar = ({
           controls. It remains visible because it is how readers know whether
           this browser is syncing their CVs to other devices.
         */}
+        <LangToggle className="hidden sm:inline-flex" />
         <UserMenu />
       </div>
     </div>

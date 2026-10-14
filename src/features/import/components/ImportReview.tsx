@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { Button, SectionLabel, Switch, Tabs } from '@/components/ui';
 import type { Resume } from '@/features/resume';
 import { bn } from '@/lib/bn';
+import { Lang } from '@/i18n';
 import { cn } from '@/lib/cn';
 
 import {
@@ -187,7 +188,10 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
           leading={<Check size={14} />}
           onClick={() => onApply(applyImport(resume, result.parsed, { accepted, strategy }))}
         >
-          {bn(groups.length)}টির মধ্যে {bn(accepted.size)}টি প্রয়োগ করুন
+          <Lang
+            bn={`${bn(groups.length)}টির মধ্যে ${bn(accepted.size)}টি প্রয়োগ করুন`}
+            en={`Apply ${accepted.size} of ${groups.length}`}
+          />
         </Button>
       </footer>
     </div>

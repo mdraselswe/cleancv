@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { APP_NAME } from '@/constants';
-import { PrivacyPolicy } from '@/features/legal';
+import { PrivacyPolicyView } from '@/features/legal';
 import { isAiConfigured, isEmailAuthEnabled } from '@/server/env';
 
 export const metadata: Metadata = {
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-  return <PrivacyPolicy emailAuth={isEmailAuthEnabled()} ai={isAiConfigured()} />;
+  return <PrivacyPolicyView emailAuth={isEmailAuthEnabled()} ai={isAiConfigured()} />;
 }

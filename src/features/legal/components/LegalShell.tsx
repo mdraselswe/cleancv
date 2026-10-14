@@ -33,7 +33,7 @@ export const LegalShell = ({ title, summary, children }: LegalShellProps) => (
         className="tap-target text-fg-muted hover:text-fg text-ui-md inline-flex w-fit items-center gap-1.5 font-medium transition"
       >
         <ArrowLeft size={15} aria-hidden="true" />
-        {APP_NAME}-এ ফিরে যান
+        {`${APP_NAME}-এ ফিরে যান`}
       </Link>
 
       <header className="flex flex-col gap-2">

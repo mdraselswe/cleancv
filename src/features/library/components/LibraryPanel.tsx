@@ -33,6 +33,7 @@ import { useAuthSession } from '@/features/auth';
 import { downloadText } from '@/features/export';
 import { formatRelativeTime } from '@/lib/date';
 import { bn } from '@/lib/bn';
+import { Lang } from '@/i18n';
 import { cn } from '@/lib/cn';
 
 import { backupFilename, parseBackup, serializeBackup } from '../backup';
@@ -283,9 +284,22 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
             <div className="border-border-base rounded-card mt-3 border p-3">
               <p className="text-fg text-ui font-medium">সব ডিভাইসে আপনার CV ব্যবহার করুন</p>
               <p className="text-fg-subtle text-ui-xs mt-0.5">
-                PDF ডাউনলোড করতে একটি ফ্রি অ্যাকাউন্ট লাগে। এতে আপনার পছন্দের {bn(cloudToggle.max)}টি
-                পর্যন্ত CV অ্যাকাউন্টে রাখা যায়, যাতে সেগুলো অন্য ডিভাইসেও পাওয়া যায়। বাকি সব CV শুধু
-                এই ডিভাইসেই থাকে।
+                <Lang
+                  bn={
+                    <>
+                      PDF ডাউনলোড করতে একটি ফ্রি অ্যাকাউন্ট লাগে। এতে আপনার পছন্দের {bn(cloudToggle.max)}টি
+                      পর্যন্ত CV অ্যাকাউন্টে রাখা যায়, যাতে সেগুলো অন্য ডিভাইসেও পাওয়া যায়। বাকি সব CV শুধু
+                      এই ডিভাইসেই থাকে।
+                    </>
+                  }
+                  en={
+                    <>
+                      A free account is needed to download PDFs. It also lets you keep up to{' '}
+                      {cloudToggle.max} CVs of your choice on your account so they follow you to
+                      other devices. Every other CV stays on this device only.
+                    </>
+                  }
+                />
               </p>
               <Button
                 size="sm"

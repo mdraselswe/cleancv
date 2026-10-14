@@ -136,7 +136,7 @@ export default async function AdminPage() {
             href={ROUTES.editor}
             className="text-fg-muted hover:text-fg text-ui-md inline-flex items-center gap-1.5 font-medium transition"
           >
-            <ArrowLeft size={15} /> {APP_NAME}-এ ফিরে যান
+            <ArrowLeft size={15} /> {`${APP_NAME}-এ ফিরে যান`}
           </Link>
           <a
             href="https://vercel.com/mdraselswes-projects/cleancv/analytics"

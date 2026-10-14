@@ -13,6 +13,8 @@ import { Analytics } from '@vercel/analytics/next';
 import { AnonymousVisitorTracker } from '@/components/analytics/AnonymousVisitorTracker';
 import { APP_NAME, APP_TAGLINE } from '@/constants';
 import { THEME_BOOTSTRAP_SCRIPT } from '@/hooks';
+import { LANG_BOOTSTRAP_SCRIPT } from '@/i18n';
+import { LangRuntime } from '@/i18n/LangControls';
 
 import './globals.css';
 import '@/styles/resume.css';
@@ -126,6 +128,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Applies the stored theme before first paint so there is no flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
+        {/* Notes an English reader before first paint; see `i18n/index.tsx`. */}
+        <script dangerouslySetInnerHTML={{ __html: LANG_BOOTSTRAP_SCRIPT }} />
       </head>
       {/*
         Extensions write their own attributes onto `body` before React
@@ -140,6 +144,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       */}
       <body suppressHydrationWarning>
         {children}
+        <LangRuntime />
         <AnonymousVisitorTracker />
         <Analytics />
       </body>

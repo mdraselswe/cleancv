@@ -11,6 +11,7 @@ import {
   ROUTES,
 } from '@/constants';
 import { bn } from '@/lib/bn';
+import { Lang } from '@/i18n';
 
 const LINKS = [
   { href: ROUTES.features, label: 'কী কী আছে' },
@@ -25,10 +26,20 @@ export const SiteFooter = () => (
   <footer className="border-border-base mt-8 border-t">
     <div className="text-fg-subtle text-ui-xs mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 sm:px-6">
       <span className="flex flex-col gap-1">
-        <span>
-          {APP_NAME} · ব্যবহার ফ্রি · আপনার CV এই ব্রাউজারেই থাকে; আপনার বেছে নেওয়া{' '}
-          {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত অ্যাকাউন্টে সিঙ্ক করা যায়।
-        </span>
+        <Lang
+          bn={
+            <span>
+              {APP_NAME} · ব্যবহার ফ্রি · আপনার CV এই ব্রাউজারেই থাকে; আপনার বেছে নেওয়া{' '}
+              {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত অ্যাকাউন্টে সিঙ্ক করা যায়।
+            </span>
+          }
+          en={
+            <span>
+              {APP_NAME} · free to use · your CVs stay in this browser; up to {CLOUD_SYNC.maxDocuments}{' '}
+              you choose can sync to your account.
+            </span>
+          }
+        />
         <span>
           তৈরি করেছেন{' '}
           <a

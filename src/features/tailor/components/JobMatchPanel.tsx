@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { Button, Textarea } from '@/components/ui';
 import { useResume, useResumeActions } from '@/features/resume';
 import { bn, bnPercent } from '@/lib/bn';
+import { Lang } from '@/i18n';
 
 import { analyzeTailor } from '../engine';
 import { TailorDialog } from './TailorDialog';
@@ -47,7 +48,10 @@ export const JobMatchPanel = () => {
         >
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-fg text-ui-md font-bold">
-              {bn(analysis.keywords.length)}টি মূল শব্দের মধ্যে {bn(analysis.matched.length)}টি আপনার CV-তে আছে
+              <Lang
+                bn={`${bn(analysis.keywords.length)}টি মূল শব্দের মধ্যে ${bn(analysis.matched.length)}টি আপনার CV-তে আছে`}
+                en={`${analysis.matched.length} of ${analysis.keywords.length} key terms are on your CV`}
+              />
             </p>
             <span className="text-fg-subtle text-ui-xs tabular-nums">{bnPercent(percent)}</span>
           </div>

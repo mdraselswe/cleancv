@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { APP_NAME } from '@/constants';
-import { TermsOfService } from '@/features/legal';
+import { TermsOfServiceView } from '@/features/legal';
 import { isEmailAuthEnabled } from '@/server/env';
 
 export const metadata: Metadata = {
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
-  return <TermsOfService emailAuth={isEmailAuthEnabled()} />;
+  return <TermsOfServiceView emailAuth={isEmailAuthEnabled()} />;
 }

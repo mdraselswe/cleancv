@@ -7,3 +7,4 @@ export {
 } from './components/LegalShell';
 export { PrivacyPolicy } from './components/PrivacyPolicy';
 export { TermsOfService } from './components/TermsOfService';
+export { PrivacyPolicyView, TermsOfServiceView } from './components/LegalDocuments';

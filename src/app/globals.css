@@ -214,6 +214,22 @@ html:lang(bn) body *:not(.resume-root):not(.resume-root *) {
   text-transform: none !important;
 }
 
+/*
+ * An English reader is held on a blank page until the translator has run, so
+ * they never see Bangla flash by. The animation is the way out if it never
+ * does: after two and a half seconds the page shows regardless.
+ */
+html[data-lang='en']:not([data-i18n-ready]) body {
+  visibility: hidden;
+  animation: i18n-reveal 0s linear 2.5s forwards;
+}
+
+@keyframes i18n-reveal {
+  to {
+    visibility: visible;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--app-border);

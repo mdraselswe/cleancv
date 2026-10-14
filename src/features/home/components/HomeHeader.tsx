@@ -9,6 +9,7 @@ import { Button, Menu, type MenuEntry } from '@/components/ui';
 import { APP_NAME, AUTH_ROUTES, LEGAL_ROUTES, ROUTES } from '@/constants';
 import { UserMenu, useAuthSession } from '@/features/auth';
 import { useTheme, type ThemePreference } from '@/hooks';
+import { LangToggle } from '@/i18n/LangControls';
 
 const THEME_ICON = { light: Sun, dark: Moon, system: Monitor } as const;
 const THEME_LABEL: Record<ThemePreference, string> = {
@@ -114,6 +115,7 @@ export const HomeHeader = () => {
           >
             <ThemeIcon size={16} />
           </Button>
+          <LangToggle />
           <UserMenu />
         </div>
       </div>

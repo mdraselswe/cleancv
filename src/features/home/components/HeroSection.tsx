@@ -4,6 +4,7 @@ import { FileUp, Gauge, Layers, Lock, Plus, Sparkles, Wand2 } from 'lucide-react
 
 import { HeroIllustration } from '@/components/illustrations';
 import { Button } from '@/components/ui';
+import { Lang } from '@/i18n';
 
 export interface HeroSectionProps {
   onCreate: () => void;
@@ -36,8 +37,20 @@ export const HeroSection = ({ onCreate, onSample, onImport, disabled }: HeroSect
         </span>
 
         <h1 className="text-fg text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-5xl">
-          এমন একটি CV বানান, যা <span className="app-gradient-text animate-gradient">মানুষ</span>{' '}
-          আর <span className="app-gradient-text animate-gradient">ATS</span> দুজনেই পড়তে পারে।
+          <Lang
+            bn={
+              <>
+                এমন একটি CV বানান, যা <span className="app-gradient-text animate-gradient">মানুষ</span>{' '}
+                আর <span className="app-gradient-text animate-gradient">ATS</span> দুজনেই পড়তে পারে।
+              </>
+            }
+            en={
+              <>
+                Build a CV that <span className="app-gradient-text animate-gradient">people</span> and{' '}
+                <span className="app-gradient-text animate-gradient">parsers</span> both read.
+              </>
+            }
+          />
         </h1>
 
         <p className="text-fg-muted text-ui-lg max-w-xl leading-relaxed">
