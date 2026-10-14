@@ -49,3 +49,7 @@ next-env.d.ts
 
 # Local preview server config for the editor sessions
 .claude/launch.json
+
+# promo video renders and its tooling
+promo/out/
+promo/node_modules/

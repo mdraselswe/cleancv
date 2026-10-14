@@ -1,0 +1,8 @@
+{
+  "name": "cleancv-promo",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "mp4-muxer": "^5.1.3"
+  }
+}

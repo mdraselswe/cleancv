@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<title>CleanCV promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #070714;
+    --indigo: #4f46e5;
+    --indigo-2: #818cf8;
+    --teal: #2dd4bf;
+    --green: #10b981;
+    --amber: #fbbf24;
+    --red: #f43f5e;
+    --text: #f8fafc;
+    --muted: #a5b4fc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; background: #000; overflow: hidden; }
+  body { font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; color: var(--text); }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  .bg { position: absolute; inset: 0; background:
+      radial-gradient(900px 700px at 50% 18%, rgba(79,70,229,.45), transparent 70%),
+      radial-gradient(800px 800px at 85% 90%, rgba(45,212,191,.16), transparent 70%),
+      linear-gradient(180deg, #0a0a1f 0%, #070714 60%, #05050f 100%); }
+  .orb { position: absolute; width: 760px; height: 760px; border-radius: 50%; filter: blur(110px); opacity: .55; }
+  .o1 { background: #4f46e5; left: -280px; top: 120px; }
+  .o2 { background: #14b8a6; right: -320px; bottom: 80px; opacity: .35; }
+  canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+  #grain { mix-blend-mode: overlay; opacity: .09; }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(0,0,0,.55) 100%); pointer-events: none; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+  .scene { position: absolute; inset: 0; opacity: 0; }
+  .center { text-align: center; }
+
+  .bn { line-height: 1.45; font-weight: 700; }
+  .kicker { font-size: 40px; font-weight: 600; letter-spacing: .04em; color: var(--muted); }
+  .grad { background: linear-gradient(90deg, #a5b4fc, #2dd4bf); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .glass { background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)); border: 2px solid rgba(255,255,255,.14); border-radius: 44px; box-shadow: 0 40px 100px rgba(0,0,0,.45); backdrop-filter: blur(6px); }
+  .chip { display: inline-flex; align-items: center; gap: 14px; padding: 16px 30px; border-radius: 999px; font-size: 36px; font-weight: 600; background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.16); }
+  .chip.g { background: rgba(16,185,129,.16); border-color: rgba(16,185,129,.5); color: #6ee7b7; }
+  .chip.t { background: rgba(45,212,191,.14); border-color: rgba(45,212,191,.5); color: #5eead4; }
+  .chip.a { background: rgba(251,191,36,.14); border-color: rgba(251,191,36,.5); color: #fcd34d; }
+
+  /* s1 */
+  #s1 .h1 { position: absolute; left: 0; right: 0; top: 250px; font-size: 118px; }
+  #s1 .h1 span { display: block; }
+  #s1 .kicker { position: absolute; top: 170px; left: 0; right: 0; text-align: center; }
+  .paper { position: absolute; background: #fff; border-radius: 22px; box-shadow: 0 50px 120px rgba(0,0,0,.6); overflow: hidden; }
+  #paper1 { width: 470px; height: 640px; left: 305px; top: 900px; }
+  .ln { position: absolute; height: 18px; border-radius: 9px; background: #e0e7ff; }
+  .ln.d { background: #4f46e5; }
+  #beam { position: absolute; left: -20px; right: -20px; height: 10px; background: #f43f5e; box-shadow: 0 0 40px 14px rgba(244,63,94,.7); border-radius: 5px; top: 0; }
+  #stamp { position: absolute; left: 190px; top: 1150px; padding: 18px 54px; border: 10px solid var(--red); color: var(--red); font-size: 92px; font-weight: 700; border-radius: 22px; transform: rotate(-14deg); background: #0b0b1f; }
+
+  /* s2 */
+  #s2 .mark { position: absolute; left: 330px; top: 360px; width: 420px; height: 420px; }
+  #s2 .name { position: absolute; left: 0; right: 0; top: 850px; font-size: 170px; font-weight: 800; letter-spacing: -.02em; }
+  #s2 .sub { position: absolute; left: 60px; right: 60px; top: 1080px; font-size: 62px; }
+  #s2 .tags { position: absolute; left: 0; right: 0; top: 1330px; display: flex; justify-content: center; gap: 24px; }
+
+  /* s3 */
+  #s3 .top { position: absolute; top: 210px; left: 0; right: 0; font-size: 64px; }
+  .big { position: absolute; left: 90px; right: 90px; height: 520px; padding: 54px 56px; }
+  #b1 { top: 420px; }
+  #b2 { top: 1010px; }
+  .big .tag { position: absolute; right: 40px; top: -30px; padding: 12px 30px; border-radius: 999px; background: linear-gradient(90deg, #10b981, #2dd4bf); color: #04130d; font-size: 38px; font-weight: 700; }
+  .big .ico { width: 120px; height: 120px; border-radius: 34px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
+  .big h2 { font-size: 86px; line-height: 1.35; }
+  .big p { font-size: 46px; color: #c7d2fe; line-height: 1.5; font-weight: 500; margin-top: 12px; }
+  #s3 .foot { position: absolute; left: 0; right: 0; top: 1620px; font-size: 46px; color: var(--muted); font-weight: 500; }
+
+  /* features */
+  .fs .eyebrow { position: absolute; top: 170px; left: 0; right: 0; font-size: 42px; font-weight: 700; color: var(--teal); letter-spacing: .08em; }
+  .fs .ft { position: absolute; top: 250px; left: 60px; right: 60px; font-size: 94px; line-height: 1.35; }
+  .fs .fd { position: absolute; top: 560px; left: 90px; right: 90px; font-size: 50px; line-height: 1.55; color: #c7d2fe; font-weight: 500; }
+  .fvis { position: absolute; left: 0; right: 0; top: 780px; height: 1000px; }
+  .dots { position: absolute; bottom: 120px; left: 0; right: 0; display: flex; justify-content: center; gap: 18px; }
+  .dots i { width: 18px; height: 18px; border-radius: 9px; background: rgba(255,255,255,.2); }
+  .dots i.on { width: 64px; background: var(--teal); }
+
+  .tpl { position: absolute; left: 340px; top: 120px; width: 400px; height: 560px; border-radius: 20px; background: #fff; box-shadow: 0 40px 90px rgba(0,0,0,.55); transform-origin: 50% 100%; overflow: hidden; }
+  .tpl .band { position: absolute; left: 0; right: 0; top: 0; height: 120px; }
+  .tpl .ln { background: #e5e7eb; }
+  #f1chip { position: absolute; left: 0; right: 0; top: 760px; display: flex; justify-content: center; }
+
+  #ringwrap { position: absolute; left: 270px; top: 20px; width: 540px; height: 540px; }
+  #ringnum { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 190px; font-weight: 800; line-height: 1.1; }
+  #ringlab { position: absolute; left: 0; right: 0; top: 345px; text-align: center; font-size: 48px; color: var(--teal); font-weight: 700; }
+  .meters { position: absolute; left: 90px; right: 90px; top: 620px; display: flex; flex-direction: column; gap: 28px; }
+  .meter { padding: 30px 38px; }
+  .meter .row { display: flex; justify-content: space-between; font-size: 44px; font-weight: 600; }
+  .meter .bar { height: 18px; border-radius: 9px; background: rgba(255,255,255,.12); margin-top: 18px; overflow: hidden; }
+  .meter .bar b { display: block; height: 100%; border-radius: 9px; background: linear-gradient(90deg, #10b981, #2dd4bf); }
+  #gain { position: absolute; right: 80px; top: 70px; }
+
+  #fixcard { position: absolute; left: 80px; right: 80px; top: 60px; padding: 52px 52px 46px; }
+  #fixcard .where { font-size: 38px; color: #a5b4fc; font-weight: 600; }
+  #fixcard .quote { font-size: 48px; line-height: 1.5; margin-top: 18px; font-weight: 600; color: #fff; }
+  #fixcard .ask { margin-top: 34px; padding: 28px 32px; border-radius: 28px; background: rgba(45,212,191,.12); border: 2px solid rgba(45,212,191,.45); font-size: 44px; line-height: 1.55; color: #99f6e4; font-weight: 600; }
+  #fixgain { position: absolute; right: 80px; top: 640px; font-size: 56px; padding: 18px 38px; background: rgba(16,185,129,.9); color: #04130d; border-color: #34d399; }
+  #fixlist { position: absolute; left: 80px; right: 80px; top: 780px; display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+
+  #jd { position: absolute; left: 60px; width: 470px; top: 40px; padding: 36px; }
+  #jd .t { font-size: 38px; color: #a5b4fc; font-weight: 700; margin-bottom: 20px; }
+  #cvm { position: absolute; right: 60px; width: 470px; top: 40px; padding: 36px; background: #fff; border-radius: 30px; color: #0f172a; }
+  #cvm .t { font-size: 38px; font-weight: 700; margin-bottom: 20px; color: #4f46e5; }
+  .kw { display: inline-block; margin: 8px 8px 8px 0; padding: 10px 22px; border-radius: 14px; font-size: 36px; font-weight: 700; }
+  .kw.j { background: rgba(251,191,36,.18); color: #fcd34d; border: 2px solid rgba(251,191,36,.5); }
+  .kw.c { background: #e0e7ff; color: #3730a3; }
+  #match { position: absolute; left: 90px; right: 90px; top: 700px; padding: 38px; }
+  #match .row { display: flex; justify-content: space-between; font-size: 48px; font-weight: 700; }
+  #match .bar { height: 24px; border-radius: 12px; background: rgba(255,255,255,.12); margin-top: 22px; overflow: hidden; }
+  #match .bar b { display: block; height: 100%; width: 0; border-radius: 12px; background: linear-gradient(90deg, #f59e0b, #10b981); }
+
+  #phone { position: absolute; left: 330px; top: 10px; width: 420px; height: 640px; border-radius: 70px; border: 10px solid rgba(255,255,255,.35); background: linear-gradient(180deg, rgba(79,70,229,.35), rgba(15,23,42,.8)); }
+  #phone .doc { position: absolute; left: 60px; width: 270px; height: 130px; border-radius: 18px; background:
+      linear-gradient(#4f46e5,#4f46e5) 24px 24px / 90px 14px no-repeat,
+      linear-gradient(#e0e7ff,#e0e7ff) 24px 58px / 210px 10px no-repeat,
+      linear-gradient(#e0e7ff,#e0e7ff) 24px 82px / 170px 10px no-repeat,
+      #fff; }
+  #lock { position: absolute; left: 0; right: 0; top: 50px; display: flex; justify-content: center; }
+  .pchips { position: absolute; left: 70px; right: 70px; top: 690px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+
+  /* how */
+  #s5 .top { position: absolute; top: 190px; left: 0; right: 0; font-size: 84px; }
+  #s5 .sub { position: absolute; top: 330px; left: 0; right: 0; font-size: 46px; color: var(--muted); font-weight: 500; }
+  .step { position: absolute; left: 80px; right: 80px; height: 250px; padding: 38px 44px; display: flex; align-items: center; gap: 40px; }
+  .step .n { flex: none; width: 130px; height: 130px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #2dd4bf); display: flex; align-items: center; justify-content: center; font-size: 74px; font-weight: 700; }
+  .step h3 { font-size: 62px; line-height: 1.35; }
+  .step p { font-size: 40px; line-height: 1.45; color: #c7d2fe; font-weight: 500; margin-top: 6px; }
+  #spine { position: absolute; left: 144px; top: 500px; width: 6px; height: 1050px; border-radius: 3px; background: rgba(255,255,255,.12); }
+  #spine b { display: block; width: 100%; height: 0; background: linear-gradient(180deg, #4f46e5, #2dd4bf); border-radius: 3px; }
+
+  /* end */
+  #s6 .mark { position: absolute; left: 400px; top: 160px; width: 280px; height: 280px; }
+  #s6 .name { position: absolute; left: 0; right: 0; top: 470px; font-size: 118px; font-weight: 800; }
+  #s6 .free { position: absolute; left: 0; right: 0; top: 640px; font-size: 56px; color: #99f6e4; }
+  #url { position: absolute; left: 120px; right: 120px; top: 790px; padding: 34px 20px; border-radius: 999px; background: linear-gradient(90deg, #4f46e5, #2dd4bf); font-size: 78px; font-weight: 800; text-align: center; box-shadow: 0 30px 90px rgba(79,70,229,.55); }
+  #creator { position: absolute; left: 80px; right: 80px; top: 1030px; padding: 56px 60px; }
+  #creator .by { font-size: 38px; color: #a5b4fc; font-weight: 600; }
+  #creator .nm { font-size: 84px; font-weight: 800; line-height: 1.25; margin-top: 8px; }
+  #creator .bn2 { font-size: 54px; font-weight: 700; color: #e0e7ff; line-height: 1.4; }
+  #creator .role { font-size: 42px; color: #99f6e4; font-weight: 600; margin-top: 8px; }
+  #creator .links { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; font-size: 42px; font-weight: 600; color: #e0e7ff; }
+  #creator .links span { display: flex; gap: 20px; align-items: center; }
+  #creator .links i { width: 14px; height: 14px; border-radius: 50%; background: var(--teal); flex: none; }
+  #tags { position: absolute; left: 0; right: 0; top: 1800px; font-size: 36px; color: #818cf8; font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="bg"></div>
+  <div class="orb o1" id="o1"></div>
+  <div class="orb o2" id="o2"></div>
+  <canvas id="fx" width="1080" height="1920"></canvas>
+
+  <!-- 1 hook -->
+  <section class="scene" id="s1">
+    <div class="kicker" id="s1k">একটি সহজ প্রশ্ন</div>
+    <div class="h1 bn center">
+      <span id="l1a">আপনার CV কি</span>
+      <span id="l1b" class="grad">ATS পার করতে</span>
+      <span id="l1c">পারছে?</span>
+    </div>
+    <div class="paper" id="paper1">
+      <div class="ln d" style="left:46px;top:50px;width:190px;height:26px"></div>
+      <div class="ln" style="left:46px;top:110px;width:370px"></div>
+      <div class="ln" style="left:46px;top:150px;width:330px"></div>
+      <div class="ln" style="left:46px;top:190px;width:350px"></div>
+      <div class="ln d" style="left:46px;top:280px;width:150px;height:22px"></div>
+      <div class="ln" style="left:46px;top:340px;width:360px"></div>
+      <div class="ln" style="left:46px;top:380px;width:300px"></div>
+      <div class="ln" style="left:46px;top:420px;width:340px"></div>
+      <div class="ln" style="left:46px;top:490px;width:280px"></div>
+      <div class="ln" style="left:46px;top:530px;width:350px"></div>
+      <div id="beam"></div>
+    </div>
+    <div id="stamp">বাতিল</div>
+  </section>
+
+  <!-- 2 logo -->
+  <section class="scene" id="s2">
+    <svg class="mark" id="mark2" viewBox="0 0 64 64" fill="none">
+      <rect id="m2tile" width="64" height="64" rx="16" fill="#4F46E5"/>
+      <g id="m2page"><rect x="17" y="10" width="30" height="40" rx="4" fill="#fff"/>
+      <rect x="22" y="17" width="12" height="4" rx="2" fill="#4F46E5"/>
+      <rect x="22" y="25" width="20" height="3" rx="1.5" fill="#C7D2FE"/>
+      <rect x="22" y="38" width="20" height="3" rx="1.5" fill="#C7D2FE"/></g>
+      <rect id="m2scan" x="11" y="31" width="42" height="3.5" rx="1.75" fill="#2DD4BF"/>
+      <g id="m2badge"><circle cx="48" cy="47" r="10" fill="#10B981" stroke="#fff" stroke-width="3"/>
+      <path d="m43.5 47 3 3 5-6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+    </svg>
+    <div class="name center" id="s2name">CleanCV</div>
+    <div class="sub bn center" id="s2sub">ATS-ফ্রেন্ডলি CV বিল্ডার <span class="grad">সম্পূর্ণ ফ্রি</span></div>
+    <div class="tags" id="s2tags"><span class="chip g">✓ ফ্রি ডাউনলোড</span><span class="chip t">✓ ফ্রি ATS চেকার</span></div>
+  </section>
+
+  <!-- 3 free -->
+  <section class="scene" id="s3">
+    <div class="top bn center" id="s3top">দুটি জিনিস, <span class="grad">একদম ফ্রি</span></div>
+    <div class="big glass" id="b1">
+      <div class="tag">১০০% ফ্রি</div>
+      <div class="ico" style="background:rgba(16,185,129,.2)"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg></div>
+      <h2 class="bn">ফ্রি PDF ডাউনলোড</h2>
+      <p>কোনো পেমেন্ট নেই, কোনো সাবস্ক্রিপশন নেই। শুধু Google দিয়ে সাইন-ইন।</p>
+    </div>
+    <div class="big glass" id="b2">
+      <div class="tag">১০০% ফ্রি</div>
+      <div class="ico" style="background:rgba(45,212,191,.2)"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div>
+      <h2 class="bn">ফ্রি ATS চেকার</h2>
+      <p>লাইভ স্কোর, আর কোথায় কী ঠিক করবেন সরাসরি বলে দেয়।</p>
+    </div>
+    <div class="foot bn center" id="s3foot">লুকানো চার্জ নেই</div>
+  </section>
+
+  <!-- 4 features -->
+  <section class="scene fs" id="f1">
+    <div class="eyebrow center">ফিচার ০১</div>
+    <div class="ft bn center">১০টি <span class="grad">ডিজাইন</span>,<br/>সবই ATS-সেফ</div>
+    <div class="fd bn center" style="font-weight:500">এক ক্লিকে ডিজাইন বদলান। প্রতিটির টেক্সট লেয়ার পরিষ্কার, তাই পার্সার ঠিকঠাক পড়ে।</div>
+    <div class="fvis">
+      <div class="tpl" id="t1"><div class="band" style="background:#4f46e5"></div><div class="ln" style="left:36px;top:150px;width:240px"></div><div class="ln" style="left:36px;top:190px;width:320px"></div><div class="ln" style="left:36px;top:230px;width:290px"></div><div class="ln" style="left:36px;top:300px;width:200px"></div><div class="ln" style="left:36px;top:340px;width:320px"></div><div class="ln" style="left:36px;top:380px;width:260px"></div></div>
+      <div class="tpl" id="t2"><div class="band" style="background:#0d9488"></div><div class="ln" style="left:36px;top:150px;width:240px"></div><div class="ln" style="left:36px;top:190px;width:320px"></div><div class="ln" style="left:36px;top:230px;width:290px"></div><div class="ln" style="left:36px;top:300px;width:200px"></div><div class="ln" style="left:36px;top:340px;width:320px"></div></div>
+      <div class="tpl" id="t3"><div class="band" style="background:#e11d48"></div><div class="ln" style="left:36px;top:150px;width:240px"></div><div class="ln" style="left:36px;top:190px;width:320px"></div><div class="ln" style="left:36px;top:230px;width:290px"></div><div class="ln" style="left:36px;top:300px;width:200px"></div></div>
+      <div class="tpl" id="t4"><div class="band" style="background:#d97706"></div><div class="ln" style="left:36px;top:150px;width:240px"></div><div class="ln" style="left:36px;top:190px;width:320px"></div><div class="ln" style="left:36px;top:230px;width:290px"></div><div class="ln" style="left:36px;top:300px;width:200px"></div><div class="ln" style="left:36px;top:340px;width:320px"></div></div>
+      <div class="tpl" id="t5"><div class="band" style="background:#0f172a"></div><div class="ln" style="left:36px;top:150px;width:240px"></div><div class="ln" style="left:36px;top:190px;width:320px"></div><div class="ln" style="left:36px;top:230px;width:290px"></div><div class="ln" style="left:36px;top:300px;width:200px"></div><div class="ln" style="left:36px;top:340px;width:320px"></div><div class="ln" style="left:36px;top:380px;width:260px"></div></div>
+      <div id="f1chip"><span class="chip g">✓ ATS-সেফ টেক্সট লেয়ার</span></div>
+    </div>
+  </section>
+
+  <section class="scene fs" id="f2">
+    <div class="eyebrow center">ফিচার ০২</div>
+    <div class="ft bn center">লাইভ <span class="grad">ATS স্কোর</span></div>
+    <div class="fd bn center" style="font-weight:500">লেখার সঙ্গে সঙ্গে স্কোর বদলায়। মেশিন কতটা পড়তে পারে আর কনটেন্ট কতটা জোরালো, দুটোই আলাদা দেখায়।</div>
+    <div class="fvis">
+      <div id="ringwrap">
+        <svg width="540" height="540" viewBox="0 0 540 540">
+          <circle cx="270" cy="270" r="230" stroke="rgba(255,255,255,.12)" stroke-width="34" fill="none"/>
+          <circle id="ring" cx="270" cy="270" r="230" stroke="url(#rg)" stroke-width="34" fill="none" stroke-linecap="round" transform="rotate(-90 270 270)" stroke-dasharray="1445" stroke-dashoffset="1445"/>
+          <defs><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>
+        </svg>
+        <div id="ringnum">০</div>
+        <div id="ringlab">চমৎকার</div>
+      </div>
+      <div class="chip g" id="gain">+৬ পয়েন্ট</div>
+      <div class="meters">
+        <div class="meter glass" id="m1"><div class="row"><span>মেশিন রিডেবিলিটি</span><span id="mv1">০</span></div><div class="bar"><b id="mb1" style="width:0%"></b></div></div>
+        <div class="meter glass" id="m2"><div class="row"><span>কনটেন্ট স্ট্রেংথ</span><span id="mv2">০</span></div><div class="bar"><b id="mb2" style="width:0%"></b></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene fs" id="f3">
+    <div class="eyebrow center">ফিচার ০৩</div>
+    <div class="ft bn center">কোথায় কী ঠিক করবেন,<br/><span class="grad">সরাসরি বলে দেয়</span></div>
+    <div class="fd bn center" style="font-weight:500">যে লাইনে সমস্যা, সেই লাইনটি দেখায়। সঙ্গে বলে দেয় কোন সংখ্যা বসালে স্কোর বাড়বে।</div>
+    <div class="fvis">
+      <div class="glass" id="fixcard">
+        <div class="where">Senior Engineer · Acme Ltd</div>
+        <div class="quote">“Built a reusable component library across multiple products.”</div>
+        <div class="ask" id="fixask">→ কতগুলো প্রোডাক্টে ব্যবহার হয়? কত % দ্রুত হলো?</div>
+      </div>
+      <div class="chip g" id="fixgain">+৬ পয়েন্ট</div>
+      <div id="fixlist">
+        <div class="chip a" id="fl1">⚠ সংখ্যা নেই: ৯টি লাইন</div>
+        <div class="chip t" id="fl2">✓ Show all: পুরো তালিকা এক জায়গায়</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene fs" id="f4">
+    <div class="eyebrow center">ফিচার ০৪</div>
+    <div class="ft bn center">জব বিজ্ঞপ্তি দিন,<br/><span class="grad">CV মিলিয়ে নিন</span></div>
+    <div class="fd bn center" style="font-weight:500">চাকরির বিবরণ পেস্ট করলে কোন শব্দ মিসিং তা দেখায়। চাইলে এক ক্লিকে ওই চাকরির জন্য CV সাজিয়ে দেয়।</div>
+    <div class="fvis">
+      <div class="glass" id="jd"><div class="t">জব ডেসক্রিপশন</div>
+        <span class="kw j" id="k1">cloud</span><span class="kw j" id="k2">design systems</span><span class="kw j" id="k3">release</span><span class="kw j" id="k4">standards</span><span class="kw j" id="k5">security</span></div>
+      <div id="cvm"><div class="t">আপনার CV</div>
+        <span class="kw c" id="c1">cloud</span><span class="kw c" id="c2">design systems</span><span class="kw c" id="c3">release</span><span class="kw c" id="c4">standards</span><span class="kw c" id="c5">security</span></div>
+      <div class="glass" id="match"><div class="row"><span>কীওয়ার্ড ম্যাচ</span><span id="mt">০%</span></div><div class="bar"><b id="mtb"></b></div></div>
+    </div>
+  </section>
+
+  <section class="scene fs" id="f5">
+    <div class="eyebrow center">ফিচার ০৫</div>
+    <div class="ft bn center">আপনার ডেটা,<br/><span class="grad">আপনার ডিভাইসে</span></div>
+    <div class="fd bn center" style="font-weight:500">ডিফল্টভাবে সব CV শুধু আপনার ব্রাউজারে থাকে। ইচ্ছা হলে বেছে নেওয়া কয়েকটি CV অ্যাকাউন্টে সিঙ্ক করা যায়।</div>
+    <div class="fvis">
+      <div id="phone">
+        <div id="lock"><svg width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+        <div class="doc" id="d1" style="top:170px"></div>
+        <div class="doc" id="d2" style="top:330px"></div>
+        <div class="doc" id="d3" style="top:490px"></div>
+      </div>
+      <div class="pchips">
+        <span class="chip g" id="pc1">✓ ডিফল্ট: শুধু আপনার ডিভাইসে</span>
+        <span class="chip t" id="pc2">☁ ঐচ্ছিক: সর্বোচ্চ ৩টি CV সিঙ্ক</span>
+        <span class="chip a" id="pc3">⇪ ইমপোর্ট: PDF · DOCX · ছবি</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 how -->
+  <section class="scene" id="s5">
+    <div class="top bn center" id="s5top">ব্যবহার করবেন <span class="grad">যেভাবে</span></div>
+    <div class="sub bn center" id="s5sub">মাত্র চারটি ধাপ</div>
+    <div id="spine"><b id="spineb"></b></div>
+    <div class="step glass" id="st1" style="top:470px"><div class="n">১</div><div><h3 class="bn">ওয়েবসাইটে যান</h3><p>cv.mdrasel.site খুলুন, কোনো ইনস্টল লাগে না</p></div></div>
+    <div class="step glass" id="st2" style="top:760px"><div class="n">২</div><div><h3 class="bn">CV শুরু করুন</h3><p>নতুন লিখুন, নয়তো পুরনো PDF বা DOCX ইমপোর্ট করুন</p></div></div>
+    <div class="step glass" id="st3" style="top:1050px"><div class="n">৩</div><div><h3 class="bn">ATS স্কোর দেখে ঠিক করুন</h3><p>“Fix it” চাপলে ঠিক কোথায় কী বদলাবেন বলে দেয়</p></div></div>
+    <div class="step glass" id="st4" style="top:1340px"><div class="n">৪</div><div><h3 class="bn">PDF ডাউনলোড করুন</h3><p>Google দিয়ে সাইন-ইন করে একদম ফ্রি</p></div></div>
+  </section>
+
+  <!-- 6 end -->
+  <section class="scene" id="s6">
+    <svg class="mark" id="mark6" viewBox="0 0 64 64" fill="none">
+      <rect width="64" height="64" rx="16" fill="#4F46E5"/>
+      <rect x="17" y="10" width="30" height="40" rx="4" fill="#fff"/><rect x="22" y="17" width="12" height="4" rx="2" fill="#4F46E5"/><rect x="22" y="25" width="20" height="3" rx="1.5" fill="#C7D2FE"/><rect x="22" y="38" width="20" height="3" rx="1.5" fill="#C7D2FE"/>
+      <rect x="11" y="31" width="42" height="3.5" rx="1.75" fill="#2DD4BF"/>
+      <circle cx="48" cy="47" r="10" fill="#10B981" stroke="#fff" stroke-width="3"/><path d="m43.5 47 3 3 5-6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="name center" id="s6name">CleanCV</div>
+    <div class="free bn center" id="s6free">ফ্রি ডাউনলোড · ফ্রি ATS চেকার</div>
+    <div id="url">cv.mdrasel.site</div>
+    <div class="glass" id="creator">
+      <div class="by">এই অ্যাপটি তৈরি করেছেন</div>
+      <div class="nm">Muhammad Rasel</div>
+      <div class="bn2">মুহাম্মদ রাসেল</div>
+      <div class="role">Senior Frontend Engineer</div>
+      <div class="links">
+        <span><i></i>linkedin.com/in/mdraselswe</span>
+        <span><i></i>github.com/mdraselswe</span>
+        <span><i></i>mdrasel.site</span>
+        <span><i></i>mdraselswe@gmail.com</span>
+      </div>
+    </div>
+    <div id="tags" class="center">#CleanCV  #ATSChecker  #FreeCV  #CVBuilder</div>
+  </section>
+
+  <div class="vignette"></div>
+  <canvas id="grain" width="540" height="960"></canvas>
+  <div id="flash"></div>
+</div>
+
+<script>
+const anims = [];
+const FOREVER = 'forwards';
+const A = (el, kf, at, dur, o = {}) => {
+  const node = typeof el === 'string' ? document.querySelector(el) : el;
+  const a = node.animate(kf, {
+    delay: at * 1000, duration: dur * 1000, fill: o.fill || 'both',
+    easing: o.ease || 'cubic-bezier(.16,.84,.24,1)',
+  });
+  a.pause();
+  anims.push(a);
+  return a;
+};
+const IN = (id, at, o = {}) => A(id, [{ opacity: 0 }, { opacity: 1 }], at, o.d || 0.5, { ease: 'linear' });
+const OUT = (id, at, d = 0.45) => A(id, [{ opacity: 1 }, { opacity: 0 }], at, d, { ease: 'linear', fill: FOREVER });
+const RISE = (el, at, o = {}) => A(el, [
+  { opacity: 0, transform: `translateY(${o.y ?? 60}px) scale(${o.s ?? 0.96})`, filter: `blur(${o.b ?? 18}px)` },
+  { opacity: 1, transform: 'translateY(0) scale(1)', filter: 'blur(0)' },
+], at, o.d || 0.9);
+const SLOWZOOM = (id, at, d, from = 1, to = 1.07) => A(id, [{ transform: `scale(${from})` }, { transform: `scale(${to})` }], at, d, { ease: 'linear' });
+
+// scene windows
+const T = { s1: [0, 5], s2: [5, 10.6], s3: [10.6, 17.6], f1: [17.6, 21.9], f2: [21.9, 26.2], f3: [26.2, 30.5], f4: [30.5, 34.8], f5: [34.8, 39.1], s5: [39.1, 49.4], s6: [49.4, 58] };
+const END = 58;
+
+Object.entries(T).forEach(([id, [a, b]]) => {
+  IN('#' + id, a, { d: id === 's1' ? 0.01 : 0.35 });
+  if (id !== 's6') OUT('#' + id, b - 0.3, 0.3);
+  SLOWZOOM('#' + id, a, b - a + 0.4, 1, 1.06);
+});
+
+// background drift
+A('#o1', [{ transform: 'translate(0,0)' }, { transform: 'translate(260px,420px)' }], 0, END, { ease: 'linear' });
+A('#o2', [{ transform: 'translate(0,0)' }, { transform: 'translate(-300px,-460px)' }], 0, END, { ease: 'linear' });
+
+// flashes on cuts
+[5, 10.6, 49.4].forEach((at) => A('#flash', [{ opacity: 0.0 }, { opacity: 0.85 }, { opacity: 0 }], at - 0.08, 0.55, { ease: 'ease-out', fill: 'none' }));
+
+// ---- s1
+RISE('#s1k', 0.3, { y: 20, d: 0.7 });
+RISE('#l1a', 0.8, { d: 0.9 });
+RISE('#l1b', 1.35, { d: 0.9 });
+RISE('#l1c', 1.9, { d: 0.9 });
+A('#paper1', [{ opacity: 0, transform: 'translateY(160px) rotate(-6deg) scale(.9)' }, { opacity: 1, transform: 'translateY(0) rotate(-2deg) scale(1)' }], 2.2, 1.0);
+A('#beam', [{ top: '-20px' }, { top: '650px' }], 3.0, 1.0, { ease: 'ease-in-out' });
+A('#beam', [{ opacity: 1 }, { opacity: 0 }], 4.0, 0.2, { ease: 'linear', fill: FOREVER });
+A('#stamp', [{ opacity: 0, transform: 'rotate(-14deg) scale(2.6)' }, { opacity: 1, transform: 'rotate(-14deg) scale(1)' }], 4.0, 0.35, { ease: 'cubic-bezier(.2,1.4,.4,1)' });
+A('#paper1', [{ transform: 'translate(0,0) rotate(-2deg)' }, { transform: 'translate(-14px,8px) rotate(-3deg)' }, { transform: 'translate(12px,-6px) rotate(-1deg)' }, { transform: 'translate(0,0) rotate(-2deg)' }], 4.35, 0.4, { ease: 'linear', fill: FOREVER });
+
+// ---- s2
+A('#m2tile', [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], 5.1, 0.7);
+document.querySelectorAll('#mark2 *').forEach((n) => { n.style.transformBox = 'fill-box'; n.style.transformOrigin = 'center'; });
+A('#m2page', [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], 5.5, 0.7);
+A('#m2scan', [{ opacity: 0, transform: 'translateY(-16px) scaleX(.4)' }, { opacity: 1, transform: 'translateY(-16px) scaleX(1)' }, { opacity: 1, transform: 'translateY(16px) scaleX(1)' }, { opacity: 0.9, transform: 'translateY(0) scaleX(1)' }], 6.2, 1.5, { ease: 'ease-in-out' });
+A('#m2badge', [{ opacity: 0, transform: 'scale(0)' }, { opacity: 1, transform: 'scale(1.25)' }, { opacity: 1, transform: 'scale(1)' }], 7.7, 0.6, { ease: 'ease-out' });
+A('#mark2', [{ transform: 'translateY(0)' }, { transform: 'translateY(-70px)' }], 8.3, 1.8, { ease: 'ease-in-out' });
+RISE('#s2name', 7.9, { d: 1.0, y: 40 });
+RISE('#s2sub', 8.5, { d: 0.9, y: 40 });
+RISE('#s2tags', 9.1, { d: 0.8, y: 40 });
+A('#s2name', [{ letterSpacing: '0.18em' }, { letterSpacing: '-0.02em' }], 7.9, 1.4);
+
+// ---- s3
+RISE('#s3top', 10.8, { d: 0.8 });
+A('#b1', [{ opacity: 0, transform: 'translateX(-220px) scale(.94)' }, { opacity: 1, transform: 'translateX(0) scale(1)' }], 11.3, 0.9);
+A('#b2', [{ opacity: 0, transform: 'translateX(220px) scale(.94)' }, { opacity: 1, transform: 'translateX(0) scale(1)' }], 12.2, 0.9);
+A('#b1', [{ boxShadow: '0 0 0 rgba(16,185,129,0)' }, { boxShadow: '0 0 90px rgba(16,185,129,.55)' }], 12.4, 1.2, { ease: 'ease-in-out' });
+A('#b2', [{ boxShadow: '0 0 0 rgba(45,212,191,0)' }, { boxShadow: '0 0 90px rgba(45,212,191,.6)' }], 14.8, 1.2, { ease: 'ease-in-out' });
+RISE('#s3foot', 15.4, { d: 0.7, y: 30 });
+
+// ---- features
+const fscene = (id) => T[id][0];
+const feat = (id, extra) => {
+  const t0 = fscene(id);
+  RISE(`#${id} .eyebrow`, t0 + 0.1, { y: 20, d: 0.6 });
+  RISE(`#${id} .ft`, t0 + 0.3, { d: 0.8 });
+  RISE(`#${id} .fd`, t0 + 0.7, { d: 0.8, y: 40 });
+  extra(t0);
+};
+
+feat('f1', (t0) => {
+  const angles = [-20, -10, 0, 10, 20];
+  const dx = [-190, -95, 0, 95, 190];
+  [1, 2, 3, 4, 5].forEach((n, i) => {
+    A(`#t${n}`, [
+      { opacity: 0, transform: 'translate(0,160px) rotate(0deg) scale(.9)' },
+      { opacity: 1, transform: `translate(${dx[i]}px,0) rotate(${angles[i]}deg) scale(1)` },
+    ], t0 + 0.9 + i * 0.12, 0.9);
+  });
+  RISE('#f1chip', t0 + 2.2, { d: 0.6, y: 30 });
+});
+
+feat('f2', (t0) => {
+  RISE('#ringwrap', t0 + 0.9, { d: 0.7 });
+  A('#ring', [{ strokeDashoffset: 1445 }, { strokeDashoffset: 1445 * (1 - 0.92) }], t0 + 1.2, 2.0, { ease: 'ease-out' });
+  RISE('#m1', t0 + 1.6, { d: 0.6, y: 40 });
+  RISE('#m2', t0 + 1.9, { d: 0.6, y: 40 });
+  A('#mb1', [{ width: '0%' }, { width: '95%' }], t0 + 1.9, 1.6, { ease: 'ease-out' });
+  A('#mb2', [{ width: '0%' }, { width: '84%' }], t0 + 2.2, 1.6, { ease: 'ease-out' });
+  A('#gain', [{ opacity: 0, transform: 'scale(.5)' }, { opacity: 1, transform: 'scale(1)' }], t0 + 3.2, 0.5, { ease: 'cubic-bezier(.2,1.4,.4,1)' });
+});
+
+feat('f3', (t0) => {
+  RISE('#fixcard', t0 + 0.9, { d: 0.8, y: 60 });
+  A('#fixask', [{ opacity: 0, transform: 'translateX(-40px)' }, { opacity: 1, transform: 'translateX(0)' }], t0 + 1.7, 0.7);
+  A('#fixgain', [{ opacity: 0, transform: 'scale(.5)' }, { opacity: 1, transform: 'scale(1)' }], t0 + 2.4, 0.5, { ease: 'cubic-bezier(.2,1.4,.4,1)' });
+  RISE('#fl1', t0 + 2.6, { d: 0.5, y: 30 });
+  RISE('#fl2', t0 + 3.0, { d: 0.5, y: 30 });
+});
+
+feat('f4', (t0) => {
+  RISE('#jd', t0 + 0.9, { d: 0.7 });
+  RISE('#cvm', t0 + 1.1, { d: 0.7 });
+  ['k1', 'k2', 'k3', 'k4', 'k5'].forEach((id, i) => {
+    A('#' + id, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], t0 + 1.2 + i * 0.1, 0.4);
+  });
+  ['c1', 'c2', 'c3', 'c4', 'c5'].forEach((id, i) => {
+    A('#' + id, [{ opacity: 0, transform: 'scale(.4)', filter: 'blur(8px)' }, { opacity: 1, transform: 'scale(1)', filter: 'blur(0)' }], t0 + 1.8 + i * 0.35, 0.5);
+  });
+  RISE('#match', t0 + 1.9, { d: 0.6, y: 40 });
+  A('#mtb', [{ width: '20%' }, { width: '92%' }], t0 + 2.0, 1.8, { ease: 'ease-out' });
+});
+
+feat('f5', (t0) => {
+  RISE('#phone', t0 + 0.9, { d: 0.8 });
+  ['d1', 'd2', 'd3'].forEach((id, i) => A('#' + id, [{ opacity: 0, transform: 'translateX(-60px)' }, { opacity: 1, transform: 'translateX(0)' }], t0 + 1.3 + i * 0.25, 0.6));
+  A('#lock', [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], t0 + 2.2, 0.7, { ease: 'ease-in-out' });
+  ['pc1', 'pc2', 'pc3'].forEach((id, i) => RISE('#' + id, t0 + 1.9 + i * 0.35, { d: 0.5, y: 30 }));
+});
+
+// ---- how
+RISE('#s5top', 39.3, { d: 0.8 });
+RISE('#s5sub', 39.7, { d: 0.7, y: 30 });
+A('#spineb', [{ height: '0px' }, { height: '1050px' }], 40.4, 7.2, { ease: 'linear' });
+[['#st1', 40.4], ['#st2', 42.6], ['#st3', 44.8], ['#st4', 47.0]].forEach(([id, at]) => {
+  A(id, [{ opacity: 0, transform: 'translateX(140px) scale(.95)' }, { opacity: 1, transform: 'translateX(0) scale(1)' }], at, 0.8);
+  A(id, [{ borderColor: 'rgba(255,255,255,.14)' }, { borderColor: 'rgba(45,212,191,.9)' }, { borderColor: 'rgba(255,255,255,.14)' }], at + 0.6, 1.6, { ease: 'ease-in-out' });
+});
+
+// ---- end
+A('#mark6', [{ opacity: 0, transform: 'scale(.5) rotate(-12deg)' }, { opacity: 1, transform: 'scale(1) rotate(0)' }], 49.7, 0.9, { ease: 'cubic-bezier(.2,1.3,.4,1)' });
+RISE('#s6name', 50.2, { d: 0.8, y: 40 });
+RISE('#s6free', 50.7, { d: 0.7, y: 30 });
+A('#url', [{ opacity: 0, transform: 'scale(.8)' }, { opacity: 1, transform: 'scale(1)' }], 51.2, 0.8, { ease: 'cubic-bezier(.2,1.3,.4,1)' });
+A('#url', [{ boxShadow: '0 30px 90px rgba(79,70,229,.55)' }, { boxShadow: '0 30px 140px rgba(45,212,191,.8)' }, { boxShadow: '0 30px 90px rgba(79,70,229,.55)' }], 52.2, 2.4, { ease: 'ease-in-out' });
+RISE('#creator', 52.4, { d: 0.9, y: 70 });
+RISE('#tags', 54.4, { d: 0.7, y: 20 });
+A('#stage', [{ opacity: 1 }, { opacity: 0 }], END - 0.9, 0.9, { ease: 'ease-in', fill: FOREVER });
+
+// ---- counters (Bangla digits)
+const BN = '০১২৩৪৫৬৭৮৯';
+const bn = (n) => String(Math.round(n)).replace(/\d/g, (d) => BN[d]);
+const ramp = (t, a, b, from, to) => from + (to - from) * Math.min(1, Math.max(0, (t - a) / (b - a)));
+const ease = (x) => 1 - Math.pow(1 - x, 3);
+const counters = (t) => {
+  const f2 = T.f2[0];
+  const k = ease(Math.min(1, Math.max(0, (t - (f2 + 1.2)) / 2.0)));
+  document.getElementById('ringnum').textContent = bn(92 * k);
+  document.getElementById('mv1').textContent = bn(95 * ease(Math.min(1, Math.max(0, (t - (f2 + 1.9)) / 1.6))));
+  document.getElementById('mv2').textContent = bn(84 * ease(Math.min(1, Math.max(0, (t - (f2 + 2.2)) / 1.6))));
+  const f4 = T.f4[0];
+  const m = 20 + 72 * ease(Math.min(1, Math.max(0, (t - (f4 + 2.0)) / 1.8)));
+  document.getElementById('mt').textContent = bn(m) + '%';
+};
+
+// ---- particles + grain (deterministic)
+const rnd = (s) => { let x = Math.sin(s * 12.9898) * 43758.5453; return x - Math.floor(x); };
+const P = Array.from({ length: 110 }, (_, i) => ({
+  x: rnd(i + 1) * 1080, y: rnd(i + 7) * 1920, r: 2 + rnd(i + 3) * 7, v: 18 + rnd(i + 5) * 60,
+  ph: rnd(i + 9) * 6.28, hue: rnd(i + 11) > 0.55 ? 'rgba(129,140,248,' : 'rgba(45,212,191,',
+}));
+const fx = document.getElementById('fx').getContext('2d');
+const grain = document.getElementById('grain');
+const gx = grain.getContext('2d');
+const draw = (t) => {
+  fx.clearRect(0, 0, 1080, 1920);
+  P.forEach((p) => {
+    const y = ((p.y - p.v * t) % 1960 + 1960) % 1960 - 20;
+    const x = p.x + Math.sin(t * 0.6 + p.ph) * 26;
+    const a = 0.15 + 0.5 * (0.5 + 0.5 * Math.sin(t * 1.4 + p.ph));
+    fx.beginPath();
+    fx.fillStyle = p.hue + a * 0.7 + ')';
+    fx.shadowColor = p.hue + '0.9)';
+    fx.shadowBlur = 18;
+    fx.arc(x, y, p.r, 0, 6.283);
+    fx.fill();
+  });
+  const img = gx.createImageData(540, 960);
+  const seed = Math.floor(t * 30);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = rnd(i * 0.37 + seed * 7.13) * 255;
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+    img.data[i + 3] = 255;
+  }
+  gx.putImageData(img, 0, 0);
+};
+
+window.setTime = (t) => {
+  for (const a of anims) a.currentTime = t * 1000;
+  counters(t);
+  draw(t);
+};
+window.__END = END;
+window.__ready = document.fonts.ready.then(() => document.fonts.load('700 40px "Hind Siliguri"', 'আপনার ফ্রি')).then(() => document.fonts.load('800 40px "Plus Jakarta Sans"', 'CleanCV')).then(() => true);
+window.setTime(0);
+</script>
+</body>
+</html>
