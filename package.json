@@ -16,7 +16,7 @@
     "test": "vitest run --dir tests/unit",
     "test:watch": "vitest --dir tests/unit",
     "test:pdf": "vitest run --config vitest.regression.mts",
-    "i18n": "node scripts/build-i18n.mjs main",
+    "i18n": "node scripts/build-i18n.mjs 621953d",
     "i18n:coverage": "node scripts/i18n-coverage.mjs",
     "chrome": "puppeteer browsers install chrome"
   },
