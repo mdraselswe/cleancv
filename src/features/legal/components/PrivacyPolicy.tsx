@@ -8,6 +8,7 @@ import {
   LEGAL_ENTITY,
   LEGAL_ROUTES,
 } from '@/constants';
+import { bn } from '@/lib/bn';
 
 import { LegalList, LegalSection, LegalShell } from './LegalShell';
 
@@ -35,263 +36,258 @@ export interface PrivacyPolicyProps {
 
 export const PrivacyPolicy = ({ emailAuth, ai = false }: PrivacyPolicyProps) => (
   <LegalShell
-    title="Privacy Policy"
-    summary={`How ${APP_NAME} handles your CV, optional cloud sync, and your account.`}
+    title="গোপনীয়তা নীতি"
+    summary={`${APP_NAME} আপনার CV, ঐচ্ছিক ক্লাউড সিঙ্ক আর অ্যাকাউন্ট কীভাবে সামলায়।`}
   >
-    <LegalSection id="short-version" heading="The short version">
+    <LegalSection id="short-version" heading="সংক্ষেপে">
       <LegalList
         items={[
           <>
-            <strong className="text-fg font-semibold">Your CV is local-first.</strong> Every CV is
-            saved in your browser, on your device.
+            <strong className="text-fg font-semibold">আপনার CV আগে আপনার ডিভাইসে থাকে।</strong>{' '}
+            প্রতিটি CV আপনার ব্রাউজারে, আপনার ডিভাইসেই সংরক্ষিত হয়।
           </>,
           <>
             <strong className="text-fg font-semibold">
-              Up to {CLOUD_SYNC.maxDocuments} CVs, the ones you choose, can also be kept on your
-              account
+              আপনার বেছে নেওয়া {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত CV অ্যাকাউন্টেও রাখা যায়,
             </strong>{' '}
-            so they follow you to other devices. Nothing is uploaded unless you switch a CV to
-            sync. Every other CV stays on your device only.
+            যাতে সেগুলো অন্য ডিভাইসেও পাওয়া যায়। আপনি কোনো CV সিঙ্ক চালু না করলে কিছুই আপলোড হয় না।
+            বাকি সব CV শুধু আপনার ডিভাইসেই থাকে।
           </>,
           <>
             <strong className="text-fg font-semibold">
-              Anonymous usage analytics, never advertising profiles.
+              নামহীন ব্যবহারের পরিসংখ্যান, কখনো বিজ্ঞাপনের প্রোফাইল নয়।
             </strong>{' '}
-            Visits are counted in aggregate and are not connected to your CV or account identity.
+            ভিজিট সামগ্রিকভাবে গোনা হয়, আর এটি আপনার CV বা অ্যাকাউন্টের পরিচয়ের সঙ্গে যুক্ত নয়।
           </>,
           <>
             <strong className="text-fg font-semibold">
-              Downloading a PDF sends your CV through our server
+              PDF ডাউনলোড করলে আপনার CV আমাদের সার্ভারের ভেতর দিয়ে যায়,
             </strong>{' '}
-            to be rendered, and it is discarded as soon as the file is sent back.
+            তৈরি করার জন্য, আর ফাইল ফেরত পাঠানোর সঙ্গে সঙ্গে সেটি মুছে ফেলা হয়।
           </>,
         ]}
       />
     </LegalSection>
 
-    <LegalSection id="analytics" heading="Anonymous usage analytics">
+    <LegalSection id="analytics" heading="নামহীন ব্যবহারের পরিসংখ্যান">
       <p>
-        Vercel Web Analytics counts page views and approximate unique visitors so we can understand
-        whether the service is useful. It may report the page, referrer, country, device type,
-        operating system and browser. The analytics record is anonymous, uses no tracking cookie,
-        does not retain an IP address, and is not joined to a CleanCV account or CV.
+        Vercel Web Analytics পেজ ভিউ আর আনুমানিক অনন্য ভিজিটর গোনে, যাতে আমরা বুঝতে পারি সার্ভিসটি
+        কাজে লাগছে কি না। এটি পেজ, রেফারার, দেশ, ডিভাইসের ধরন, অপারেটিং সিস্টেম ও ব্রাউজার জানাতে
+        পারে। এই রেকর্ড নামহীন, কোনো ট্র্যাকিং কুকি ব্যবহার করে না, IP ঠিকানা রাখে না, আর
+        CleanCV-র কোনো অ্যাকাউন্ট বা CV-র সঙ্গে যুক্ত হয় না।
       </p>
       <p>
-        When the editor is opened while signed out, CleanCV also stores a random browser ID in local
-        storage. Only a one-way hash of that ID, first and last activity times, and a visit count are
-        stored. It is not based on an IP address, device fingerprint, name, email, or CV content.
+        সাইন-ইন ছাড়া এডিটর খুললে CleanCV লোকাল স্টোরেজে একটি এলোমেলো ব্রাউজার আইডিও রাখে। শুধু
+        ওই আইডির একটি এক-মুখী হ্যাশ, প্রথম ও শেষ সক্রিয় থাকার সময়, আর ভিজিটের সংখ্যা রাখা হয়।
+        এটি IP ঠিকানা, ডিভাইস ফিঙ্গারপ্রিন্ট, নাম, ইমেইল বা CV-র লেখার ওপর ভিত্তি করে নয়।
       </p>
       <p>
-        Signed-in account activity shown to the service owner is limited to account details already
-        listed below, the number of synced CVs, and timestamps from sessions and sync writes. The
-        dashboard does not expose CV content.
-      </p>
-    </LegalSection>
-
-    <LegalSection id="who-we-are" heading="Who this is">
-      <p>
-        {APP_NAME} is run by {LEGAL_ENTITY}. Questions, requests and complaints go to <Mail />.
+        সার্ভিসের মালিকের দেখা সাইন-ইন করা অ্যাকাউন্টের কার্যকলাপ সীমিত: নিচে তালিকাভুক্ত
+        অ্যাকাউন্টের তথ্য, সিঙ্ক করা CV-র সংখ্যা, আর সেশন ও সিঙ্ক লেখার সময়। ড্যাশবোর্ডে CV-র
+        বিষয়বস্তু দেখা যায় না।
       </p>
     </LegalSection>
 
-    <LegalSection id="your-cv" heading="Your CV is local-first">
+    <LegalSection id="who-we-are" heading="কে এটি চালায়">
       <p>
-        Everything you type into the editor — your name, contact details, photograph, employment
-        history, every bullet — is stored by your browser on your own device, in IndexedDB. It is
-        saved as you type and remains usable offline. Signed-out CVs are not stored in our database,
-        so clearing browsing data can erase the only copy unless you made a backup.
-      </p>
-      <p>
-        If you point the app at a workspace folder, it also writes copies of your documents into
-        that folder. That folder is on your own disk (or in whatever service you have syncing it),
-        and the app has no access to anything outside the folder you chose.
-      </p>
-      <p>
-        Photographs and signatures you upload are converted to data URLs and stored the same way —
-        in your browser, alongside the rest of the document.
-      </p>
-      <p>
-        Signing in does not upload anything by itself. A CV is copied to our database only after
-        you switch it to <em>sync to my account</em>, and an account can keep at most{' '}
-        {CLOUD_SYNC.maxDocuments} such CVs, each up to {CLOUD_SYNC.maxBytes / 1024} KB including
-        its photograph or signature. Those copies are merged across your signed-in devices; the
-        newest saved copy wins. Stopping sync removes the server copy and leaves the CV on your
-        device. Deleting a synced CV leaves a small marker so an old offline device cannot restore
-        it.
+        {APP_NAME} চালান {LEGAL_ENTITY}। প্রশ্ন, অনুরোধ ও অভিযোগ <Mail /> ঠিকানায় পাঠান।
       </p>
     </LegalSection>
 
-    <LegalSection id="account" heading="What an account stores">
+    <LegalSection id="your-cv" heading="আপনার CV আগে আপনার ডিভাইসে">
       <p>
-        A free account is required to download a PDF, and it lets you keep up to{' '}
-        {CLOUD_SYNC.maxDocuments} CVs of your choice on the server. Writing, designs, ATS scoring,
-        imports, backups and the document library work without an account.
+        এডিটরে আপনি যা কিছু লেখেন — নাম, যোগাযোগের তথ্য, ছবি, কাজের ইতিহাস, প্রতিটি বুলেট — সবই আপনার
+        ব্রাউজার আপনার নিজের ডিভাইসে, IndexedDB-তে রাখে। আপনি লেখার সঙ্গে সঙ্গে এটি সংরক্ষিত হয় আর
+        অফলাইনেও ব্যবহার করা যায়। সাইন-ইন ছাড়া থাকা CV আমাদের ডেটাবেসে রাখা হয় না, তাই ব্যাকআপ না
+        থাকলে ব্রাউজিং ডেটা মুছলে একমাত্র কপিটিও মুছে যেতে পারে।
       </p>
-      <p>When you create an account, our database holds:</p>
+      <p>
+        আপনি অ্যাপটিকে কোনো ওয়ার্কস্পেস ফোল্ডার দেখিয়ে দিলে এটি আপনার ডকুমেন্টের কপি সেই
+        ফোল্ডারেও লেখে। ফোল্ডারটি আপনার নিজের ডিস্কে (অথবা যে সার্ভিস সেটি সিঙ্ক করে সেখানে), আর
+        আপনার বেছে নেওয়া ফোল্ডারের বাইরের কিছুতে অ্যাপের কোনো অ্যাক্সেস নেই।
+      </p>
+      <p>
+        আপনার আপলোড করা ছবি ও স্বাক্ষর ডেটা URL-এ রূপান্তরিত হয়ে একইভাবে সংরক্ষিত হয় — আপনার
+        ব্রাউজারে, ডকুমেন্টের বাকি অংশের পাশেই।
+      </p>
+      <p>
+        সাইন-ইন করলেই কিছু আপলোড হয় না। কোনো CV-তে <em>আমার অ্যাকাউন্টে সিঙ্ক করুন</em> চালু করার
+        পরই সেটি আমাদের ডেটাবেসে কপি হয়, আর একটি অ্যাকাউন্টে সর্বোচ্চ {bn(CLOUD_SYNC.maxDocuments)}টি
+        এমন CV রাখা যায়, প্রতিটি ছবি বা স্বাক্ষরসহ {bn(CLOUD_SYNC.maxBytes / 1024)} KB পর্যন্ত। এই
+        কপিগুলো আপনার সাইন-ইন করা ডিভাইসগুলোর মধ্যে মিলিয়ে নেওয়া হয়; সবচেয়ে নতুন সংরক্ষিত কপিটি জেতে।
+        সিঙ্ক বন্ধ করলে সার্ভারের কপি মুছে যায়, আর CV-টি আপনার ডিভাইসে থেকে যায়। সিঙ্ক করা CV মুছলে
+        একটি ছোট চিহ্ন রাখা হয়, যাতে পুরনো অফলাইন ডিভাইস সেটি ফিরিয়ে আনতে না পারে।
+      </p>
+    </LegalSection>
+
+    <LegalSection id="account" heading="অ্যাকাউন্টে কী সংরক্ষিত হয়">
+      <p>
+        PDF ডাউনলোড করতে একটি ফ্রি অ্যাকাউন্ট লাগে, আর এতে আপনার পছন্দের {bn(CLOUD_SYNC.maxDocuments)}টি
+        পর্যন্ত CV সার্ভারে রাখা যায়। লেখা, ডিজাইন, ATS স্কোর, ইমপোর্ট, ব্যাকআপ আর ডকুমেন্ট
+        লাইব্রেরি অ্যাকাউন্ট ছাড়াই কাজ করে।
+      </p>
+      <p>অ্যাকাউন্ট খুললে আমাদের ডেটাবেসে থাকে:</p>
       <LegalList
         items={[
           emailAuth
-            ? 'Your name and email address, as you entered them.'
-            : 'Your name and email address, as Google reports them.',
+            ? 'আপনার নাম ও ইমেইল ঠিকানা, যেভাবে আপনি লিখেছেন।'
+            : 'আপনার নাম ও ইমেইল ঠিকানা, যেভাবে Google জানায়।',
           ...(emailAuth
             ? [
-                'A scrypt hash of your password. The password itself is never stored and cannot be recovered from the hash — that is why a forgotten password is reset rather than looked up.',
+                'আপনার পাসওয়ার্ডের একটি scrypt হ্যাশ। পাসওয়ার্ডটি নিজে কখনো রাখা হয় না, আর হ্যাশ থেকে সেটি ফিরে পাওয়া যায় না — তাই পাসওয়ার্ড ভুলে গেলে সেটি খুঁজে দেওয়া হয় না, রিসেট করা হয়।',
               ]
             : []),
-          'If you signed in with Google: the account identifier Google gives us, and the tokens Google issues for it. We ask Google for your name, email address and profile picture, and nothing else.',
-          'One row per active session, holding a session token, the IP address and browser user-agent it was created from, and when it expires. This is what lets you stay signed in, and what makes it possible to sign every other browser out when you reset your password.',
+          'Google দিয়ে সাইন-ইন করলে: Google আমাদের যে অ্যাকাউন্ট শনাক্তকারী দেয়, আর এর জন্য Google যে টোকেন ইস্যু করে। আমরা Google-এর কাছে আপনার নাম, ইমেইল ঠিকানা ও প্রোফাইল ছবি চাই, এর বেশি কিছু নয়।',
+          'প্রতিটি সক্রিয় সেশনের জন্য একটি সারি, যাতে থাকে সেশন টোকেন, যে IP ঠিকানা ও ব্রাউজার ইউজার-এজেন্ট থেকে এটি তৈরি হয়েছে, আর কখন মেয়াদ শেষ হবে। এটিই আপনাকে সাইন-ইন রাখে, আর পাসওয়ার্ড রিসেট করলে অন্য সব ব্রাউজার সাইন-আউট করা সম্ভব করে।',
           ...(emailAuth
             ? [
-                'Short-lived tokens for confirming your email address and resetting your password. Each is deleted once it is used, and expires within an hour either way.',
+                'ইমেইল ঠিকানা নিশ্চিত করা ও পাসওয়ার্ড রিসেটের জন্য স্বল্প মেয়াদের টোকেন। প্রতিটি ব্যবহারের পরে মুছে ফেলা হয়, আর যেভাবেই হোক এক ঘণ্টার মধ্যে মেয়াদ শেষ হয়।',
               ]
             : []),
-          'Counters keyed by IP address, used to rate-limit sign-in attempts.',
-          `The CVs you chose to sync (at most ${CLOUD_SYNC.maxDocuments}), their names and timestamps, and deletion markers for CVs removed on another device.`,
+          'IP ঠিকানা ধরে রাখা গণনা, যা সাইন-ইনের চেষ্টার হার সীমিত করতে ব্যবহৃত হয়।',
+          `আপনার সিঙ্ক করা CV (সর্বোচ্চ ${bn(CLOUD_SYNC.maxDocuments)}টি), সেগুলোর নাম ও সময়, আর অন্য ডিভাইসে মুছে ফেলা CV-র মুছে ফেলার চিহ্ন।`,
         ]}
       />
     </LegalSection>
 
-    <LegalSection id="transit" heading="When your CV does reach our server">
+    <LegalSection id="transit" heading="কখন আপনার CV আমাদের সার্ভারে পৌঁছায়">
       <p>
-        Cloud sync, PDF export, and optional smart import send document content off your device.
-        Sync applies only to a CV you switched on, after you sign in; the other two start only
-        when you request them.
+        ক্লাউড সিঙ্ক, PDF এক্সপোর্ট আর ঐচ্ছিক স্মার্ট ইমপোর্ট ডকুমেন্টের বিষয়বস্তু আপনার ডিভাইসের
+        বাইরে পাঠায়। সিঙ্ক শুধু আপনার চালু করা CV-র ক্ষেত্রে, সাইন-ইনের পরে প্রযোজ্য; বাকি দুটি
+        আপনি চাইলে তবেই শুরু হয়।
       </p>
       <p>
-        <strong className="text-fg font-semibold">Downloading a PDF.</strong> The PDF is rendered by
-        a real browser so it carries a genuine text layer rather than a picture of one, and that
-        rendering happens on our server. Your document is sent there, laid out, turned into a PDF,
-        and returned to you. It is held in memory for the seconds that takes and is not written to a
-        disk or a database. If the render fails, the error is logged; the document is not.
+        <strong className="text-fg font-semibold">PDF ডাউনলোড।</strong> PDF একটি আসল ব্রাউজার দিয়ে
+        তৈরি হয়, যাতে এতে লেখার ছবি নয়, সত্যিকারের লেখার স্তর থাকে, আর সেই কাজ আমাদের সার্ভারে হয়।
+        আপনার ডকুমেন্ট সেখানে পাঠানো হয়, সাজানো হয়, PDF হয়, আর আপনাকে ফেরত দেওয়া হয়। এতে যে কয়েক
+        সেকেন্ড লাগে, সে সময় এটি মেমোরিতে থাকে, ডিস্ক বা ডেটাবেসে লেখা হয় না। তৈরি ব্যর্থ হলে ত্রুটিটি
+        লগ হয়; ডকুমেন্টটি নয়।
       </p>
       <p>
-        <strong className="text-fg font-semibold">Smart import.</strong> If you configure an AI
-        endpoint of your own to help parse a CV you are importing, the text of that CV is forwarded
-        to the endpoint you named, using the API key you supplied. Our server is a pass-through
-        here: it stores nothing and logs nothing, and it exists only because a browser cannot make
-        that request directly. What the provider you chose does with the text is governed by their
-        policy, not ours. This feature is off unless you turn it on.
+        <strong className="text-fg font-semibold">স্মার্ট ইমপোর্ট।</strong> আপনি যে CV ইমপোর্ট করছেন,
+        সেটি পড়তে সাহায্য পেতে যদি নিজের একটি AI এন্ডপয়েন্ট ঠিক করেন, তাহলে সেই CV-র লেখা আপনার
+        দেওয়া এন্ডপয়েন্টে, আপনার দেওয়া API কী দিয়ে পাঠানো হয়। এখানে আমাদের সার্ভার শুধু একটি
+        মাধ্যম: এটি কিছু রাখে না, কিছু লগও করে না, আর শুধু এ কারণেই আছে যে ব্রাউজার সরাসরি ওই
+        অনুরোধ করতে পারে না। আপনার বেছে নেওয়া প্রোভাইডার লেখাটি নিয়ে কী করে তা তাদের নীতি
+        অনুযায়ী, আমাদের নয়। আপনি চালু না করলে এই সুবিধা বন্ধ থাকে।
       </p>
       <p>
-        Note that an exported PDF has your CV data embedded inside it as an attachment, so that
-        opening the file in {APP_NAME} later restores the document exactly. That is a feature of the
-        file you downloaded — if you send that PDF to someone, the data goes with it.
-      </p>
-    </LegalSection>
-
-    <LegalSection id="cookies" heading="Cookies">
-      <p>
-        One cookie, and only once you sign in: the session cookie that keeps you signed in. It is
-        signed, marked <code className="font-mono">HttpOnly</code> and{' '}
-        <code className="font-mono">SameSite</code>, and served over HTTPS only.
-      </p>
-      <p>
-        There are no advertising cookies, analytics cookies or cross-site trackers on this site.
-        Anonymous analytics are cookie-free. Your theme choice and a few
-        interface preferences are kept in your browser&apos;s local storage, which is not a cookie
-        and never leaves your device.
+        মনে রাখবেন, এক্সপোর্ট করা PDF-এর ভেতরে আপনার CV-র ডেটা সংযুক্তি হিসেবে বসানো থাকে, যাতে
+        পরে ফাইলটি {APP_NAME}-এ খুললে ডকুমেন্ট হুবহু ফিরে আসে। এটি আপনার ডাউনলোড করা ফাইলেরই
+        বৈশিষ্ট্য — আপনি সেই PDF কাউকে পাঠালে ডেটাও তার সঙ্গে যায়।
       </p>
     </LegalSection>
 
-    <LegalSection id="processors" heading="Who else touches this data">
-      <p>{3 + (emailAuth ? 1 : 0) + (ai ? 1 : 0)} services, each doing one job:</p>
+    <LegalSection id="cookies" heading="কুকি">
+      <p>
+        একটিই কুকি, আর শুধু সাইন-ইন করার পরে: আপনাকে সাইন-ইন রাখার সেশন কুকি। এটি স্বাক্ষরিত,{' '}
+        <code className="font-mono">HttpOnly</code> ও <code className="font-mono">SameSite</code>{' '}
+        চিহ্নিত, আর শুধু HTTPS-এ পাঠানো হয়।
+      </p>
+      <p>
+        এই সাইটে বিজ্ঞাপনের কুকি, অ্যানালিটিক্স কুকি বা এক সাইট থেকে আরেক সাইটে অনুসরণকারী কিছু
+        নেই। নামহীন অ্যানালিটিক্স কুকি ছাড়াই চলে। আপনার থিমের পছন্দ আর কয়েকটি ইন্টারফেসের পছন্দ
+        আপনার ব্রাউজারের লোকাল স্টোরেজে থাকে, যা কুকি নয়, আর আপনার ডিভাইস ছেড়ে যায় না।
+      </p>
+    </LegalSection>
+
+    <LegalSection id="processors" heading="আর কে এই ডেটা ছোঁয়">
+      <p>{bn(3 + (emailAuth ? 1 : 0) + (ai ? 1 : 0))}টি সার্ভিস, প্রতিটি একটি করে কাজ করে:</p>
       <LegalList
         items={[
           <>
-            <strong className="text-fg font-semibold">Vercel</strong> hosts the site, keeps request
-            logs, and provides anonymous aggregate Web Analytics.
+            <strong className="text-fg font-semibold">Vercel</strong> সাইটটি হোস্ট করে, রিকোয়েস্ট
+            লগ রাখে, আর নামহীন সামগ্রিক Web Analytics দেয়।
           </>,
           <>
-            <strong className="text-fg font-semibold">Neon</strong> hosts the database that holds
-            accounts, sessions and signed-in users&apos; synced CVs.
+            <strong className="text-fg font-semibold">Neon</strong> সেই ডেটাবেস হোস্ট করে, যেখানে
+            অ্যাকাউন্ট, সেশন আর সাইন-ইন করা ব্যবহারকারীদের সিঙ্ক করা CV থাকে।
           </>,
           ...(emailAuth
             ? [
                 <>
-                  <strong className="text-fg font-semibold">Resend</strong> sends the two emails
-                  this service sends: confirm your address, and reset your password. It receives
-                  your email address in order to deliver them.
+                  <strong className="text-fg font-semibold">Resend</strong> এই সার্ভিসের পাঠানো
+                  দুটি ইমেইল পাঠায়: ঠিকানা নিশ্চিত করা, আর পাসওয়ার্ড রিসেট। পৌঁছে দিতে এটি আপনার
+                  ইমেইল ঠিকানা পায়।
                 </>,
               ]
             : []),
           <>
-            <strong className="text-fg font-semibold">Google</strong>, if and only if you choose to
-            sign in with Google.
+            <strong className="text-fg font-semibold">Google</strong>, শুধু আপনি যদি Google দিয়ে
+            সাইন-ইন করতে চান।
           </>,
           ...(ai
             ? [
                 <>
-                  <strong className="text-fg font-semibold">Google Gemini</strong> rewrites a bullet
-                  or summary when an account on a short invitation list presses{' '}
-                  <em>Polish with AI</em>. Only that text — and the job description, if you pasted
-                  one — is sent, from the server, never from the browser. It is not available to
-                  other accounts.
+                  <strong className="text-fg font-semibold">Google Gemini</strong> একটি ছোট
+                  আমন্ত্রণ-তালিকার কোনো অ্যাকাউন্ট <em>AI দিয়ে পরিমার্জন করুন</em> চাপলে একটি
+                  বুলেট বা সারসংক্ষেপ নতুন করে লেখে। শুধু সেই লেখা — আর আপনি পেস্ট করে থাকলে চাকরির
+                  বিবরণ — সার্ভার থেকে পাঠানো হয়, কখনো ব্রাউজার থেকে নয়। এটি অন্য অ্যাকাউন্টের জন্য
+                  নেই।
                 </>,
               ]
             : []),
         ]}
       />
       <p>
-        Vercel receives CV content briefly when rendering a PDF, and Neon stores synced CVs for
-        signed-in users.{' '}
+        PDF তৈরির সময় Vercel অল্প সময়ের জন্য CV-র বিষয়বস্তু পায়, আর Neon সাইন-ইন করা
+        ব্যবহারকারীদের সিঙ্ক করা CV রাখে।{' '}
         {ai
-          ? 'Google Gemini receives only the text being rewritten, and only for accounts allowed to use AI polish. '
+          ? 'Google Gemini শুধু নতুন করে লেখার লেখাটুকু পায়, আর শুধু AI পরিমার্জনের অনুমতি থাকা অ্যাকাউন্টের জন্য। '
           : ''}
-        {emailAuth ? 'Resend is sent your email address and no CV content. ' : ''}
-        Google sign-in is sent no CV content. We do not sell personal data.
+        {emailAuth ? 'Resend আপনার ইমেইল ঠিকানা পায়, CV-র কোনো বিষয়বস্তু নয়। ' : ''}
+        Google সাইন-ইন কোনো CV-র বিষয়বস্তু পায় না। আমরা ব্যক্তিগত তথ্য বিক্রি করি না।
       </p>
     </LegalSection>
 
-    <LegalSection id="retention" heading="How long it is kept">
+    <LegalSection id="retention" heading="কত দিন রাখা হয়">
       <p>
-        Account data is kept while the account exists. Ask us to delete it and everything above is
-        removed within {ACCOUNT_DELETION_DAYS} days, sessions included. Expired sessions and used
-        tokens are deleted as they expire, without being asked.
+        অ্যাকাউন্ট যত দিন আছে, অ্যাকাউন্টের ডেটাও তত দিন রাখা হয়। মুছে ফেলতে বললে ওপরের সবকিছু,
+        সেশনসহ, {bn(ACCOUNT_DELETION_DAYS)} দিনের মধ্যে সরিয়ে ফেলা হয়। মেয়াদোত্তীর্ণ সেশন আর
+        ব্যবহার হয়ে যাওয়া টোকেন মেয়াদ শেষ হলে, না চাইতেই মুছে ফেলা হয়।
       </p>
       <p>
-        Server copies of CVs are removed for an account that has been inactive for{' '}
-        {CLOUD_SYNC.inactiveMonths} months, at our discretion and without a notice. The account
-        itself, and every CV in your own browsers, are not affected, and you can switch a CV back
-        to sync at any time.
+        যে অ্যাকাউন্ট {bn(CLOUD_SYNC.inactiveMonths)} মাস নিষ্ক্রিয়, তার CV-র সার্ভার কপি আমাদের
+        বিবেচনায়, কোনো নোটিস ছাড়াই সরিয়ে ফেলা হতে পারে। অ্যাকাউন্ট নিজে, আর আপনার নিজের
+        ব্রাউজারের প্রতিটি CV, এতে প্রভাবিত হয় না, আর যেকোনো সময় কোনো CV-র সিঙ্ক আবার চালু করা যায়।
       </p>
       <p>
-        Your CV is kept for exactly as long as you keep it, because it is on your machine. Deleting
-        your account does not touch it.
-      </p>
-    </LegalSection>
-
-    <LegalSection id="rights" heading="Your choices">
-      <p>
-        You can ask for a copy of what we hold about you, ask us to correct it, or ask us to delete
-        it and the account with it. Write to <Mail /> from the address on the account and we will
-        act on it.
-      </p>
-      <p>
-        You can also empty everything on your own side at any time: the document library has a
-        delete for each CV, and clearing this site&apos;s browsing data removes all of it at once.
-        Export a JSON backup first if you want to keep any of it.
+        আপনার CV ঠিক ততদিন থাকে যতদিন আপনি রাখেন, কারণ সেটি আপনার কম্পিউটারে। অ্যাকাউন্ট মুছলে
+        সেটি ছোঁয়া হয় না।
       </p>
     </LegalSection>
 
-    <LegalSection id="children" heading="Age">
+    <LegalSection id="rights" heading="আপনার পছন্দ">
       <p>
-        This is a tool for people applying for work and is not directed at children. Do not create
-        an account if you are under 16.
+        আমরা আপনার সম্পর্কে যা রাখি তার একটি কপি চাইতে পারেন, সংশোধন করতে বলতে পারেন, অথবা
+        অ্যাকাউন্টসহ সেটি মুছে ফেলতে বলতে পারেন। অ্যাকাউন্টের ঠিকানা থেকে <Mail /> ঠিকানায়
+        লিখুন, আমরা সে অনুযায়ী কাজ করব।
+      </p>
+      <p>
+        নিজের দিক থেকেও যেকোনো সময় সব খালি করতে পারেন: ডকুমেন্ট লাইব্রেরিতে প্রতিটি CV-র জন্য মুছে
+        ফেলার বিকল্প আছে, আর এই সাইটের ব্রাউজিং ডেটা মুছলে সব একসঙ্গে সরে যায়। কিছু রাখতে চাইলে আগে
+        একটি JSON ব্যাকআপ এক্সপোর্ট করুন।
       </p>
     </LegalSection>
 
-    <LegalSection id="changes" heading="Changes to this policy">
+    <LegalSection id="children" heading="বয়স">
       <p>
-        If this changes, the date at the top changes with it. A change that affects what we do with
-        data you have already given us will be sent to the email address on your account before it
-        takes effect.
+        এটি চাকরির আবেদনকারীদের জন্য একটি টুল, শিশুদের জন্য নয়। আপনার বয়স ১৬-র নিচে হলে অ্যাকাউন্ট
+        খুলবেন না।
+      </p>
+    </LegalSection>
+
+    <LegalSection id="changes" heading="এই নীতির পরিবর্তন">
+      <p>
+        এটি বদলালে ওপরের তারিখও বদলাবে। আপনি আগে যে ডেটা দিয়েছেন তা নিয়ে আমরা যা করি, তাতে প্রভাব
+        ফেলে এমন কোনো পরিবর্তন কার্যকর হওয়ার আগে আপনার অ্যাকাউন্টের ইমেইল ঠিকানায় পাঠানো হবে।
       </p>
       <p>
-        The rules for using the service are in the{' '}
+        সার্ভিস ব্যবহারের নিয়ম আছে{' '}
         <Link href={LEGAL_ROUTES.terms} className="text-fg underline">
-          Terms of Service
+          ব্যবহারের শর্তাবলিতে
         </Link>
-        .
+        ।
       </p>
     </LegalSection>
   </LegalShell>

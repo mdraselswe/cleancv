@@ -43,10 +43,10 @@ export const urlSchema = z
   .string()
   .trim()
   .max(300)
-  .refine((value) => !DANGEROUS_SCHEME.test(value), { message: 'That link type is not allowed' })
+  .refine((value) => !DANGEROUS_SCHEME.test(value), { message: 'এই ধরনের লিংক অনুমোদিত নয়' })
   .refine(
     (value) => value === '' || /^(https?:\/\/|mailto:|tel:)/i.test(value) || !/\s/.test(value),
-    { message: 'Enter a valid link' },
+    { message: 'সঠিক একটি লিংক লিখুন' },
   )
   .catch('')
   .default('');
@@ -56,7 +56,7 @@ export const emailSchema = z
   .trim()
   .max(160)
   .refine((value) => value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), {
-    message: 'Enter a valid email address',
+    message: 'সঠিক একটি ইমেইল ঠিকানা লিখুন',
   })
   .catch('')
   .default('');

@@ -35,7 +35,7 @@ export const AuthShell = ({ title, subtitle, children, footer }: AuthShellProps)
         className="tap-target text-fg-muted hover:text-fg text-ui-md mx-auto inline-flex items-center gap-2 font-semibold transition"
       >
         <BrandMark className="h-8 w-8" />
-        <span className="app-gradient-text text-ui-lg font-extrabold tracking-tight">{APP_NAME}</span>
+        <span className="app-gradient-text text-ui-lg font-extrabold ">{APP_NAME}</span>
       </Link>
 
       <div className="mx-auto -mb-2 w-28">
@@ -62,10 +62,10 @@ export const AuthShell = ({ title, subtitle, children, footer }: AuthShellProps)
       */}
       <nav className="text-fg-subtle text-ui-xs flex items-center justify-center gap-4">
         <Link href={LEGAL_ROUTES.privacy} className="tap-target hover:text-fg underline">
-          Privacy
+          গোপনীয়তা
         </Link>
         <Link href={LEGAL_ROUTES.terms} className="tap-target hover:text-fg underline">
-          Terms
+          শর্তাবলি
         </Link>
       </nav>
     </div>

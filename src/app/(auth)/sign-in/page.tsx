@@ -8,7 +8,7 @@ import { isAuthConfigured, isEmailAuthEnabled, isGoogleConfigured } from '@/serv
 
 import { AuthUnavailable } from '../unavailable';
 
-export const metadata: Metadata = { title: 'Sign in' };
+export const metadata: Metadata = { title: 'সাইন-ইন' };
 /* Reads the session and the environment. Nothing here can be prerendered. */
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +35,7 @@ export default async function SignInPage({ searchParams }: AuthPageProps) {
   if (await getSessionUser()) redirect(next);
 
   return (
-    <AuthShell title="Sign in" subtitle={GATE_REASON}>
+    <AuthShell title="সাইন-ইন" subtitle={GATE_REASON}>
       <SignInForm
         redirectTo={next}
         googleEnabled={isGoogleConfigured()}

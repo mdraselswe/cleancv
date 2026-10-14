@@ -77,8 +77,8 @@ describe('hasScale', () => {
 
 describe('metricPrompt', () => {
   it('asks the question that fits the line, never invents a figure', () => {
-    expect(metricPrompt('Mentored engineers through code reviews')).toMatch(/how many people/i);
-    expect(metricPrompt('Optimized rendering and caching')).toMatch(/load time/i);
-    expect(metricPrompt('Did a thing')).toMatch(/what number/i);
+    expect(metricPrompt('Mentored engineers through code reviews')).toMatch(/কতজনকে/);
+    expect(metricPrompt('Optimized rendering and caching')).toMatch(/লোড টাইম/);
+    expect(metricPrompt('Did a thing')).toMatch(/কোন সংখ্যা/);
   });
 });

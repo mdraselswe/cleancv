@@ -54,7 +54,7 @@ export const parseWithModel = async (
   const payload = (await response.json()) as { content?: string; error?: string };
 
   if (!response.ok) {
-    throw new Error(payload.error ?? 'The model endpoint rejected the request.');
+    throw new Error(payload.error ?? 'মডেলের এন্ডপয়েন্ট অনুরোধটি গ্রহণ করেনি।');
   }
 
   let raw: unknown;
@@ -63,14 +63,14 @@ export const parseWithModel = async (
     raw = JSON.parse(unfence(payload.content ?? ''));
   } catch {
     throw new Error(
-      'The model did not return JSON. Try a different model — some small ones cannot hold the format.',
+      'মডেল JSON ফেরত দেয়নি। অন্য একটি মডেল চেষ্টা করুন — কিছু ছোট মডেল এই ফরম্যাট ধরে রাখতে পারে না।',
     );
   }
 
   const parsed = smartResponseSchema.safeParse(raw);
 
   if (!parsed.success) {
-    throw new Error('The model returned JSON in an unexpected shape.');
+    throw new Error('মডেল অপ্রত্যাশিত গঠনের JSON ফেরত দিয়েছে।');
   }
 
   return toParsedResume(parsed.data);

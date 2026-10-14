@@ -65,7 +65,7 @@ export const AUTH_RATE_LIMIT = {
  */
 export const SIGN_IN_REQUIRED = {
   code: 'sign_in_required',
-  message: 'Sign in to download your PDF. Everything else stays open.',
+  message: 'PDF ডাউনলোড করতে সাইন-ইন করুন। বাকি সবকিছু সাইন-ইন ছাড়াই খোলা।',
 } as const;
 
 /**
@@ -73,4 +73,4 @@ export const SIGN_IN_REQUIRED = {
  * the two cannot drift into telling the reader different stories.
  */
 export const GATE_REASON =
-  'Downloads need a free account. Writing, designs and the ATS score do not.';
+  'ডাউনলোডের জন্য একটি ফ্রি অ্যাকাউন্ট লাগে। লেখা, ডিজাইন আর ATS স্কোরের জন্য লাগে না।';

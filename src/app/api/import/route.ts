@@ -53,21 +53,21 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as ImportRequestBody;
   } catch {
-    return badRequest('Request body must be JSON.');
+    return badRequest('অনুরোধের বডি অবশ্যই JSON হতে হবে।');
   }
 
   const { endpoint = '', model = '', apiKey = '', text, imageDataUrl } = body;
 
-  if (!endpoint || !model) return badRequest('Set an endpoint and a model under Smart import.');
-  if (!text && !imageDataUrl) return badRequest('Nothing to read.');
+  if (!endpoint || !model) return badRequest('স্মার্ট ইমপোর্ট থেকে একটি এন্ডপয়েন্ট ও একটি মডেল ঠিক করুন।');
+  if (!text && !imageDataUrl) return badRequest('পড়ার মতো কিছু নেই।');
 
   const url = chatUrl(endpoint);
   if (!url) {
-    return badRequest('That endpoint is not a valid https URL (localhost is allowed for Ollama).');
+    return badRequest('ওই এন্ডপয়েন্ট সঠিক https URL নয় (Ollama-র জন্য localhost চলবে)।');
   }
 
   const payloadSize = (text?.length ?? 0) + (imageDataUrl?.length ?? 0);
-  if (payloadSize > MAX_PAYLOAD_CHARS) return badRequest('That document is too large to send.');
+  if (payloadSize > MAX_PAYLOAD_CHARS) return badRequest('ডকুমেন্টটি পাঠানোর জন্য খুব বড়।');
 
   const content = imageDataUrl
     ? [
@@ -106,13 +106,13 @@ export async function POST(request: Request) {
         typeof result.error === 'string' ? result.error : result.error?.message;
 
       return Response.json(
-        { error: detail ?? `The endpoint returned ${upstream.status}.` },
+        { error: detail ?? `এন্ডপয়েন্ট ${upstream.status} ফেরত দিয়েছে।` },
         { status: 502 },
       );
     }
 
     const message = result.choices?.[0]?.message?.content;
-    if (!message) return Response.json({ error: 'The endpoint returned no content.' }, { status: 502 });
+    if (!message) return Response.json({ error: 'এন্ডপয়েন্ট কোনো উত্তর দেয়নি।' }, { status: 502 });
 
     return Response.json({ content: message });
   } catch (error) {
@@ -121,8 +121,8 @@ export async function POST(request: Request) {
     return Response.json(
       {
         error: timedOut
-          ? 'The endpoint took too long to answer.'
-          : 'Could not reach that endpoint. Check the URL, and that a local model is running.',
+          ? 'এন্ডপয়েন্ট উত্তর দিতে অনেক দেরি করেছে।'
+          : 'ওই এন্ডপয়েন্টে পৌঁছানো যায়নি। URL দেখুন, আর লোকাল মডেল চালু আছে কি না যাচাই করুন।',
       },
       { status: 502 },
     );

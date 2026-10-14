@@ -46,7 +46,7 @@ const readAsDataUrl = (file: File): Promise<string> =>
     const reader = new FileReader();
 
     reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error('That file could not be read.'));
+    reader.onerror = () => reject(new Error('ফাইলটি পড়া যায়নি।'));
     reader.readAsDataURL(file);
   });
 
@@ -81,7 +81,7 @@ export const useImport = (): UseImport => {
     try {
       setState({
         stage: 'extracting',
-        message: useVision ? 'Preparing the image' : 'Reading the file',
+        message: useVision ? 'ছবি প্রস্তুত করা হচ্ছে' : 'ফাইল পড়া হচ্ছে',
         progress: -1,
         error: '',
         result: null,
@@ -124,21 +124,21 @@ export const useImport = (): UseImport => {
       if (!useVision && extracted.empty) {
         throw new Error(
           kind === 'pdf'
-            ? 'This PDF has no text layer — it is a scan. Import it as an image instead, or use a screenshot.'
-            : 'No readable text was found in that file.',
+            ? 'এই PDF-এ কোনো লেখার স্তর নেই — এটি স্ক্যান করা। এটি ছবি হিসেবে ইমপোর্ট করুন, অথবা একটি স্ক্রিনশট ব্যবহার করুন।'
+            : 'ফাইলে পড়ার মতো কোনো লেখা পাওয়া যায়নি।',
         );
       }
 
       if (!useVision && isTwoColumn(extracted.lines)) {
         warnings.push(
-          'This looks like a two-column CV. Columns were read one at a time, but check the order below carefully.',
+          'এটি দুই-কলামের CV মনে হচ্ছে। কলামগুলো একটি একটি করে পড়া হয়েছে, তবু নিচের ক্রম ভালো করে দেখে নিন।',
         );
       }
 
       setState((current) => ({
         ...current,
         stage: 'parsing',
-        message: provider === 'smart' ? 'Asking the model' : 'Finding the sections',
+        message: provider === 'smart' ? 'মডেলকে জিজ্ঞেস করা হচ্ছে' : 'সেকশন খোঁজা হচ্ছে',
         progress: -1,
       }));
 
@@ -167,7 +167,7 @@ export const useImport = (): UseImport => {
       setState({
         ...IDLE,
         stage: 'error',
-        error: error instanceof Error ? error.message : 'That file could not be imported.',
+        error: error instanceof Error ? error.message : 'ফাইলটি ইমপোর্ট করা যায়নি।',
       });
     }
   }, []);

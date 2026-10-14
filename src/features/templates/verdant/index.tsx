@@ -34,9 +34,9 @@ const MAIN_SECTIONS: SectionKey[] = ['summary', 'experience', 'education', 'achi
 
 export const meta: TemplateMeta = {
   id: 'verdant',
-  name: 'Portrait Panel',
+  name: 'পোর্ট্রেট প্যানেল',
   description:
-    'Portrait and supporting detail in a left panel, narrative on the right, and every heading behind a soft green badge. Warm and current without giving up a plain reading order.',
+    'বাঁ দিকের প্যানেলে ছবি ও সহায়ক তথ্য, ডানে মূল বর্ণনা, আর প্রতিটি শিরোনাম নরম সবুজ ব্যাজের ভেতরে। উষ্ণ ও আধুনিক, তবু পড়ার ক্রম সাদামাটা।',
   category: 'balanced',
   /*
    * Two real columns, so a parser working from positions can interleave them.

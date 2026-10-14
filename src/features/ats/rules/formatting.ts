@@ -5,6 +5,7 @@ import {
   SUMMARY_WORD_RANGE,
   panelTarget,
 } from '@/constants';
+import { bn } from '@/lib/bn';
 import { isRangeReversed } from '@/lib/date';
 import { isBlank, wordCount } from '@/lib/text';
 
@@ -16,7 +17,7 @@ export const rules: AtsRule[] = [
     id: 'date-order',
     category: 'formatting',
     weight: 4,
-    label: 'Date ranges',
+    label: 'তারিখের পরিসর',
     evaluate: (resume) => {
       const reversed = [
         ...resume.experience.filter((entry) => isRangeReversed(entry.dates)),
@@ -25,13 +26,13 @@ export const rules: AtsRule[] = [
       ];
 
       if (reversed.length === 0) {
-        return { status: 'pass', message: 'Every date range runs forwards, in one MM/YYYY format.' };
+        return { status: 'pass', message: 'প্রতিটি তারিখের পরিসর সামনের দিকে চলেছে, আর সব একই MM/YYYY ফরম্যাটে।' };
       }
 
       return {
         status: 'error',
-        message: `${reversed.length} entr${reversed.length === 1 ? 'y ends' : 'ies end'} before they start.`,
-        fixHint: 'A parser reading these will compute negative tenure.',
+        message: `${bn(reversed.length)}টি এন্ট্রি শুরু হওয়ার আগেই শেষ হয়েছে।`,
+        fixHint: 'পার্সার এগুলো পড়লে অভিজ্ঞতার সময় ঋণাত্মক হিসাব করবে।',
         targets: ['experience', 'education'],
       };
     },
@@ -41,20 +42,20 @@ export const rules: AtsRule[] = [
     id: 'page-count',
     category: 'formatting',
     weight: 4,
-    label: 'Length',
+    label: 'দৈর্ঘ্য',
     evaluate: (_resume, { estimatedPages }) => {
       if (estimatedPages <= MAX_RESUME_PAGES) {
         return {
           status: 'pass',
-          message: `About ${estimatedPages} page${estimatedPages === 1 ? '' : 's'} — within the usual limit.`,
+          message: `প্রায় ${bn(estimatedPages)} পৃষ্ঠা — স্বাভাবিক সীমার ভেতরে।`,
         };
       }
 
       return {
         status: estimatedPages > MAX_RESUME_PAGES + 1 ? 'error' : 'warn',
-        message: `About ${estimatedPages} pages.`,
+        message: `প্রায় ${bn(estimatedPages)} পৃষ্ঠা।`,
         fixHint:
-          'Cut older roles to two bullets, or tighten spacing under Design. Two pages is the ceiling outside academia.',
+          'পুরনো পদগুলো দুটি বুলেটে নামিয়ে আনুন, অথবা “ডিজাইন” থেকে ফাঁকা জায়গা কমান। একাডেমিক CV ছাড়া দুই পৃষ্ঠাই সীমা।',
         targets: [panelTarget('design')],
       };
     },
@@ -64,25 +65,25 @@ export const rules: AtsRule[] = [
     id: 'summary-length',
     category: 'formatting',
     weight: 3,
-    label: 'Summary length',
+    label: 'সারসংক্ষেপের দৈর্ঘ্য',
     evaluate: (resume) => {
       if (isBlank(resume.summary.text)) {
-        return { status: 'warn', message: 'No summary to measure.', targets: ['summary'] };
+        return { status: 'warn', message: 'মাপার মতো কোনো সারসংক্ষেপ নেই।', targets: ['summary'] };
       }
 
       const count = wordCount(resume.summary.text);
 
       if (count >= SUMMARY_WORD_RANGE.min && count <= SUMMARY_WORD_RANGE.max) {
-        return { status: 'pass', message: `${count} words — about right.` };
+        return { status: 'pass', message: `${bn(count)} শব্দ — ঠিক আছে।` };
       }
 
       return {
         status: 'warn',
         message:
           count < SUMMARY_WORD_RANGE.min
-            ? `${count} words — too thin to position you.`
-            : `${count} words — longer than anyone reads.`,
-        fixHint: `Aim for ${SUMMARY_WORD_RANGE.min}–${SUMMARY_WORD_RANGE.max} words.`,
+            ? `${bn(count)} শব্দ — আপনাকে তুলে ধরার জন্য খুব কম।`
+            : `${bn(count)} শব্দ — কেউ এত লম্বা পড়ে না।`,
+        fixHint: `${bn(SUMMARY_WORD_RANGE.min)} থেকে ${bn(SUMMARY_WORD_RANGE.max)} শব্দের মধ্যে রাখুন।`,
         targets: ['summary'],
       };
     },
@@ -92,11 +93,11 @@ export const rules: AtsRule[] = [
     id: 'reverse-chronological',
     category: 'formatting',
     weight: 3,
-    label: 'Newest first',
+    label: 'নতুনটি আগে',
     evaluate: (resume) => {
       const dated = resume.experience.filter((entry) => !isBlank(entry.dates.start));
       if (dated.length < 2) {
-        return { status: 'pass', message: 'Too few dated roles for ordering to matter.' };
+        return { status: 'pass', message: 'তারিখসহ পদ এত কম যে ক্রম নিয়ে ভাবার দরকার নেই।' };
       }
 
       const outOfOrder = dated.some((entry, index) => {
@@ -110,11 +111,11 @@ export const rules: AtsRule[] = [
       return outOfOrder
         ? {
             status: 'warn',
-            message: 'Roles are not in reverse-chronological order.',
-            fixHint: 'Most recent first. Recruiters and parsers both assume it.',
+            message: 'পদগুলো সাম্প্রতিক থেকে পুরনো ক্রমে নেই।',
+            fixHint: 'সবচেয়ে সাম্প্রতিকটি আগে রাখুন। রিক্রুটার ও পার্সার দুজনেই এটাই ধরে নেয়।',
             targets: ['experience'],
           }
-        : { status: 'pass', message: 'Roles run newest to oldest.' };
+        : { status: 'pass', message: 'পদগুলো নতুন থেকে পুরনো ক্রমে সাজানো।' };
     },
   },
 
@@ -122,19 +123,19 @@ export const rules: AtsRule[] = [
     id: 'body-size',
     category: 'formatting',
     weight: 3,
-    label: 'Text size',
+    label: 'লেখার আকার',
     evaluate: (resume, { measuredBodyPt }) => {
       if (!measuredBodyPt || measuredBodyPt <= 0) {
         return {
           status: 'pass',
-          message: 'Measured from the preview, which is not open on this screen.',
+          message: 'প্রিভিউ থেকে মাপা হয়, আর এই স্ক্রিনে প্রিভিউ খোলা নেই।',
         };
       }
 
       const pt = Math.round(measuredBodyPt * 10) / 10;
 
       if (pt >= BODY_TEXT_PT.warn) {
-        return { status: 'pass', message: `Body text measures ${pt}pt.` };
+        return { status: 'pass', message: `মূল লেখার আকার ${bn(pt)}pt।` };
       }
 
       /*
@@ -149,12 +150,12 @@ export const rules: AtsRule[] = [
 
       return {
         status: pt < BODY_TEXT_PT.error ? 'error' : 'warn',
-        message: `Body text measures about ${pt}pt — small enough to tire a reader.`,
-        fixHint: `Text size ${Math.round(current * 100)}% → ${Math.round(rounded * 100)}% brings it to ${BODY_TEXT_PT.warn}pt. It can add a page; if it does, trim a bullet or two rather than shrinking again.`,
+        message: `মূল লেখার আকার প্রায় ${bn(pt)}pt — পাঠকের চোখ ক্লান্ত হওয়ার মতো ছোট।`,
+        fixHint: `লেখার আকার ${bn(Math.round(current * 100))}% থেকে ${bn(Math.round(rounded * 100))}% করলে এটি ${bn(BODY_TEXT_PT.warn)}pt-তে পৌঁছায়। এতে একটি পৃষ্ঠা বাড়তে পারে; বাড়লে আবার ছোট না করে দু-একটি বুলেট ছেঁটে ফেলুন।`,
         fix: {
           kind: 'font-scale',
           value: rounded,
-          label: `Set text size to ${Math.round(rounded * 100)}%`,
+          label: `লেখার আকার ${bn(Math.round(rounded * 100))}% করুন`,
         },
         targets: [panelTarget('design')],
       };
@@ -165,18 +166,18 @@ export const rules: AtsRule[] = [
     id: 'section-count',
     category: 'formatting',
     weight: 1,
-    label: 'Section count',
+    label: 'সেকশনের সংখ্যা',
     evaluate: (resume) => {
       const enabled = Object.values(resume.meta.sections).filter((setting) => setting?.enabled).length;
 
       if (enabled <= 12) {
-        return { status: 'pass', message: `${enabled} sections enabled.` };
+        return { status: 'pass', message: `${bn(enabled)}টি সেকশন চালু আছে।` };
       }
 
       return {
         status: 'warn',
-        message: `${enabled} sections enabled.`,
-        fixHint: 'Past a dozen, each one gets less attention. Turn off what is not earning its space.',
+        message: `${bn(enabled)}টি সেকশন চালু আছে।`,
+        fixHint: 'বারোটির বেশি হলে প্রতিটি সেকশন কম মনোযোগ পায়। যেগুলো কাজে লাগছে না, বন্ধ করে দিন।',
         targets: [panelTarget('sections')],
       };
     },

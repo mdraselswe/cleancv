@@ -8,7 +8,7 @@ import { isAuthConfigured, isEmailAuthEnabled } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
-export const metadata: Metadata = { title: 'Reset your password' };
+export const metadata: Metadata = { title: 'পাসওয়ার্ড রিসেট করুন' };
 export const dynamic = 'force-dynamic';
 
 /**
@@ -25,8 +25,8 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthShell
-      title="Reset your password"
-      subtitle="Tell us the address on the account and we will send a link."
+      title="পাসওয়ার্ড রিসেট করুন"
+      subtitle="অ্যাকাউন্টের ইমেইল ঠিকানাটি লিখুন, আমরা একটি লিংক পাঠাব।"
     >
       <ForgotPasswordForm />
     </AuthShell>

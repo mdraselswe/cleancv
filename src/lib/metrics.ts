@@ -136,26 +136,26 @@ export const metricPrompt = (text: string): string => {
   const has = (pattern: RegExp) => pattern.test(t);
 
   if (has(/\b(mentor|coach|led|lead|guid|manag|train)/)) {
-    return 'How many people, over how long, and what did they ship or grow into?';
+    return 'কতজনকে, কত সময় ধরে? তারা কী ডেলিভার করেছে বা কোন পর্যায়ে পৌঁছেছে?';
   }
   if (has(/\b(perform|speed|fast|latency|load|render|ssr|ssg|isr|cach|optimi[sz]|bundle|re-render)/)) {
-    return 'By how much: load time before → after, Lighthouse score, or bundle size?';
+    return 'কতটা: লোড টাইম আগে → পরে, Lighthouse স্কোর, নাকি বান্ডল সাইজ?';
   }
   if (has(/\b(deploy|pipeline|ci\b|cd\b|build|release|automat)/)) {
-    return 'How long did it take before and after, or how many releases or deploys does it run?';
+    return 'আগে ও পরে কত সময় লাগত, অথবা এটি কতবার রিলিজ বা ডিপ্লয় চালায়?';
   }
   if (has(/\b(test|lint|quality|bug|incident|production issue|static analysis)/)) {
-    return 'How many bugs or incidents fewer, or what test coverage did it reach?';
+    return 'কতগুলো বাগ বা ইনসিডেন্ট কমেছে, অথবা টেস্ট কভারেজ কত হয়েছে?';
   }
   if (has(/\b(compon|librar|reusable|standardi[sz]|pattern|storybook|documentation|polyfill)/)) {
-    return 'How many screens, products or teams use it, or how much faster did a new page ship?';
+    return 'কতগুলো স্ক্রিন, প্রোডাক্ট বা টিম এটি ব্যবহার করে, অথবা নতুন পেজ কতটা দ্রুত শিপ হয়?';
   }
   if (has(/\b(integrat|api|third-party|service|sync|workflow)/)) {
-    return 'How many services, requests or users go through it?';
+    return 'কতগুলো সার্ভিস, রিকোয়েস্ট বা ব্যবহারকারী এর ভেতর দিয়ে যায়?';
   }
   if (has(/\b(develop|built|build|launch|feature|platform|app|application|erp|e-commerce)/)) {
-    return 'How many users, orders or pages does it serve, or how much time did it save?';
+    return 'কতজন ব্যবহারকারী, অর্ডার বা পেজ এটি সামলায়, অথবা কতটা সময় বাঁচিয়েছে?';
   }
 
-  return 'What number would prove this: users, time saved, percent change or a count?';
+  return 'কোন সংখ্যা এটি প্রমাণ করবে: ব্যবহারকারী, বাঁচানো সময়, শতাংশে পরিবর্তন, নাকি গণনা?';
 };

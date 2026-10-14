@@ -90,15 +90,15 @@ export const EditorPane = ({
             <EmptyIllustration />
           </div>
           <h2 className="text-fg text-xl font-extrabold tracking-tight">
-            How do you want to begin?
+            কীভাবে শুরু করতে চান?
           </h2>
           <div className="mt-1 flex w-full flex-col gap-3 text-left">
             <div className="border-border-base bg-surface/70 rounded-card flex flex-col gap-2 border p-3.5">
               <div>
-                <p className="text-fg text-ui-md font-bold">Write my own CV</p>
+                <p className="text-fg text-ui-md font-bold">নিজের CV লিখব</p>
                 <p className="text-fg-muted text-ui mt-0.5 leading-snug">
-                  The form opens empty and you type your own details. This is the right choice if
-                  you are making your real CV.
+                  ফর্ম ফাঁকা অবস্থায় খুলবে, আর আপনি নিজের তথ্য লিখবেন। আপনার আসল CV বানাতে
+                  চাইলে এটিই ঠিক পথ।
                 </p>
               </div>
               <Button
@@ -109,16 +109,16 @@ export const EditorPane = ({
                   setActive({ kind: 'section', key: 'contact' });
                 }}
               >
-                Start with an empty form
+                ফাঁকা ফর্ম দিয়ে শুরু করুন
               </Button>
             </div>
 
             <div className="border-border-base bg-surface/70 rounded-card flex flex-col gap-2 border p-3.5">
               <div>
-                <p className="text-fg text-ui-md font-bold">See an example first</p>
+                <p className="text-fg text-ui-md font-bold">আগে একটি উদাহরণ দেখি</p>
                 <p className="text-fg-muted text-ui mt-0.5 leading-snug">
-                  Fills in a made-up CV so you can see how a finished one looks. You can change or
-                  clear every line afterwards.
+                  একটি বানানো CV বসিয়ে দেবে, যাতে সম্পূর্ণ CV দেখতে কেমন হয় বুঝতে পারেন। পরে
+                  প্রতিটি লাইন বদলাতে বা মুছতে পারবেন।
                 </p>
               </div>
               <Button
@@ -127,7 +127,7 @@ export const EditorPane = ({
                 onClick={actions.loadSample}
                 leading={<Sparkles size={14} />}
               >
-                Fill with example data
+                উদাহরণ তথ্য দিয়ে ভরুন
               </Button>
             </div>
           </div>
@@ -163,8 +163,8 @@ export const EditorPane = ({
           <div className="min-w-0 flex-1">
             <div className="text-hue-strong mb-1 flex items-center gap-1.5">
               <visual.Icon size={13} aria-hidden="true" />
-              <span className="text-ui-2xs font-bold tracking-[0.14em] uppercase">
-                {active.kind === 'panel' ? 'Customise' : 'Build your story'}
+              <span className="text-ui-2xs font-bold">
+                {active.kind === 'panel' ? 'কাস্টমাইজ করুন' : 'আপনার গল্প লিখুন'}
               </span>
             </div>
             <h2 className="text-fg text-xl font-extrabold tracking-tight">{title}</h2>
@@ -207,7 +207,7 @@ export const EditorPane = ({
                 onClick={() => setActive(next.target)}
                 trailing={<ArrowRight size={15} />}
               >
-                Next: {next.label}
+                পরবর্তী: {next.label}
               </Button>
             ) : null}
           </div>

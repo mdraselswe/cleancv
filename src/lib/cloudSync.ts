@@ -49,6 +49,6 @@ export const checkCloudDocument = ({
 };
 
 export const CLOUD_REFUSAL_MESSAGE: Record<CloudRefusal, string> = {
-  too_large: `This CV is over ${CLOUD_SYNC.maxBytes / 1024} KB, usually because of a large photo. It stays on this device only. Use a smaller photo to sync it.`,
-  limit_reached: `You already sync ${CLOUD_SYNC.maxDocuments} CVs. Stop syncing one to choose this one.`,
+  too_large: `এই CV ${CLOUD_SYNC.maxBytes / 1024} KB-এর বেশি বড়, সাধারণত বড় ছবির কারণে। এটি শুধু এই ডিভাইসেই থাকবে। সিঙ্ক করতে ছোট ছবি ব্যবহার করুন।`,
+  limit_reached: `আপনি ইতিমধ্যে ${CLOUD_SYNC.maxDocuments}টি CV সিঙ্ক করছেন। এটি বেছে নিতে আগে একটির সিঙ্ক বন্ধ করুন।`,
 };

@@ -14,21 +14,21 @@ import { AuthNotice, AuthShell } from '@/features/auth';
  */
 export const AuthUnavailable = () => (
   <AuthShell
-    title="Sign-in is not available here"
-    subtitle="This install has no way to sign in configured, so there is nothing to sign in to."
+    title="এখানে সাইন-ইন চালু নেই"
+    subtitle="এই ইনস্টলে সাইন-ইনের কোনো ব্যবস্থা ঠিক করা নেই, তাই সাইন-ইন করার মতো কিছু নেই।"
   >
     <div className="flex flex-col gap-4">
       <AuthNotice tone="info">
-        Set <code className="font-mono">DATABASE_URL</code>,{' '}
-        <code className="font-mono">BETTER_AUTH_SECRET</code> and Google credentials, then restart.
-        See <code className="font-mono">.env.example</code>.
+        <code className="font-mono">DATABASE_URL</code>,{' '}
+        <code className="font-mono">BETTER_AUTH_SECRET</code> আর Google-এর তথ্য সেট করে আবার চালু করুন।
+        <code className="font-mono">.env.example</code> দেখুন।
       </AuthNotice>
 
       <Link
         href={ROUTES.editor}
         className="tap-target text-fg text-ui-md text-center font-medium underline"
       >
-        Back to the editor
+        এডিটরে ফিরে যান
       </Link>
     </div>
   </AuthShell>

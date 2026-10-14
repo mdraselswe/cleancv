@@ -1,7 +1,7 @@
 /** Storage keys, routes, and hard limits. */
 
 export const APP_NAME = 'CleanCV';
-export const APP_TAGLINE = 'Build a resume that people and parsers both read.';
+export const APP_TAGLINE = 'এমন একটি CV বানান, যা মানুষ আর ATS সফটওয়্যার দুজনেই সহজে পড়তে পারে।';
 
 /** Bump when a stored resume can no longer be read by the current schema. */
 export const RESUME_SCHEMA_VERSION = 1;
@@ -49,12 +49,12 @@ export const IDB_KEYS = {
  * only its author has.
  */
 export const KEYBOARD_SHORTCUTS = [
-  { keys: 'Ctrl + Z', action: 'Undo the last change' },
-  { keys: 'Ctrl + Shift + Z', action: 'Redo' },
-  { keys: 'Ctrl + S', action: 'Download the designed PDF' },
-  { keys: 'Ctrl + K', action: 'Open My CVs' },
-  { keys: '?', action: 'Show this list' },
-  { keys: 'Esc', action: 'Close a panel or dialog' },
+  { keys: 'Ctrl + Z', action: 'শেষ পরিবর্তন ফিরিয়ে নিন' },
+  { keys: 'Ctrl + Shift + Z', action: 'আবার করুন' },
+  { keys: 'Ctrl + S', action: 'ডিজাইন করা PDF ডাউনলোড করুন' },
+  { keys: 'Ctrl + K', action: 'আমার CV-গুলো খুলুন' },
+  { keys: '?', action: 'এই তালিকা দেখান' },
+  { keys: 'Esc', action: 'প্যানেল বা ডায়ালগ বন্ধ করুন' },
 ] as const;
 
 /** How long after the last edit the active document is written to storage. */

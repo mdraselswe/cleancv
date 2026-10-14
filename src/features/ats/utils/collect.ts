@@ -39,6 +39,13 @@ export const collectBullets = (resume: Resume): BulletRef[] => {
   return bullets;
 };
 
+const SOURCE_LABEL: Record<BulletRef['source'], string> = {
+  experience: 'অভিজ্ঞতা',
+  education: 'শিক্ষা',
+  projects: 'প্রজেক্ট',
+  volunteering: 'স্বেচ্ছাসেবা',
+};
+
 /** Where a bullet lives, in the words the reader would use: "Senior Engineer · Acme". */
 export const describeBullet = (resume: Resume, ref: BulletRef): string => {
   const pick = (entry: Record<string, unknown> | undefined, keys: string[]): string =>
@@ -58,7 +65,7 @@ export const describeBullet = (resume: Resume, ref: BulletRef): string => {
 
   return (
     pick(entry, ['role', 'degree', 'name', 'company', 'organization']) ||
-    ref.source.charAt(0).toUpperCase() + ref.source.slice(1)
+    SOURCE_LABEL[ref.source]
   );
 };
 

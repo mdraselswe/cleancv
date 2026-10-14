@@ -29,7 +29,7 @@ export const IconPicker = ({ value, label, onChange }: IconPickerProps) => {
   return (
     <div
       role="radiogroup"
-      aria-label="Icon"
+      aria-label="আইকন"
       className="border-border-base rounded-control flex flex-wrap gap-1 border p-1.5"
     >
       {RESUME_ICON_KEYS.map((key) => {
@@ -44,7 +44,7 @@ export const IconPicker = ({ value, label, onChange }: IconPickerProps) => {
             role="radio"
             aria-checked={selected}
             aria-label={RESUME_ICON_LABEL[key]}
-            title={key === 'auto' ? 'Automatic — from the name you typed' : RESUME_ICON_LABEL[key]}
+            title={key === 'auto' ? 'স্বয়ংক্রিয় — আপনার লেখা নাম থেকে' : RESUME_ICON_LABEL[key]}
             onClick={() => onChange(key)}
             className={cn(
               'tap-target flex h-9 items-center justify-center rounded-lg border transition',
@@ -56,7 +56,7 @@ export const IconPicker = ({ value, label, onChange }: IconPickerProps) => {
           >
             {key === 'auto' ? (
               <>
-                <span className="text-ui-2xs font-medium">Auto</span>
+                <span className="text-ui-2xs font-medium">অটো</span>
                 {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
               </>
             ) : (

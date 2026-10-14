@@ -31,7 +31,7 @@ export const sectionSlotSchema = z.custom<SectionSlot>(
     typeof value === 'string' &&
     ((SECTION_KEYS as readonly string[]).includes(value) ||
       value.startsWith(CUSTOM_SECTION_PREFIX)),
-  { message: 'Unknown section' },
+  { message: 'অজানা সেকশন' },
 );
 
 /** Per-section display state. Kept out of the data itself so content survives toggling. */

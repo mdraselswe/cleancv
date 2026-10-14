@@ -10,13 +10,14 @@ import {
   LEGAL_ROUTES,
   ROUTES,
 } from '@/constants';
+import { bn } from '@/lib/bn';
 
 const LINKS = [
-  { href: ROUTES.features, label: 'What’s included' },
-  { href: LEGAL_ROUTES.privacy, label: 'Privacy' },
-  { href: LEGAL_ROUTES.terms, label: 'Terms' },
-  { href: AUTH_ROUTES.signIn, label: 'Sign in' },
-  { href: AUTH_ROUTES.signUp, label: 'Create account' },
+  { href: ROUTES.features, label: 'কী কী আছে' },
+  { href: LEGAL_ROUTES.privacy, label: 'গোপনীয়তা' },
+  { href: LEGAL_ROUTES.terms, label: 'শর্তাবলি' },
+  { href: AUTH_ROUTES.signIn, label: 'সাইন-ইন' },
+  { href: AUTH_ROUTES.signUp, label: 'অ্যাকাউন্ট খুলুন' },
 ] as const;
 
 /** Shared by the home and features pages: the legal and account links in one row. */
@@ -25,11 +26,11 @@ export const SiteFooter = () => (
     <div className="text-fg-subtle text-ui-xs mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 sm:px-6">
       <span className="flex flex-col gap-1">
         <span>
-          {APP_NAME} · free to use · your CVs stay in this browser; up to {CLOUD_SYNC.maxDocuments} you
-          choose can sync to your account.
+          {APP_NAME} · ব্যবহার ফ্রি · আপনার CV এই ব্রাউজারেই থাকে; আপনার বেছে নেওয়া{' '}
+          {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত অ্যাকাউন্টে সিঙ্ক করা যায়।
         </span>
         <span>
-          Built by{' '}
+          তৈরি করেছেন{' '}
           <a
             href={AUTHOR_LINKEDIN_URL}
             target="_blank"
@@ -44,7 +45,7 @@ export const SiteFooter = () => (
           </a>
         </span>
       </span>
-      <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1">
+      <nav aria-label="ফুটার" className="flex flex-wrap gap-x-4 gap-y-1">
         {LINKS.map((link) => (
           <Link key={link.href} href={link.href} className="hover:text-fg underline">
             {link.label}

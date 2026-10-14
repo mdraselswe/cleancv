@@ -7,9 +7,9 @@ import './academic-cv.css';
 
 export const meta: TemplateMeta = {
   id: 'academic-cv',
-  name: 'Academic / Govt CV',
+  name: 'একাডেমিক / সরকারি CV',
   description:
-    'Centred identity, personal-details table, declaration and signature. The formal shape expected for public-sector and academic posts.',
+    'মাঝখানে পরিচয়, ব্যক্তিগত তথ্যের টেবিল, ঘোষণা ও স্বাক্ষর। সরকারি ও একাডেমিক পদের জন্য প্রত্যাশিত আনুষ্ঠানিক ধাঁচ।',
   category: 'balanced',
   atsBaseline: 90,
   supports: {

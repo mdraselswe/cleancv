@@ -14,9 +14,9 @@ import './formal-centered.css';
 
 export const meta: TemplateMeta = {
   id: 'formal-centered',
-  name: 'Formal Centered',
+  name: 'আনুষ্ঠানিক মাঝামাঝি',
   description:
-    'Centred serif headings over a full-width rule, contact on one line, and each role led by the employer. Symmetrical and conservative — the safest-looking of the designed templates.',
+    'পুরো প্রস্থের রেখার ওপর মাঝখানে সেরিফ শিরোনাম, এক লাইনে যোগাযোগ, আর প্রতিটি পদ শুরু হয় নিয়োগকর্তা দিয়ে। প্রতিসম ও রক্ষণশীল — ডিজাইন করা টেমপ্লেটের মধ্যে সবচেয়ে নিরাপদ চেহারার।',
   category: 'ats',
   /*
    * As high as the plain design: everything here is one column, in reading

@@ -7,9 +7,9 @@ import './elegant-serif.css';
 
 export const meta: TemplateMeta = {
   id: 'elegant-serif',
-  name: 'Elegant Serif',
+  name: 'মার্জিত সেরিফ',
   description:
-    'Serif headings, hairline rules and plenty of air. Distinctive without costing parse quality.',
+    'সেরিফ শিরোনাম, সূক্ষ্ম রেখা আর প্রচুর ফাঁকা জায়গা। আলাদা, অথচ পার্সিংয়ের মান কমে না।',
   category: 'balanced',
   atsBaseline: 92,
   supports: {

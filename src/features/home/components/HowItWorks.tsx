@@ -1,23 +1,25 @@
 import { Download, Gauge, PencilLine } from 'lucide-react';
 
+import { bn } from '@/lib/bn';
+
 const STEPS = [
   {
     icon: PencilLine,
     hue: 'indigo',
-    title: 'Fill in the story',
-    body: 'One section at a time. Add roles, schooling and skills; the page builds itself beside you.',
+    title: 'আপনার গল্প লিখুন',
+    body: 'একটি একটি করে সেকশন পূরণ করুন। পদ, পড়াশোনা আর দক্ষতা যোগ করুন; পাশেই পেজ নিজে থেকে তৈরি হবে।',
   },
   {
     icon: Gauge,
     hue: 'emerald',
-    title: 'Watch the score',
-    body: 'A live ATS score names what a parser would trip on and takes you straight to the fix.',
+    title: 'স্কোরের দিকে নজর রাখুন',
+    body: 'লাইভ ATS স্কোর বলে দেয় পার্সার কোথায় আটকাবে, আর আপনাকে সোজা সমাধানের জায়গায় নিয়ে যায়।',
   },
   {
     icon: Download,
     hue: 'pink',
-    title: 'Download two PDFs',
-    body: 'A designed one for people, a plain single-column one for job portals.',
+    title: 'দুটি PDF ডাউনলোড করুন',
+    body: 'মানুষের জন্য ডিজাইন করা একটি, আর জব পোর্টালের জন্য সাদামাটা এক-কলামের একটি।',
   },
 ] as const;
 
@@ -33,7 +35,7 @@ export const HowItWorks = () => (
           aria-hidden="true"
           className="text-hue/10 absolute -top-3 right-3 text-[84px] leading-none font-black"
         >
-          {index + 1}
+          {bn(index + 1)}
         </span>
         <span className="bg-hue text-white mb-4 flex h-11 w-11 items-center justify-center rounded-card shadow-sm">
           <Icon size={20} />

@@ -115,12 +115,12 @@ describe('credential schemas', () => {
 
 describe('authErrorMessage', () => {
   it('rewrites the codes a reader can act on', () => {
-    expect(authErrorMessage({ code: 'INVALID_EMAIL_OR_PASSWORD' })).toMatch(/do not match/);
-    expect(authErrorMessage({ code: 'EMAIL_NOT_VERIFIED' })).toMatch(/inbox/);
+    expect(authErrorMessage({ code: 'INVALID_EMAIL_OR_PASSWORD' })).toMatch(/মেলেনি/);
+    expect(authErrorMessage({ code: 'EMAIL_NOT_VERIFIED' })).toMatch(/ইনবক্স/);
   });
 
   it('reports rate limiting from the status, which carries no code', () => {
-    expect(authErrorMessage({ status: 429 })).toMatch(/Too many attempts/);
+    expect(authErrorMessage({ status: 429 })).toMatch(/অনেকবার চেষ্টা/);
   });
 
   it('keeps an unmapped message rather than hiding it', () => {

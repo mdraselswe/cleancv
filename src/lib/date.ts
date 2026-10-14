@@ -123,9 +123,9 @@ const RELATIVE_STEPS: Array<[Intl.RelativeTimeFormatUnit, number]> = [
 ];
 
 export const formatRelativeTime = (timestamp: number, now = Date.now()): string => {
-  if (!timestamp) return 'never';
+  if (!timestamp) return 'কখনো না';
 
-  const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+  const formatter = new Intl.RelativeTimeFormat('bn', { numeric: 'auto' });
   let amount = (timestamp - now) / 1000;
 
   for (const [unit, step] of RELATIVE_STEPS) {

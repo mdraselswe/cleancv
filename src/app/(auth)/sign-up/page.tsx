@@ -7,7 +7,7 @@ import { isAuthConfigured, isEmailAuthEnabled, isGoogleConfigured } from '@/serv
 
 import { AuthUnavailable } from '../unavailable';
 
-export const metadata: Metadata = { title: 'Create an account' };
+export const metadata: Metadata = { title: 'অ্যাকাউন্ট খুলুন' };
 export const dynamic = 'force-dynamic';
 
 export default async function SignUpPage({
@@ -25,8 +25,8 @@ export default async function SignUpPage({
 
   return (
     <AuthShell
-      title="Create an account"
-      subtitle="A free account unlocks PDF downloads, and lets you keep up to 3 CVs of your choice on your account."
+      title="অ্যাকাউন্ট খুলুন"
+      subtitle="একটি ফ্রি অ্যাকাউন্টে PDF ডাউনলোড করা যায়, আর আপনার পছন্দের ৩টি পর্যন্ত CV অ্যাকাউন্টে রাখা যায়।"
     >
       <SignUpForm
         redirectTo={next}

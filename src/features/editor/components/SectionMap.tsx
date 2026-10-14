@@ -29,6 +29,7 @@ import {
   withoutHiddenEntries,
 } from '@/features/resume';
 import { getTemplate } from '@/features/templates';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import { useSectionMap, type SectionBox } from '../hooks/useSectionMap';
@@ -173,10 +174,10 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
         `position: fixed` resolves against, and dnd-kit positions the carried
         box in viewport coordinates. See ADR-043.
       */}
-      <Modal label="Rearrange the sections" onClose={onClose} className="max-w-[620px]">
+      <Modal label="সেকশন সাজান" onClose={onClose} className="max-w-[620px]">
         <ModalHeader
-          title="Hold and drag the boxes to rearrange the sections"
-          subtitle="Each box is drawn where that section actually falls, at the size it actually takes."
+          title="বাক্সগুলো ধরে টেনে সেকশন সাজান"
+          subtitle="প্রতিটি বাক্স ঠিক সেই জায়গায় ও সেই মাপে আঁকা, যেখানে সেকশনটি আসলে পড়ে।"
           onClose={onClose}
         />
 
@@ -187,13 +188,19 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={() => setCarried(null)}
+            accessibility={{
+              screenReaderInstructions: {
+                draggable:
+                  'সরানোর জন্য একটি বাক্স তুলতে স্পেস বার চাপুন। টানার সময় তীর কী দিয়ে বাক্সটি সরান। আবার স্পেস বার চাপলে বাক্সটি নতুন জায়গায় বসবে, আর Esc চাপলে সরানো বাতিল হবে।',
+              },
+            }}
           >
             <SortableContext items={slots} strategy={rectSortingStrategy}>
               <div className="flex flex-col items-center gap-5">
                 {pages.map((page, index) => (
                   <div key={index} className="w-full max-w-[380px]">
                     <p className="text-fg-subtle text-ui-xs mb-1.5 text-center">
-                      Page {index + 1} of {pages.length}
+                      পৃষ্ঠা {bn(index + 1)} / {bn(pages.length)}
                     </p>
                     <div className="border-border-base bg-surface shadow-app rounded-control relative aspect-[210/297] w-full border">
                       <div
@@ -224,7 +231,7 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
                                   className="text-fg-subtle absolute top-1 left-1"
                                   aria-hidden="true"
                                 />
-                                <span>Header</span>
+                                <span>হেডার</span>
                               </div>
                             ))
                           : null}

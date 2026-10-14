@@ -29,6 +29,7 @@ import { UserMenu } from '@/features/auth';
 import { IMPORT_INPUT_ID } from '@/features/export';
 import type { SaveState } from '@/features/library';
 import type { ThemePreference } from '@/hooks';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import { SaveStatus } from './SaveStatus';
@@ -47,9 +48,9 @@ const THEME_ICON: Record<ThemePreference, typeof Sun> = {
 };
 
 const THEME_LABEL: Record<ThemePreference, string> = {
-  light: 'Theme: light',
-  dark: 'Theme: dark',
-  system: 'Theme: system',
+  light: 'থিম: লাইট',
+  dark: 'থিম: ডার্ক',
+  system: 'থিম: সিস্টেম অনুযায়ী',
 };
 
 export interface ToolbarProps {
@@ -133,7 +134,7 @@ export const Toolbar = ({
   const menuEntries: MenuEntry[] = [
     {
       id: 'undo',
-      label: 'Undo',
+      label: 'ফিরিয়ে নিন',
       hint: 'Ctrl+Z',
       icon: <Undo2 size={15} />,
       disabled: !canUndo,
@@ -141,7 +142,7 @@ export const Toolbar = ({
     },
     {
       id: 'redo',
-      label: 'Redo',
+      label: 'আবার করুন',
       hint: 'Ctrl+Shift+Z',
       icon: <Redo2 size={15} />,
       disabled: !canRedo,
@@ -150,32 +151,32 @@ export const Toolbar = ({
     { id: 'sep-1', separator: true },
     {
       id: 'cloud',
-      label: cloudSynced ? 'Stop syncing this CV' : 'Sync this CV to my account',
-      hint: `${cloudUsed} of ${cloudMax}`,
+      label: cloudSynced ? 'এই CV-র সিঙ্ক বন্ধ করুন' : 'এই CV আমার অ্যাকাউন্টে সিঙ্ক করুন',
+      hint: `${bn(cloudUsed)} / ${bn(cloudMax)}`,
       icon: cloudSynced ? <CloudOff size={15} /> : <Cloud size={15} />,
       onSelect: onToggleCloud,
     },
     {
       id: 'job',
-      label: 'Tailor to a job posting',
+      label: 'চাকরির বিজ্ঞপ্তি অনুযায়ী সাজান',
       icon: <Target size={15} />,
       onSelect: onOpenJob,
     },
     {
       id: 'design',
-      label: 'Change the design',
+      label: 'ডিজাইন বদলান',
       icon: <Palette size={15} />,
       onSelect: onOpenDesign,
     },
     {
       id: 'import',
-      label: 'Import a CV file',
+      label: 'CV ফাইল ইমপোর্ট করুন',
       icon: <FileUp size={15} />,
       onSelect: onOpenImport,
     },
     {
       id: 'restore',
-      label: 'Restore a JSON backup',
+      label: 'JSON ব্যাকআপ ফিরিয়ে আনুন',
       icon: <Upload size={15} />,
       /*
        * The file input is opened by script here rather than by a `<label>`:
@@ -195,7 +196,7 @@ export const Toolbar = ({
     },
     {
       id: 'shortcuts',
-      label: 'Keyboard shortcuts',
+      label: 'কীবোর্ড শর্টকাট',
       hint: '?',
       icon: <Keyboard size={15} />,
       onSelect: onOpenShortcuts,
@@ -205,7 +206,7 @@ export const Toolbar = ({
   const downloadEntries: MenuEntry[] = [
     {
       id: 'design-pdf',
-      label: 'Designed PDF',
+      label: 'ডিজাইন করা PDF',
       hint: 'Ctrl+S',
       icon: <Download size={15} />,
       disabled: pendingExport !== null,
@@ -213,7 +214,7 @@ export const Toolbar = ({
     },
     {
       id: 'ats-pdf',
-      label: 'ATS-safe PDF',
+      label: 'ATS-সেফ PDF',
       icon: <Download size={15} />,
       disabled: pendingExport !== null,
       onSelect: onExportAts,
@@ -221,7 +222,7 @@ export const Toolbar = ({
     { id: 'sep-dl', separator: true },
     {
       id: 'json',
-      label: 'JSON backup',
+      label: 'JSON ব্যাকআপ',
       icon: <FileJson size={15} />,
       onSelect: onExportJson,
     },
@@ -232,8 +233,8 @@ export const Toolbar = ({
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <Link
           href={ROUTES.home}
-          title={`${APP_NAME} home`}
-          aria-label={`${APP_NAME} home`}
+          title={`${APP_NAME} হোম`}
+          aria-label={`${APP_NAME} হোম`}
           className="tap-target rounded-control hover:bg-surface-2 flex flex-none items-center gap-2 p-1 transition"
         >
           <BrandMark className="h-8 w-8 drop-shadow-sm" />
@@ -247,12 +248,12 @@ export const Toolbar = ({
         <button
           type="button"
           onClick={onOpenLibrary}
-          title="My CVs — switch, duplicate or back up"
+          title="আমার CV — বদলান, কপি করুন বা ব্যাকআপ নিন"
           className="tap-target border-border-base bg-surface/70 text-fg-muted hover:border-primary/30 hover:bg-primary-soft hover:text-fg rounded-control inline-flex min-w-0 items-center gap-1.5 border px-2.5 py-1.5 shadow-sm transition"
         >
           <FolderOpen size={14} className="text-primary flex-none" />
           <span className="text-ui max-w-[9rem] truncate md:max-w-[16rem]">
-            {documentName || 'Untitled resume'}
+            {documentName || 'নামহীন CV'}
           </span>
         </button>
 
@@ -264,8 +265,8 @@ export const Toolbar = ({
           aria-pressed={cloudSynced}
           title={
             cloudSynced
-              ? `Kept on your account (${cloudUsed} of ${cloudMax}). Click to stop syncing.`
-              : `Only on this device. Click to sync it to your account (${cloudUsed} of ${cloudMax} used).`
+              ? `আপনার অ্যাকাউন্টে রাখা আছে (${bn(cloudUsed)}/${bn(cloudMax)})। সিঙ্ক বন্ধ করতে ক্লিক করুন।`
+              : `শুধু এই ডিভাইসে আছে। অ্যাকাউন্টে সিঙ্ক করতে ক্লিক করুন (${bn(cloudUsed)}/${bn(cloudMax)} ব্যবহৃত)।`
           }
           className={cn(
             'tap-target rounded-control text-ui-xs hidden items-center gap-1.5 border px-2 py-1 font-semibold transition lg:inline-flex',
@@ -275,7 +276,7 @@ export const Toolbar = ({
           )}
         >
           {cloudSynced ? <Cloud size={13} /> : <CloudOff size={13} />}
-          {cloudSynced ? 'Synced' : 'This device only'}
+          {cloudSynced ? 'সিঙ্ক হচ্ছে' : 'শুধু এই ডিভাইসে'}
         </button>
       </div>
 
@@ -289,7 +290,7 @@ export const Toolbar = ({
           type="button"
           onClick={onToggleScorePanel}
           aria-pressed={scorePanelOpen}
-          title="ATS score"
+          title="ATS স্কোর"
           className={cn(
             'tap-target rounded-control text-ui hidden items-center gap-2 border py-1 pr-2.5 pl-1.5 font-semibold transition md:inline-flex',
             scorePanelOpen
@@ -307,8 +308,8 @@ export const Toolbar = ({
             variant="ghost"
             onClick={onUndo}
             disabled={!canUndo}
-            aria-label="Undo"
-            title="Undo (Ctrl+Z)"
+            aria-label="ফিরিয়ে নিন"
+            title="ফিরিয়ে নিন (Ctrl+Z)"
           >
             <Undo2 size={15} />
           </Button>
@@ -317,8 +318,8 @@ export const Toolbar = ({
             variant="ghost"
             onClick={onRedo}
             disabled={!canRedo}
-            aria-label="Redo"
-            title="Redo (Ctrl+Shift+Z)"
+            aria-label="আবার করুন"
+            title="আবার করুন (Ctrl+Shift+Z)"
           >
             <Redo2 size={15} />
           </Button>
@@ -331,7 +332,7 @@ export const Toolbar = ({
           className="hidden xl:inline-flex"
           leading={<Target size={14} />}
         >
-          Job match
+          জব ম্যাচ
         </Button>
 
         <Button
@@ -341,14 +342,14 @@ export const Toolbar = ({
           className="hidden lg:inline-flex"
           leading={<Palette size={14} />}
         >
-          Design
+          ডিজাইন
         </Button>
 
         <Menu
-          label="More actions"
+          label="আরও অ্যাকশন"
           entries={menuEntries}
           trigger={(props) => (
-            <Button size="icon" variant="ghost" aria-label="More actions" title="More" {...props}>
+            <Button size="icon" variant="ghost" aria-label="আরও অ্যাকশন" title="আরও" {...props}>
               <MoreHorizontal size={17} />
             </Button>
           )}
@@ -369,17 +370,17 @@ export const Toolbar = ({
               )
             }
           >
-            Download
+            ডাউনলোড
           </Button>
           <Menu
-            label="Download options"
+            label="ডাউনলোডের বিকল্প"
             entries={downloadEntries}
             trigger={(props) => (
               <Button
                 variant="primary"
                 size="icon"
-                aria-label="More download options"
-                title="More download options"
+                aria-label="আরও ডাউনলোডের বিকল্প"
+                title="আরও ডাউনলোডের বিকল্প"
                 className="w-8 rounded-l-none border-l border-white/25"
                 {...props}
               >
@@ -426,11 +427,11 @@ const MiniRing = ({ score, color }: { score: number; color: string }) => {
         />
       </svg>
       <span
-        className="absolute text-[10px] leading-none font-bold tabular-nums"
+        className="text-ui-2xs absolute leading-none font-bold tabular-nums"
         style={{ color }}
-        aria-label={`ATS score ${clamped}`}
+        aria-label={`ATS স্কোর ${bn(clamped)}`}
       >
-        {clamped}
+        {bn(clamped)}
       </span>
     </span>
   );

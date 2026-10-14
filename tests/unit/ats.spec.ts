@@ -277,7 +277,7 @@ describe('body text size', () => {
 
   it('says so rather than guessing when the preview is not open', () => {
     expect(ruleFor(0)?.status).toBe('pass');
-    expect(ruleFor(undefined)?.message).toContain('not open');
+    expect(ruleFor(undefined)?.message).toContain('প্রিভিউ খোলা নেই');
   });
 
   it('passes comfortable type', () => {
@@ -293,7 +293,7 @@ describe('body text size', () => {
     expect(error?.status).toBe('error');
     expect(error?.targets).toEqual(['panel:design']);
     // 7.6pt needs about 120% to reach 9pt.
-    expect(error?.fixHint).toContain('120%');
+    expect(error?.fixHint).toContain('১২০%');
   });
 });
 
@@ -385,7 +385,7 @@ describe('fixes say exactly what to do', () => {
     resume.meta.theme.fontScale = 1;
     const result = rule(resume, 'body-size', context({ measuredBodyPt: 7.6 }));
 
-    expect(result?.fix).toEqual({ kind: 'font-scale', value: 1.2, label: 'Set text size to 120%' });
+    expect(result?.fix).toEqual({ kind: 'font-scale', value: 1.2, label: 'লেখার আকার ১২০% করুন' });
 
     // Already at 110% and still 8.4pt: it needs to go further, not back to 120% of 100.
     resume.meta.theme.fontScale = 1.1;

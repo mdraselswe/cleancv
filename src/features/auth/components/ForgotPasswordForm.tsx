@@ -24,14 +24,14 @@ export const ForgotPasswordForm = () => {
     return (
       <div className="flex flex-col gap-4">
         <AuthNotice tone="success">
-          If there is an account for <strong className="font-semibold">{sentTo}</strong>, a reset
-          link is on its way. It works for an hour, and only once.
+          <strong className="font-semibold">{sentTo}</strong>-এর জন্য কোনো অ্যাকাউন্ট থাকলে একটি রিসেট
+          লিংক পাঠানো হচ্ছে। লিংকটি এক ঘণ্টা কাজ করবে, আর শুধু একবারই।
         </AuthNotice>
         <Link
           href={AUTH_ROUTES.signIn}
           className="tap-target text-fg-subtle text-ui-md text-center underline"
         >
-          Back to sign in
+          সাইন-ইনে ফিরে যান
         </Link>
       </div>
     );
@@ -39,7 +39,7 @@ export const ForgotPasswordForm = () => {
 
   return (
     <form className="flex flex-col gap-3.5" onSubmit={submit} noValidate>
-      <Field label="Email" error={errors.email}>
+      <Field label="ইমেইল" error={errors.email}>
         {({ id, describedBy, invalid }) => (
           <Input
             className={AUTH_FIELD_CLASS}
@@ -65,14 +65,14 @@ export const ForgotPasswordForm = () => {
         className="justify-center"
         disabled={pending}
       >
-        {pending ? 'Sending…' : 'Send the reset link'}
+        {pending ? 'পাঠানো হচ্ছে…' : 'রিসেট লিংক পাঠান'}
       </Button>
 
       <Link
         href={AUTH_ROUTES.signIn}
         className="tap-target text-fg-subtle text-ui-md text-center underline"
       >
-        Back to sign in
+        সাইন-ইনে ফিরে যান
       </Link>
     </form>
   );

@@ -64,7 +64,7 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
 
       if (!response.ok) {
         const detail = (await response.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(detail?.error ?? 'Cloud sync is unavailable.');
+        throw new Error(detail?.error ?? 'ক্লাউড সিঙ্ক এখন পাওয়া যাচ্ছে না।');
       }
 
       const body = (await response.json()) as Record<string, unknown>;
@@ -92,7 +92,7 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
       // Said once per refusal, in words: a CV that quietly stayed local is a CV
       // the reader believes is safe somewhere it is not.
       for (const entry of refused) {
-        toast.error(CLOUD_REFUSAL_MESSAGE[entry.reason] ?? 'This CV could not be synced.');
+        toast.error(CLOUD_REFUSAL_MESSAGE[entry.reason] ?? 'এই CV সিঙ্ক করা যায়নি।');
       }
       for (const document of [...allDocuments, ...remoteDocuments]) {
         uploadedAt.set(document.meta.id, document.meta.updatedAt);
@@ -106,7 +106,7 @@ const runCloudSync = async (forcePull = false): Promise<void> => {
     } catch (error) {
       useCloudSyncStore.setState({
         status: 'error',
-        error: error instanceof Error ? error.message : 'Cloud sync is unavailable.',
+        error: error instanceof Error ? error.message : 'ক্লাউড সিঙ্ক এখন পাওয়া যাচ্ছে না।',
       });
     } finally {
       activeSync = null;

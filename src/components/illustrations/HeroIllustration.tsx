@@ -126,10 +126,10 @@ export const HeroIllustration = ({ className }: IllustrationProps) => (
         strokeLinejoin="round"
       />
       <text x="372" y="53" fontSize="9" fontWeight="600" fill="var(--app-fg-subtle)" fontFamily="inherit">
-        ATS SCORE
+        ATS স্কোর
       </text>
       <text x="372" y="69" fontSize="15" fontWeight="800" fill="var(--app-fg)" fontFamily="inherit">
-        94 / 100
+        ৯৪ / ১০০
       </text>
     </g>
 

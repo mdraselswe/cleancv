@@ -28,7 +28,7 @@ export const dynamic = 'force-dynamic';
 const unconfigured = (request: Request): Response =>
   new URL(request.url).pathname.endsWith('/get-session')
     ? Response.json(null)
-    : Response.json({ error: 'Accounts are not configured on this deployment.' }, { status: 503 });
+    : Response.json({ error: 'এই ডেপ্লয়মেন্টে অ্যাকাউন্ট সেট করা নেই।' }, { status: 503 });
 
 /*
  * The handler is built per request rather than at module scope so a build with

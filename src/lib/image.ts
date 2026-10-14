@@ -90,7 +90,7 @@ const decode = async (file: Blob): Promise<ImageBitmap> => {
     } catch {
       // Every error this module throws is written to be shown to the reader, so
       // the browser's own wording does not escape into the interface.
-      throw new Error('That file could not be read as an image.');
+      throw new Error('ফাইলটি ছবি হিসেবে পড়া যায়নি।');
     }
   }
 };
@@ -118,7 +118,7 @@ const render = (bitmap: ImageBitmap, scale: number, quality: number): Downscaled
   canvas.height = height;
 
   const context = canvas.getContext('2d');
-  if (!context) throw new Error('This browser could not open a canvas to resize the image.');
+  if (!context) throw new Error('ছবি ছোট করার জন্য এই ব্রাউজার ক্যানভাস খুলতে পারেনি।');
 
   // The canvas starts transparent and stays that way where the source is, which
   // is what carries a signature's background through.
@@ -144,7 +144,7 @@ const render = (bitmap: ImageBitmap, scale: number, quality: number): Downscaled
  */
 export const downscaleImage = async (file: Blob, budget: ImageBudget): Promise<DownscaledImage> => {
   if (file.size > budget.uploadBytes) {
-    throw new Error(`Pick an image under ${Math.round(budget.uploadBytes / (1024 * 1024))} MB.`);
+    throw new Error(`${Math.round(budget.uploadBytes / (1024 * 1024))} MB-এর কম আকারের একটি ছবি বেছে নিন।`);
   }
 
   const bitmap = await decode(file);

@@ -38,7 +38,7 @@ export const IdentitySection = () => {
   return (
     <div className="flex flex-col gap-5">
       <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-        <Field label="Full name" className="col-span-full">
+        <Field label="পুরো নাম" className="col-span-full">
           {({ id }) => (
             <Input
               id={id}
@@ -51,9 +51,9 @@ export const IdentitySection = () => {
         </Field>
 
         <Field
-          label="Professional headline"
+          label="পেশাগত শিরোনাম"
           className="col-span-full"
-          hint="The role you are applying for, not the one you hold."
+          hint="যে পদের জন্য আবেদন করছেন সেটি লিখুন, বর্তমান পদটি নয়।"
         >
           {({ id, describedBy }) => (
             <Input
@@ -69,10 +69,10 @@ export const IdentitySection = () => {
       </div>
 
       <ImageUpload
-        label="Photo"
+        label="ছবি"
         value={basics.photo}
         budget={IMAGE_BUDGET}
-        hint="Optional, and a parse risk. Leave it off for US, UK and Canadian applications."
+        hint="ঐচ্ছিক, আর এতে পার্সারের ঝুঁকি আছে। যুক্তরাষ্ট্র, যুক্তরাজ্য ও কানাডার আবেদনে ছবি দেবেন না।"
         onChange={(photo) => {
           // A new photo is a new subject: the old framing described someone
           // else's head, so it goes back to centre. See ADR-025.
@@ -92,9 +92,9 @@ export const IdentitySection = () => {
       ) : null}
 
       <div>
-        <SectionLabel className="mb-2.5">Contact</SectionLabel>
+        <SectionLabel className="mb-2.5">যোগাযোগ</SectionLabel>
         <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-          <Field label="Phone">
+          <Field label="ফোন">
             {({ id }) => (
               <Input
                 id={id}
@@ -106,7 +106,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Alternate phone">
+          <Field label="বিকল্প ফোন">
             {({ id }) => (
               <Input
                 id={id}
@@ -117,7 +117,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Email" className="col-span-full">
+          <Field label="ইমেইল" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -129,7 +129,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Location" className="col-span-full" hint="City and country is enough.">
+          <Field label="অবস্থান" className="col-span-full" hint="শহর আর দেশের নাম দিলেই যথেষ্ট।">
             {({ id, describedBy }) => (
               <Input
                 id={id}
@@ -165,7 +165,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Portfolio" className="col-span-full">
+          <Field label="পোর্টফোলিও" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -177,7 +177,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Present address" className="col-span-full">
+          <Field label="বর্তমান ঠিকানা" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -187,7 +187,7 @@ export const IdentitySection = () => {
             )}
           </Field>
 
-          <Field label="Permanent address" className="col-span-full">
+          <Field label="স্থায়ী ঠিকানা" className="col-span-full">
             {({ id }) => (
               <Input
                 id={id}
@@ -200,13 +200,13 @@ export const IdentitySection = () => {
       </div>
 
       <div>
-        <SectionLabel className="mb-2.5">Other links</SectionLabel>
+        <SectionLabel className="mb-2.5">অন্যান্য লিংক</SectionLabel>
         <div className="flex flex-col gap-2">
           {contact.links.map((link) => (
             <div key={link.id} className="flex gap-2">
               <Input
                 value={link.label}
-                placeholder="Label"
+                placeholder="লেবেল"
                 className="w-40"
                 onChange={(event) => setLink(link.id, { label: event.target.value })}
               />
@@ -218,7 +218,7 @@ export const IdentitySection = () => {
               />
               <button
                 type="button"
-                aria-label="Remove link"
+                aria-label="লিংক সরান"
                 onClick={() =>
                   actions.edit((draft) => {
                     draft.contact.links = draft.contact.links.filter((item) => item.id !== link.id);
@@ -243,7 +243,7 @@ export const IdentitySection = () => {
                 })
               }
             >
-              Add link
+              লিংক যোগ করুন
             </Button>
           ) : null}
         </div>

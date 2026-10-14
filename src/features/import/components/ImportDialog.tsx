@@ -51,10 +51,10 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
   };
 
   return (
-    <Modal label="Import a CV" onClose={close}>
+    <Modal label="CV ইমপোর্ট করুন" onClose={close}>
       <ModalHeader
-        title="Import a CV"
-        subtitle="PDF, DOCX or a screenshot. Everything is reviewed before it is written."
+        title="CV ইমপোর্ট করুন"
+        subtitle="PDF, DOCX বা স্ক্রিনশট। লেখার আগে সবকিছু আপনি দেখে নিতে পারবেন।"
         onClose={close}
       />
 
@@ -62,7 +62,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
           <SmartImportSettings onDone={() => setShowSettings(false)} />
           <Button variant="ghost" className="mt-3" onClick={() => setShowSettings(false)}>
-            Back
+            পেছনে যান
           </Button>
         </div>
       ) : state.stage === 'restore' && state.restore ? (
@@ -74,22 +74,20 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
           <div className="flex gap-3">
             <CheckCircle2 size={20} className="text-success mt-0.5 flex-none" />
             <div className="min-w-0">
-              <p className="text-fg text-ui-md font-medium">This PDF was made by CleanCV</p>
+              <p className="text-fg text-ui-md font-medium">এই PDF CleanCV দিয়ে বানানো</p>
               <p className="text-fg-subtle text-ui-xs mt-1">
-                It carries the CV inside it, so everything comes back exactly as it was — every
-                section, the design and the wording. Nothing is guessed from the page.
+                এটির ভেতরেই CV রাখা আছে, তাই সবকিছু ঠিক যেমন ছিল তেমনই ফিরে আসবে — প্রতিটি সেকশন, ডিজাইন ও লেখা। পেজ থেকে কিছুই আন্দাজ করা হয় না।
               </p>
             </div>
           </div>
 
           <p className="bg-surface-2 text-fg-muted rounded-control text-ui-xs px-3 py-2">
-            Opening it replaces what is in the editor now. Your other CVs are untouched — this is
-            one document in the library.
+            এটি খুললে এডিটরে এখন যা আছে তা বদলে যাবে। আপনার অন্য CV-গুলো অপরিবর্তিত থাকবে — এটি লাইব্রেরির একটি ডকুমেন্ট মাত্র।
           </p>
 
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={reset}>
-              Choose another file
+              অন্য ফাইল বেছে নিন
             </Button>
             <Button
               variant="primary"
@@ -99,7 +97,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
                 onClose();
               }}
             >
-              Restore this CV
+              এই CV ফিরিয়ে আনুন
             </Button>
           </div>
         </div>
@@ -145,18 +143,18 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
                   </div>
                 ) : null}
                 <Button size="sm" variant="ghost" onClick={cancel}>
-                  Cancel
+                  বাতিল
                 </Button>
               </div>
             ) : (
               <>
                 <FileUp size={22} className="text-fg-subtle mx-auto" />
-                <p className="text-fg text-ui mt-2">Drop a file here</p>
+                <p className="text-fg text-ui mt-2">এখানে একটি ফাইল ছেড়ে দিন</p>
                 <label
                   htmlFor={FILE_INPUT_ID}
                   className="border-border-base hover:bg-surface-2 rounded-control text-ui mt-2 inline-flex h-8 cursor-pointer items-center border px-3 font-medium transition"
                 >
-                  Choose a file
+                  একটি ফাইল বেছে নিন
                 </label>
                 <input
                   ref={fileInput}
@@ -181,14 +179,14 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
 
           <div className="mt-4">
             <div className="flex items-center justify-between">
-              <span className="text-fg text-ui font-medium">How to read it</span>
+              <span className="text-fg text-ui font-medium">কীভাবে পড়বে</span>
               <Button
                 size="sm"
                 variant="ghost"
                 leading={<Settings2 size={13} />}
                 onClick={() => setShowSettings(true)}
               >
-                {smartAvailable ? 'Change model' : 'Set up smart import'}
+                {smartAvailable ? 'মডেল বদলান' : 'স্মার্ট ইমপোর্ট চালু করুন'}
               </Button>
             </div>
 
@@ -210,11 +208,11 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
                 />
                 <span className="min-w-0">
                   <span className="text-fg text-ui block font-medium">
-                    On this device — free, private
+                    এই ডিভাইসে — ফ্রি, ব্যক্তিগত
                   </span>
                   <span className="text-fg-subtle text-ui-xs block">
-                    Reads headings, dates and bullets itself. Nothing is uploaded. Good on a plain
-                    one-column CV, weaker on a heavily designed one.
+                    শিরোনাম, তারিখ ও বুলেট নিজেই পড়ে। কিছুই আপলোড হয় না। সাদামাটা এক-কলামের CV-তে
+                    ভালো, ভারী ডিজাইনের CV-তে দুর্বল।
                   </span>
                 </span>
               </label>
@@ -235,11 +233,11 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
                   />
                   <span className="min-w-0">
                     <span className="text-fg text-ui flex items-center gap-1.5 font-medium">
-                      <Sparkles size={13} /> Smart import
+                      <Sparkles size={13} /> স্মার্ট ইমপোর্ট
                     </span>
                     <span className="text-fg-subtle text-ui-xs block">
-                      Sends the document to the model you configured. Handles screenshots and
-                      two-column layouts far better.
+                      ডকুমেন্টটি আপনার ঠিক করা মডেলে পাঠায়। স্ক্রিনশট আর দুই-কলামের লেআউট অনেক ভালো
+                      সামলায়।
                     </span>
                   </span>
                 </label>

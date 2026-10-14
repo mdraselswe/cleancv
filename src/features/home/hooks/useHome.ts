@@ -19,6 +19,7 @@ import {
 } from '@/features/library';
 import { useResumeActions, type Resume } from '@/features/resume';
 import { getTemplate } from '@/features/templates';
+import { bn } from '@/lib/bn';
 
 /**
  * Everything the home screen *does*: create, open, rename, duplicate, remove,
@@ -54,7 +55,7 @@ export const useHome = () => {
   const guardLimit = useCallback((): boolean => {
     if (!atLimit) return true;
 
-    toast.error(`You can keep ${MAX_DOCUMENTS} CVs. Delete one to make room.`);
+    toast.error(`আপনি সর্বোচ্চ ${bn(MAX_DOCUMENTS)}টি CV রাখতে পারেন। জায়গা করতে একটি মুছে ফেলুন।`);
 
     return false;
   }, [atLimit]);
@@ -98,7 +99,7 @@ export const useHome = () => {
       if (!guardLimit()) return;
 
       await actions.duplicate(id);
-      toast.success('Copy created');
+      toast.success('কপি তৈরি হয়েছে');
     },
     [actions, guardLimit],
   );
@@ -115,7 +116,7 @@ export const useHome = () => {
     async (id: string) => {
       await actions.remove(id);
       setDeleting(null);
-      toast('CV deleted');
+      toast('CV মুছে ফেলা হয়েছে');
     },
     [actions],
   );
@@ -157,15 +158,15 @@ export const useHome = () => {
       const result = parseBackup(await file.text());
 
       if (!result.ok) {
-        toast.error(result.error ?? 'That file could not be read.');
+        toast.error(result.error ?? 'ফাইলটি পড়া যায়নি।');
 
         return;
       }
 
       const landed = await actions.importDocuments(result.documents);
 
-      if (landed === 0) toast('Nothing to restore — everything in that file is already here.');
-      else toast.success(`Restored ${landed} CV${landed === 1 ? '' : 's'}`);
+      if (landed === 0) toast('ফিরিয়ে আনার মতো কিছু নেই — ফাইলের সবকিছু আগে থেকেই এখানে আছে।');
+      else toast.success(`${bn(landed)}টি CV ফিরিয়ে আনা হয়েছে`);
     },
     [actions],
   );
@@ -175,7 +176,7 @@ export const useHome = () => {
     const filename = backupFilename();
 
     downloadText(serializeBackup(all), filename);
-    toast.success(`Backed up ${all.length} CV${all.length === 1 ? '' : 's'}`, {
+    toast.success(`${bn(all.length)}টি CV-এর ব্যাকআপ নেওয়া হয়েছে`, {
       description: filename,
     });
   }, []);

@@ -34,7 +34,7 @@ const open = (): Promise<IDBDatabase> => {
   connection = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     const deadline = setTimeout(
-      () => reject(new Error('IndexedDB did not respond — another tab may have it open')),
+      () => reject(new Error('IndexedDB সাড়া দেয়নি — অন্য কোনো ট্যাবে এটি খোলা থাকতে পারে')),
       OPEN_TIMEOUT_MS,
     );
 
@@ -66,9 +66,9 @@ const open = (): Promise<IDBDatabase> => {
       settle(resolve)(db);
     };
     request.onerror = () =>
-      settle(reject)(request.error ?? new Error('IndexedDB is unavailable'));
+      settle(reject)(request.error ?? new Error('IndexedDB পাওয়া যাচ্ছে না'));
     // Another tab is holding an older version open.
-    request.onblocked = () => settle(reject)(new Error('Another tab is upgrading the database'));
+    request.onblocked = () => settle(reject)(new Error('অন্য একটি ট্যাব ডেটাবেস আপগ্রেড করছে'));
   });
 
   // A failed connection must not be cached, or every later call fails with it.
@@ -90,7 +90,7 @@ const run = async <T>(
     const request = action(transaction.objectStore(STORE));
 
     request.onsuccess = () => resolve(request.result as T);
-    request.onerror = () => reject(request.error ?? new Error('IndexedDB request failed'));
+    request.onerror = () => reject(request.error ?? new Error('IndexedDB-র অনুরোধ ব্যর্থ হয়েছে'));
   });
 };
 

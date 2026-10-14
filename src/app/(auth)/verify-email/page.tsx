@@ -9,7 +9,7 @@ import { isAuthConfigured } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
-export const metadata: Metadata = { title: 'Email confirmed' };
+export const metadata: Metadata = { title: 'ইমেইল নিশ্চিত হয়েছে' };
 export const dynamic = 'force-dynamic';
 
 /**
@@ -25,10 +25,10 @@ export const dynamic = 'force-dynamic';
  * page asks for the address and offers the link from there.
  */
 const FAILURE_MESSAGE: Record<string, string> = {
-  TOKEN_EXPIRED: 'That link has expired. They last an hour.',
-  INVALID_TOKEN: 'That link is not valid any more. Confirmation links work once.',
-  USER_NOT_FOUND: 'That link belongs to an account that no longer exists.',
-  INVALID_USER: 'That link belongs to a different account than the one signed in here.',
+  TOKEN_EXPIRED: 'ওই লিংকের মেয়াদ শেষ। লিংক এক ঘণ্টা কাজ করে।',
+  INVALID_TOKEN: 'ওই লিংকটি আর বৈধ নয়। নিশ্চিতকরণ লিংক একবারই কাজ করে।',
+  USER_NOT_FOUND: 'ওই লিংকটি এমন একটি অ্যাকাউন্টের, যা আর নেই।',
+  INVALID_USER: 'ওই লিংকটি এখানে সাইন-ইন করা অ্যাকাউন্টের নয়, অন্য একটির।',
 };
 
 export default async function VerifyEmailPage({
@@ -43,19 +43,19 @@ export default async function VerifyEmailPage({
 
   if (error) {
     return (
-      <AuthShell title="That link did not work">
+      <AuthShell title="লিংকটি কাজ করেনি">
         <div className="flex flex-col gap-4">
           <AuthNotice tone="error">
-            {FAILURE_MESSAGE[error] ?? 'That confirmation link could not be used.'}
+            {FAILURE_MESSAGE[error] ?? 'নিশ্চিতকরণ লিংকটি ব্যবহার করা যায়নি।'}
           </AuthNotice>
           <p className="text-fg-subtle text-ui-md leading-relaxed">
-            Sign in with your email and password, and the page will offer to send a fresh link.
+            ইমেইল ও পাসওয়ার্ড দিয়ে সাইন-ইন করুন, পেজটি নতুন একটি লিংক পাঠানোর সুযোগ দেবে।
           </p>
           <Link
             href={AUTH_ROUTES.signIn}
             className="tap-target text-fg text-ui-md text-center font-medium underline"
           >
-            Go to sign in
+            সাইন-ইনে যান
           </Link>
         </div>
       </AuthShell>
@@ -64,32 +64,32 @@ export default async function VerifyEmailPage({
 
   if (!user) {
     return (
-      <AuthShell title="Check your inbox" subtitle="The confirmation link works for an hour.">
+      <AuthShell title="আপনার ইনবক্স দেখুন" subtitle="নিশ্চিতকরণ লিংক এক ঘণ্টা কাজ করে।">
         <Link
           href={AUTH_ROUTES.signIn}
           className="tap-target text-fg text-ui-md text-center font-medium underline"
         >
-          Back to sign in
+          সাইন-ইনে ফিরে যান
         </Link>
       </AuthShell>
     );
   }
 
   return (
-    <AuthShell title="Email confirmed" subtitle={`You are signed in as ${user.email}.`}>
+    <AuthShell title="ইমেইল নিশ্চিত হয়েছে" subtitle={`আপনি ${user.email} হিসেবে সাইন-ইন করা আছেন।`}>
       <div className="flex flex-col gap-4">
         <p className="text-fg-muted text-ui-md flex items-start gap-3 leading-relaxed">
           <span className="bg-success/12 text-success rounded-control flex h-9 w-9 flex-none items-center justify-center">
             <MailCheck size={17} aria-hidden="true" />
           </span>
-          Downloads are open now. Everything you built is where you left it.
+          ডাউনলোড এখন চালু। আপনার বানানো সবকিছু যেখানে রেখেছিলেন সেখানেই আছে।
         </p>
 
         <Link
           href={ROUTES.editor}
           className="bg-primary text-primary-fg rounded-control tap-target text-ui-md flex h-11 items-center justify-center font-medium transition hover:brightness-110"
         >
-          Back to my CV
+          আমার CV-তে ফিরে যান
         </Link>
       </div>
     </AuthShell>

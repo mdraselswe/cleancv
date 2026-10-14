@@ -31,19 +31,17 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-fg-subtle text-[12.5px]">
-        Smart import sends the CV&apos;s text — or the image itself — to a model you choose. Anything
-        speaking the OpenAI <code>/chat/completions</code> shape works. The request goes through this
-        app&apos;s server and nothing is kept.
+      <p className="text-fg-subtle text-ui-xs">
+        স্মার্ট ইমপোর্ট CV-র লেখা — অথবা ছবিটিই — আপনার বেছে নেওয়া একটি মডেলে পাঠায়। OpenAI-র <code>/chat/completions</code> ধরনের যেকোনো সার্ভিস চলে। অনুরোধটি এই অ্যাপের সার্ভারের ভেতর দিয়ে যায়, আর কিছুই জমা থাকে না।
       </p>
 
-      <Field label="Start from a provider" hint={preset?.note}>
+      <Field label="একটি প্রোভাইডার থেকে শুরু করুন" hint={preset?.note}>
         {({ id, describedBy }) => (
           <Select
             id={id}
             aria-describedby={describedBy}
             value={presetId}
-            placeholder="Choose one…"
+            placeholder="একটি বেছে নিন…"
             options={SMART_PRESETS.map((entry) => ({ value: entry.id, label: entry.label }))}
             onChange={(event) => {
               const chosen = SMART_PRESETS.find((entry) => entry.id === event.target.value);
@@ -54,7 +52,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
         )}
       </Field>
 
-      <Field label="Endpoint" hint="The base URL, without /chat/completions.">
+      <Field label="এন্ডপয়েন্ট" hint="বেস URL, /chat/completions ছাড়া।">
         {({ id, describedBy }) => (
           <Input
             id={id}
@@ -66,7 +64,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
         )}
       </Field>
 
-      <Field label="Model">
+      <Field label="মডেল">
         {({ id, describedBy }) => (
           <Input
             id={id}
@@ -79,8 +77,8 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
       </Field>
 
       <Field
-        label="API key"
-        hint="Stored in this browser only. Leave blank for a local model that needs none."
+        label="API কী"
+        hint="শুধু এই ব্রাউজারে রাখা হয়। যে লোকাল মডেলে লাগে না, সেখানে ফাঁকা রাখুন।"
       >
         {({ id, describedBy }) => (
           <Input
@@ -89,7 +87,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
             autoComplete="off"
             aria-describedby={describedBy}
             value={draft.apiKey}
-            placeholder="Optional"
+            placeholder="ঐচ্ছিক"
             onChange={(event) => patch({ apiKey: event.target.value })}
           />
         )}
@@ -98,8 +96,8 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
       <Switch
         checked={draft.useVision}
         onChange={(useVision) => patch({ useVision })}
-        label="Send screenshots as images"
-        description="Lets the model see the layout instead of reading OCR text. Needs a model that accepts images."
+        label="স্ক্রিনশট ছবি হিসেবে পাঠান"
+        description="OCR লেখা পড়ার বদলে মডেল সরাসরি লেআউট দেখতে পায়। ছবি নিতে পারে এমন মডেল লাগবে।"
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -110,7 +108,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
             onDone?.();
           }}
         >
-          Save
+          সংরক্ষণ
         </Button>
         {saved.endpoint ? (
           <Button
@@ -120,15 +118,13 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
               setDraft({ endpoint: '', model: '', apiKey: '', useVision: true });
             }}
           >
-            Remove
+            সরান
           </Button>
         ) : null}
       </div>
 
-      <p className="text-fg-subtle text-[11.5px]">
-        A free tier is not automatically a private one — several say usage may be retained to improve
-        their models. Worth knowing before importing someone else&apos;s CV. A model running on this
-        machine sends nothing anywhere.
+      <p className="text-fg-subtle text-ui-2xs">
+        ফ্রি প্ল্যান মানেই ব্যক্তিগত নয় — অনেকেই বলে ব্যবহারের তথ্য তাদের মডেল উন্নত করতে রাখা হতে পারে। অন্য কারও CV ইমপোর্ট করার আগে এটি জানা দরকার। আপনার নিজের কম্পিউটারে চলা মডেল কোথাও কিছু পাঠায় না।
       </p>
     </div>
   );

@@ -14,6 +14,7 @@ import { Badge, Button, Menu, type Hue, type MenuEntry } from '@/components/ui';
 import type { DocumentMeta } from '@/features/library';
 import type { Resume } from '@/features/resume';
 import { TemplatePreview, getTemplate } from '@/features/templates';
+import { bn } from '@/lib/bn';
 import { formatRelativeTime } from '@/lib/date';
 import { isBlank } from '@/lib/text';
 import { cn } from '@/lib/cn';
@@ -59,7 +60,7 @@ export const DocumentCard = ({
   onDuplicate,
   onDelete,
 }: DocumentCardProps) => {
-  const title = meta.name || meta.personName || resume?.basics.fullName || 'Untitled CV';
+  const title = meta.name || meta.personName || resume?.basics.fullName || 'নামহীন CV';
   const empty =
     resume !== undefined &&
     isBlank(resume.basics.fullName) &&
@@ -67,18 +68,18 @@ export const DocumentCard = ({
     resume.experience.length === 0;
 
   const entries: MenuEntry[] = [
-    { id: 'open', label: 'Open', icon: <FilePenLine size={15} />, onSelect: onOpen },
-    { id: 'rename', label: 'Rename', icon: <PencilLine size={15} />, onSelect: onRename },
-    { id: 'duplicate', label: 'Duplicate', icon: <Copy size={15} />, onSelect: onDuplicate },
+    { id: 'open', label: 'খুলুন', icon: <FilePenLine size={15} />, onSelect: onOpen },
+    { id: 'rename', label: 'নাম বদলান', icon: <PencilLine size={15} />, onSelect: onRename },
+    { id: 'duplicate', label: 'কপি করুন', icon: <Copy size={15} />, onSelect: onDuplicate },
     {
       id: 'sync',
-      label: synced ? 'Stop syncing' : 'Sync to my account',
-      hint: `${syncUsed} of ${syncMax}`,
+      label: synced ? 'সিঙ্ক বন্ধ করুন' : 'আমার অ্যাকাউন্টে সিঙ্ক করুন',
+      hint: `${bn(syncUsed)} / ${bn(syncMax)}`,
       icon: synced ? <CloudOff size={15} /> : <Cloud size={15} />,
       onSelect: onToggleSync,
     },
     { id: 'sep', separator: true },
-    { id: 'delete', label: 'Delete', icon: <Trash2 size={15} />, danger: true, onSelect: onDelete },
+    { id: 'delete', label: 'মুছে ফেলুন', icon: <Trash2 size={15} />, danger: true, onSelect: onDelete },
   ];
 
   return (
@@ -91,7 +92,7 @@ export const DocumentCard = ({
       <button
         type="button"
         onClick={onOpen}
-        aria-label={`Open ${title}`}
+        aria-label={`খুলুন: ${title}`}
         className="bg-dots rounded-t-panel relative flex flex-col items-center overflow-hidden px-4 pt-5 pb-0 text-left"
         style={{
           background:
@@ -111,7 +112,7 @@ export const DocumentCard = ({
 
           {empty ? (
             <span className="bg-surface/75 absolute inset-0 flex items-center justify-center backdrop-blur-[1px]">
-              <Badge tone="neutral">Empty draft</Badge>
+              <Badge tone="neutral">ফাঁকা খসড়া</Badge>
             </span>
           ) : null}
         </span>
@@ -121,7 +122,7 @@ export const DocumentCard = ({
         <div className="min-w-0 flex-1">
           <h3 className="text-fg text-ui-md truncate font-semibold">{title}</h3>
           <p className="text-fg-subtle text-ui-xs mt-0.5 truncate">
-            Edited {formatRelativeTime(meta.updatedAt)}
+            সম্পাদনা: {formatRelativeTime(meta.updatedAt)}
             {resume ? ` · ${getTemplate(resume.meta.templateId).meta.name}` : ''}
           </p>
           <button
@@ -129,8 +130,8 @@ export const DocumentCard = ({
             onClick={onToggleSync}
             title={
               synced
-                ? 'Kept on your account. Click to stop syncing.'
-                : `Only on this device. Click to sync (${syncUsed} of ${syncMax} used).`
+                ? 'আপনার অ্যাকাউন্টে রাখা আছে। সিঙ্ক বন্ধ করতে ক্লিক করুন।'
+                : `শুধু এই ডিভাইসে আছে। সিঙ্ক করতে ক্লিক করুন (${bn(syncUsed)}/${bn(syncMax)} ব্যবহৃত)।`
             }
             className={`tap-target text-ui-2xs mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold transition ${
               synced
@@ -139,18 +140,18 @@ export const DocumentCard = ({
             }`}
           >
             {synced ? <Cloud size={11} /> : <CloudOff size={11} />}
-            {synced ? 'Synced to account' : 'This device only'}
+            {synced ? 'অ্যাকাউন্টে সিঙ্ক হচ্ছে' : 'শুধু এই ডিভাইসে'}
           </button>
         </div>
 
         <Menu
-          label={`Actions for ${title}`}
+          label={`${title}-এর অ্যাকশন`}
           entries={entries}
           trigger={(props) => (
             <Button
               size="icon"
               variant="ghost"
-              aria-label={`Actions for ${title}`}
+              aria-label={`${title}-এর অ্যাকশন`}
               className="-mt-1 -mr-1.5"
               {...props}
             >
@@ -161,8 +162,8 @@ export const DocumentCard = ({
       </div>
 
       {active ? (
-        <span className="bg-hue absolute top-3 left-3 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase shadow-sm">
-          Last opened
+        <span className="bg-hue text-ui-2xs absolute top-3 left-3 rounded-full px-2.5 py-0.5 font-bold text-white shadow-sm">
+          সর্বশেষ খোলা
         </span>
       ) : null}
     </article>

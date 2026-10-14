@@ -34,7 +34,7 @@ export const SplitPane = ({
 
       <div
         {...handleProps}
-        aria-label="Resize editor pane"
+        aria-label="এডিটর প্যানের আকার বদলান"
         className={cn(
           'bg-border-base group relative w-0.5 flex-none cursor-col-resize transition',
           'hover:bg-primary focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',

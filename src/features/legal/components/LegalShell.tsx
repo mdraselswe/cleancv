@@ -33,21 +33,21 @@ export const LegalShell = ({ title, summary, children }: LegalShellProps) => (
         className="tap-target text-fg-muted hover:text-fg text-ui-md inline-flex w-fit items-center gap-1.5 font-medium transition"
       >
         <ArrowLeft size={15} aria-hidden="true" />
-        Back to {APP_NAME}
+        {APP_NAME}-এ ফিরে যান
       </Link>
 
       <header className="flex flex-col gap-2">
         <span className="hue-indigo bg-hue-soft text-hue-strong flex h-11 w-11 items-center justify-center rounded-card">
           <ShieldCheck size={22} aria-hidden="true" />
         </span>
-        <h1 className="app-gradient-text w-fit text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <h1 className="app-gradient-text w-fit text-3xl font-extrabold sm:text-4xl">
           {title}
         </h1>
         <p className="text-fg-muted text-ui-lg leading-relaxed">{summary}</p>
         <p className="text-fg-subtle text-ui-xs">
-          Last updated{' '}
+          সর্বশেষ হালনাগাদ{' '}
           <time dateTime={LEGAL_UPDATED}>
-            {new Date(LEGAL_UPDATED).toLocaleDateString('en-GB', {
+            {new Date(LEGAL_UPDATED).toLocaleDateString('bn-BD', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
@@ -62,10 +62,10 @@ export const LegalShell = ({ title, summary, children }: LegalShellProps) => (
 
       <footer className="text-fg-subtle text-ui-md flex flex-wrap items-center gap-x-4 gap-y-2">
         <Link href={LEGAL_ROUTES.privacy} className="tap-target hover:text-fg underline">
-          Privacy
+          গোপনীয়তা
         </Link>
         <Link href={LEGAL_ROUTES.terms} className="tap-target hover:text-fg underline">
-          Terms
+          শর্তাবলি
         </Link>
         <Link href={ROUTES.editor} className="tap-target hover:text-fg underline">
           {APP_NAME}

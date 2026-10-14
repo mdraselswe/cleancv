@@ -2,6 +2,7 @@
 
 import { Field, Input, MonthInput, RichTextEditor, Select, TagInput } from '@/components/ui';
 import type { DateRange } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import type { ResumeIconKey } from '@/constants';
@@ -71,7 +72,7 @@ export const FieldRenderer = ({ field, entry, onChange, hint }: FieldRendererPro
           label={field.label}
           hint={field.hint}
           className={cn('col-span-full', className)}
-          adornment={field.max ? `${value.length}/${field.max}` : undefined}
+          adornment={field.max ? `${bn(value.length)}/${bn(field.max)}` : undefined}
         >
           {({ id, describedBy }) => (
             <RichTextEditor

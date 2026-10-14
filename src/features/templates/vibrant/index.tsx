@@ -14,9 +14,9 @@ import './vibrant.css';
 
 export const meta: TemplateMeta = {
   id: 'vibrant',
-  name: 'Vibrant',
+  name: 'প্রাণবন্ত',
   description:
-    'Gradient banner, timeline experience and skill meters. Built to be looked at — pair it with the ATS export when applying online.',
+    'গ্রেডিয়েন্ট ব্যানার, টাইমলাইন অভিজ্ঞতা ও দক্ষতার মিটার। দেখার জন্য বানানো — অনলাইনে আবেদনের সময় ATS এক্সপোর্টের সঙ্গে ব্যবহার করুন।',
   category: 'creative',
   atsBaseline: 60,
   supports: {

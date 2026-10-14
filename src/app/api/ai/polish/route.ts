@@ -143,14 +143,14 @@ export async function POST(request: Request) {
   const user = await getSessionUser(request.headers, { fresh: true });
 
   if (!user || !isAiAllowed(user.email)) {
-    return fail(403, 'AI polish is not available for this account.', 'ai_not_allowed');
+    return fail(403, 'এই অ্যাকাউন্টে AI পরিমার্জন পাওয়া যায় না।', 'ai_not_allowed');
   }
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return fail(400, 'That text could not be polished.');
+  if (!parsed.success) return fail(400, 'এই লেখাটি পরিমার্জন করা যায়নি।');
 
   if (!(await spendAllowance(user.id))) {
-    return fail(429, 'You have used this hour’s AI polishes. Try again later.', 'ai_rate_limited');
+    return fail(429, 'এই ঘণ্টার AI পরিমার্জনের সীমা শেষ। পরে আবার চেষ্টা করুন।', 'ai_rate_limited');
   }
 
   const env = serverEnv();
@@ -203,7 +203,7 @@ export async function POST(request: Request) {
 
     if (response.ok) working = model;
   } catch {
-    return fail(502, 'The AI service did not answer. Try again in a moment.');
+    return fail(502, 'AI সার্ভিস সাড়া দেয়নি। একটু পরে আবার চেষ্টা করুন।');
   }
 
   if (!response.ok) {
@@ -219,10 +219,10 @@ export async function POST(request: Request) {
     return fail(
       response.status === 429 ? 429 : 502,
       response.status === 429
-        ? 'The free AI quota is used up for now. Try again later.'
+        ? 'ফ্রি AI কোটা আপাতত শেষ। পরে আবার চেষ্টা করুন।'
         : response.status === 503
-          ? 'Google’s AI is busy right now. Try again in a minute.'
-          : 'The AI service could not rewrite that.',
+          ? 'Google-এর AI এখন ব্যস্ত। এক মিনিট পরে আবার চেষ্টা করুন।'
+          : 'AI সার্ভিস এটি নতুন করে লিখতে পারেনি।',
       response.status === 429 ? 'ai_quota' : undefined,
     );
   }
@@ -235,12 +235,12 @@ export async function POST(request: Request) {
     payload?.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
   const suggestion = cleanSuggestion(raw);
 
-  if (!suggestion) return fail(502, 'The AI service returned nothing usable.');
+  if (!suggestion) return fail(502, 'AI সার্ভিস ব্যবহারযোগ্য কিছু ফেরত দেয়নি।');
 
   if (introducesNewNumbers(input.text, suggestion)) {
     return fail(
       422,
-      'The rewrite added a number that is not in your text, so it was discarded. Try again.',
+      'নতুন লেখায় এমন একটি সংখ্যা যোগ হয়েছিল যা আপনার লেখায় নেই, তাই এটি বাদ দেওয়া হয়েছে। আবার চেষ্টা করুন।',
       'ai_invented',
     );
   }

@@ -129,7 +129,7 @@ export const migrateLegacyResume = async (): Promise<CvDocument | null> => {
 
   try {
     const parsed = JSON.parse(raw) as { state?: { resume?: unknown } };
-    const document = createDocument(normalizeResume(parsed.state?.resume), 'My CV');
+    const document = createDocument(normalizeResume(parsed.state?.resume), 'আমার CV');
 
     await writeDocument(document);
     localStorage.removeItem(STORAGE_KEYS.legacyResume);

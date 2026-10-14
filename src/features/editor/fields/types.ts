@@ -79,7 +79,9 @@ export interface EntrySectionConfig {
   /** Entry keys used to build a collapsed card's title and subtitle. */
   titleKey: string;
   subtitleKey?: string;
-  /** Label for the add button, e.g. 'Add role'. */
+  /** What one entry is called, e.g. 'পদ'. Used in sentences like "নামহীন পদ". */
+  noun: string;
+  /** Label for the add button, e.g. 'পদ যোগ করুন'. */
   addLabel: string;
   emptyTitle: string;
   emptyDescription: string;

@@ -4,6 +4,7 @@ import { Maximize2, Minus, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui';
 import type { Resume } from '@/features/resume';
+import { bnPercent } from '@/lib/bn';
 import { ResumePreview, useFitZoom } from '@/features/preview';
 import type { ZoomMode } from '../hooks/useEditorLayout';
 
@@ -58,13 +59,13 @@ export const PreviewPane = ({
       */}
       <div className="pointer-events-none sticky bottom-3 z-10 mt-6 flex justify-center">
         <div className="border-primary/15 bg-surface/90 shadow-pop pointer-events-auto inline-flex items-center gap-0.5 rounded-full border p-1 backdrop-blur-xl">
-          <Button size="icon" variant="ghost" onClick={onZoomOut} aria-label="Zoom out">
+          <Button size="icon" variant="ghost" onClick={onZoomOut} aria-label="ছোট করুন">
             <Minus size={15} />
           </Button>
           <span className="text-fg-muted text-ui-xs min-w-12 text-center tabular-nums">
-            {Math.round(effectiveZoom * 100)}%
+            {bnPercent(effectiveZoom * 100)}
           </span>
-          <Button size="icon" variant="ghost" onClick={onZoomIn} aria-label="Zoom in">
+          <Button size="icon" variant="ghost" onClick={onZoomIn} aria-label="বড় করুন">
             <Plus size={15} />
           </Button>
           <span aria-hidden="true" className="bg-border-base mx-0.5 h-5 w-px" />
@@ -72,8 +73,8 @@ export const PreviewPane = ({
             size="icon"
             variant="ghost"
             onClick={onResetZoom}
-            aria-label="Fit to width"
-            title="Fit to width"
+            aria-label="প্রস্থ অনুযায়ী ফিট করুন"
+            title="প্রস্থ অনুযায়ী ফিট করুন"
           >
             <Maximize2 size={14} />
           </Button>

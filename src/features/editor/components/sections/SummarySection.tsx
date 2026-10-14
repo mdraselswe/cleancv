@@ -2,15 +2,22 @@
 
 import { Field, RichTextEditor, Tabs } from '@/components/ui';
 import { AiPolish } from '@/features/ai';
-import { LIMITS, SUMMARY_MODES, SUMMARY_MODE_LABEL, SUMMARY_WORD_RANGE } from '@/constants';
+import { LIMITS, SUMMARY_MODES, SUMMARY_WORD_RANGE } from '@/constants';
 import type { SummaryMode } from '@/constants';
 import { useResume } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 import { stripEmphasis, wordCount } from '@/lib/text';
 
 import { useResumeEdit } from '../../hooks/useResumeEdit';
 
-const MODE_TABS = SUMMARY_MODES.map((value) => ({ value, label: SUMMARY_MODE_LABEL[value] }));
+/** What the tabs say. The CV itself still prints the English heading from SUMMARY_MODE_LABEL. */
+const MODE_UI_LABEL: Record<SummaryMode, string> = {
+  summary: 'পেশাগত সারসংক্ষেপ',
+  objective: 'ক্যারিয়ারের লক্ষ্য',
+};
+
+const MODE_TABS = SUMMARY_MODES.map((value) => ({ value, label: MODE_UI_LABEL[value] }));
 
 /**
  * Summary or objective.
@@ -33,19 +40,19 @@ export const SummarySection = () => {
         items={MODE_TABS}
         value={summary.mode}
         onChange={(mode: SummaryMode) => patch('summary', { mode })}
-        ariaLabel="Summary style"
+        ariaLabel="সারসংক্ষেপের ধরন"
         className="self-start"
       />
 
       <Field
-        label={SUMMARY_MODE_LABEL[summary.mode]}
-        hint={`Aim for ${SUMMARY_WORD_RANGE.min}–${SUMMARY_WORD_RANGE.max} words: what you do, how long, and the result you are known for.`}
-        adornment={<span className={cn(outOfRange && 'text-warning')}>{count} words</span>}
+        label={MODE_UI_LABEL[summary.mode]}
+        hint={`${bn(SUMMARY_WORD_RANGE.min)} থেকে ${bn(SUMMARY_WORD_RANGE.max)} শব্দের মধ্যে রাখুন: আপনি কী করেন, কত দিন ধরে করছেন, আর কোন ফলাফলের জন্য পরিচিত।`}
+        adornment={<span className={cn(outOfRange && 'text-warning')}>{bn(count)} শব্দ</span>}
       >
         {({ id, describedBy }) => (
           <RichTextEditor
             id={id}
-            aria-label={SUMMARY_MODE_LABEL[summary.mode]}
+            aria-label={MODE_UI_LABEL[summary.mode]}
             aria-describedby={describedBy}
             rows={5}
             maxLength={LIMITS.summaryChars}

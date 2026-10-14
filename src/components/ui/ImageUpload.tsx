@@ -3,6 +3,7 @@
 import { ImagePlus, Trash2 } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
 
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 import { downscaleImage, type ImageBudget } from '@/lib/image';
 
@@ -63,11 +64,11 @@ export const ImageUpload = ({
       const image = await downscaleImage(file, budget);
 
       onChange(image.dataUrl);
-      setNote(`Resized to ${image.width}×${image.height}, ${kb(image.bytes)}.`);
+      setNote(`ছোট করে ${bn(image.width)}×${bn(image.height)} করা হয়েছে, ${bn(kb(image.bytes))}।`);
     } catch (cause) {
       // Every message `downscaleImage` throws is written to be read by whoever
       // picked the file, so it is shown as it is rather than replaced.
-      setError(cause instanceof Error ? cause.message : 'That file could not be read.');
+      setError(cause instanceof Error ? cause.message : 'ফাইলটি পড়া যায়নি।');
     } finally {
       setBusy(false);
     }
@@ -109,7 +110,7 @@ export const ImageUpload = ({
               disabled={busy}
               onClick={() => inputRef.current?.click()}
             >
-              {busy ? 'Resizing…' : value ? 'Replace' : 'Upload'}
+              {busy ? 'ছোট করা হচ্ছে…' : value ? 'বদলান' : 'আপলোড করুন'}
             </Button>
             {value ? (
               <Button
@@ -123,7 +124,7 @@ export const ImageUpload = ({
                 }}
                 leading={<Trash2 size={14} />}
               >
-                Remove
+                সরান
               </Button>
             ) : null}
           </div>

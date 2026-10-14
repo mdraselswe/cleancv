@@ -53,25 +53,25 @@ export const UserMenu = () => {
   if (!user) {
     return (
       <Button size="sm" variant="ghost" leading={<LogIn size={15} />} onClick={goToSignIn}>
-        <span className="hidden sm:inline">Sign in</span>
+        <span className="hidden sm:inline">সাইন-ইন</span>
       </Button>
     );
   }
 
   return (
     <Menu
-      label="Account"
+      label="অ্যাকাউন্ট"
       align="end"
       header={
         <div className="flex min-w-0 flex-col">
-          <span className="text-fg text-ui truncate font-medium">{user.name || 'Signed in'}</span>
+          <span className="text-fg text-ui truncate font-medium">{user.name || 'সাইন-ইন করা আছে'}</span>
           <span className="text-fg-subtle text-ui-2xs truncate">{user.email}</span>
         </div>
       }
       entries={[
         {
           id: 'sign-out',
-          label: 'Sign out',
+          label: 'সাইন-আউট',
           icon: <LogOut size={15} />,
           onSelect: () => void signOut(),
         },
@@ -80,7 +80,7 @@ export const UserMenu = () => {
         <button
           {...props}
           type="button"
-          aria-label={`Account — ${user.email}`}
+          aria-label={`অ্যাকাউন্ট — ${user.email}`}
           className="tap-target bg-surface-2 text-fg-muted hover:text-fg text-ui-2xs flex h-8 w-8 flex-none items-center justify-center rounded-full font-semibold transition"
         >
           {user.image ? (

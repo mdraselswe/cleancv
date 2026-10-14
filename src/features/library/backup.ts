@@ -46,7 +46,7 @@ export const parseBackup = (contents: string): BackupReadResult => {
   try {
     raw = JSON.parse(contents);
   } catch {
-    return { ok: false, documents: [], error: 'That file is not valid JSON.' };
+    return { ok: false, documents: [], error: 'ফাইলটি সঠিক JSON নয়।' };
   }
 
   const backup = backupFileSchema.safeParse(raw);
@@ -58,6 +58,6 @@ export const parseBackup = (contents: string): BackupReadResult => {
     ok: false,
     documents: [],
     error:
-      'No documents found in that file. Use a backup exported from this app, or import a single CV from the toolbar.',
+      'ফাইলটিতে কোনো ডকুমেন্ট পাওয়া যায়নি। এই অ্যাপ থেকে এক্সপোর্ট করা ব্যাকআপ ব্যবহার করুন, অথবা টুলবার থেকে একটি CV ইমপোর্ট করুন।',
   };
 };

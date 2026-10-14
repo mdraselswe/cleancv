@@ -1,5 +1,12 @@
-import { SECTION_META, isRecognisedHeading, panelTarget, type SectionKey } from '@/constants';
+import {
+  SECTION_META,
+  SECTION_UI_LABEL,
+  isRecognisedHeading,
+  panelTarget,
+  type SectionKey,
+} from '@/constants';
 import { isSectionEnabled } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { isBlank } from '@/lib/text';
 
 import type { AtsRule } from '../types';
@@ -15,29 +22,29 @@ export const rules: AtsRule[] = [
     id: 'template-ceiling',
     category: 'parseability',
     weight: 4,
-    label: 'Template parse reliability',
+    label: 'টেমপ্লেটের পার্সিং নির্ভরযোগ্যতা',
     evaluate: (_resume, { template }) => {
       if (template.atsBaseline >= 90) {
         return {
           status: 'pass',
-          message: `${template.name} keeps a single reading order and parses cleanly.`,
+          message: `${template.name} একটিই পড়ার ক্রম বজায় রাখে, তাই পরিষ্কারভাবে পার্স হয়।`,
         };
       }
 
       if (template.atsBaseline >= 75) {
         return {
           status: 'warn',
-          message: `${template.name} uses a layout some parsers handle imperfectly.`,
-          fixHint: 'Send the ATS PDF when applying through a portal, and this design by email.',
+          message: `${template.name}-এর লেআউট কিছু পার্সার পুরোপুরি পড়তে পারে না।`,
+          fixHint: 'পোর্টালে আবেদনের সময় ATS PDF পাঠান, আর এই ডিজাইনটি ইমেইলে পাঠান।',
           targets: [panelTarget('design')],
         };
       }
 
       return {
         status: 'error',
-        message: `${template.name} is a display design; automated parsers will lose parts of it.`,
+        message: `${template.name} একটি প্রদর্শনী-ধরনের ডিজাইন; স্বয়ংক্রিয় পার্সার এর কিছু অংশ হারাবে।`,
         fixHint:
-          'Use the ATS PDF export for any application that goes through a job portal, or pick a design with a higher ceiling.',
+          'জব পোর্টালের মাধ্যমে যেকোনো আবেদনে ATS PDF এক্সপোর্ট ব্যবহার করুন, অথবা আরও বেশি সীমার একটি ডিজাইন বেছে নিন।',
         targets: [panelTarget('design')],
       };
     },
@@ -47,19 +54,19 @@ export const rules: AtsRule[] = [
     id: 'photo-risk',
     category: 'parseability',
     weight: 2,
-    label: 'Photo',
+    label: 'ছবি',
     evaluate: (resume, { template }) => {
       const showing = template.supports.photo && resume.meta.theme.showPhoto && !isBlank(resume.basics.photo);
 
       if (!showing) {
-        return { status: 'pass', message: 'No photo — nothing for a parser to trip over.' };
+        return { status: 'pass', message: 'কোনো ছবি নেই — পার্সার আটকে যাওয়ার মতো কিছু নেই।' };
       }
 
       return {
         status: 'warn',
-        message: 'A photo is printed on the document.',
+        message: 'ডকুমেন্টে একটি ছবি ছাপা হচ্ছে।',
         fixHint:
-          'Expected in parts of Europe, Asia and the Gulf. Remove it for US, UK and Canadian applications, where it can get a resume discarded unread.',
+          'ইউরোপ, এশিয়া ও উপসাগরের কিছু অংশে এটি প্রত্যাশিত। যুক্তরাষ্ট্র, যুক্তরাজ্য ও কানাডার আবেদনে ছবি সরিয়ে দিন, কারণ সেখানে ছবির জন্য CV না পড়েই বাতিল হতে পারে।',
         targets: ['contact'],
       };
     },
@@ -69,7 +76,7 @@ export const rules: AtsRule[] = [
     id: 'standard-headings',
     category: 'parseability',
     weight: 3,
-    label: 'Section headings',
+    label: 'সেকশনের শিরোনাম',
     evaluate: (resume) => {
       // Only names no parser is known to match on. "Professional Experience"
       // is a standard heading, not a risk, and flagging it would be noise.
@@ -84,16 +91,16 @@ export const rules: AtsRule[] = [
       });
 
       if (renamed.length === 0) {
-        return { status: 'pass', message: 'All headings use names parsers recognise.' };
+        return { status: 'pass', message: 'সব শিরোনামে এমন নাম আছে, যা পার্সার চেনে।' };
       }
 
       return {
         status: renamed.length > 2 ? 'error' : 'warn',
-        message: `${renamed.length} section${renamed.length === 1 ? '' : 's'} renamed: ${renamed
+        message: `${bn(renamed.length)}টি সেকশনের নাম বদলানো হয়েছে: ${renamed
           .map((key) => resume.meta.sections[key]?.heading)
-          .join(', ')}.`,
+          .join(', ')}।`,
         fixHint:
-          'A parser matches on the heading text. A renamed section is often skipped entirely rather than mislabelled. Rename it under Sections.',
+          'পার্সার শিরোনামের লেখা দেখে মেলায়। নাম বদলানো সেকশন ভুল লেবেল না পেয়ে প্রায়ই পুরোটাই বাদ পড়ে যায়। “সেকশন” প্যানেল থেকে নামটি ঠিক করুন।',
         targets: [panelTarget('sections'), ...renamed],
       };
     },
@@ -103,20 +110,20 @@ export const rules: AtsRule[] = [
     id: 'core-sections-present',
     category: 'parseability',
     weight: 3,
-    label: 'Core sections',
+    label: 'মূল সেকশন',
     evaluate: (resume) => {
       const required: SectionKey[] = ['experience', 'education', 'skills'];
       const missing = required.filter((key) => !isSectionEnabled(resume, key));
 
       if (missing.length === 0) {
-        return { status: 'pass', message: 'Experience, education and skills are all present.' };
+        return { status: 'pass', message: 'অভিজ্ঞতা, শিক্ষা ও দক্ষতা তিনটিই আছে।' };
       }
 
       return {
         status: 'error',
-        message: `Missing: ${missing.map((key) => SECTION_META[key].defaultHeading).join(', ')}.`,
+        message: `নেই: ${missing.map((key) => `${SECTION_UI_LABEL[key]} (${SECTION_META[key].defaultHeading})`).join(', ')}।`,
         fixHint:
-          'Most parsers index on these three. A resume without them scores poorly whatever it says. Switch them on under Sections.',
+          'বেশির ভাগ পার্সার এই তিনটির ওপর ভিত্তি করে সূচি বানায়। এগুলো না থাকলে যা-ই লিখুন, স্কোর কম আসে। “সেকশন” প্যানেল থেকে এগুলো চালু করুন।',
         targets: [panelTarget('sections'), ...missing],
       };
     },
@@ -126,10 +133,10 @@ export const rules: AtsRule[] = [
     id: 'text-layer',
     category: 'parseability',
     weight: 2,
-    label: 'Selectable text',
+    label: 'নির্বাচনযোগ্য লেখা',
     evaluate: () => ({
       status: 'pass',
-      message: 'Exported as real text with inline SVG icons — no image-only PDF, no icon-font glyphs.',
+      message: 'আসল লেখা হিসেবে এক্সপোর্ট হয়, আর আইকন ইনলাইন SVG — ছবি-সর্বস্ব PDF নয়, আইকন-ফন্টের অক্ষরও নয়।',
     }),
   },
 ];

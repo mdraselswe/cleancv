@@ -51,13 +51,13 @@ export const ColorPicker = ({ value, onChange, swatches, label, className }: Col
 
         <label
           className="border-border-strong text-ui-xs text-fg-muted hover:border-primary hover:text-primary flex h-7 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 transition"
-          title="Custom colour"
+          title="নিজের পছন্দের রং"
         >
           <span
             className="border-border-base h-3 w-3 rounded-full border"
             style={{ backgroundColor: value }}
           />
-          Custom
+          নিজের রং
           <input
             type="color"
             value={value}

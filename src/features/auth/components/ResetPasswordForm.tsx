@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Button, Field } from '@/components/ui';
 import { AUTH_ROUTES, PASSWORD_MIN } from '@/constants';
+import { bn } from '@/lib/bn';
 
 import { useResetPassword } from '../hooks/usePasswordReset';
 import { AuthNotice } from './AuthNotice';
@@ -32,13 +33,13 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
     return (
       <div className="flex flex-col gap-4">
         <AuthNotice tone="error">
-          This link is incomplete. Reset links work once, and expire after an hour.
+          এই লিংকটি অসম্পূর্ণ। রিসেট লিংক একবারই কাজ করে, আর এক ঘণ্টা পরে মেয়াদ শেষ হয়।
         </AuthNotice>
         <Link
           href={AUTH_ROUTES.forgotPassword}
           className="tap-target text-fg text-ui-md text-center font-medium underline"
         >
-          Ask for a new link
+          নতুন লিংক চান
         </Link>
       </div>
     );
@@ -47,7 +48,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   if (done) {
     return (
       <AuthNotice tone="success">
-        Password changed. Every other session has been signed out. Taking you to sign in…
+        পাসওয়ার্ড বদলানো হয়েছে। অন্য সব সেশন সাইন-আউট হয়ে গেছে। আপনাকে সাইন-ইন পেজে নেওয়া হচ্ছে…
       </AuthNotice>
     );
   }
@@ -55,9 +56,9 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   return (
     <form className="flex flex-col gap-3.5" onSubmit={submit} noValidate>
       <Field
-        label="New password"
+        label="নতুন পাসওয়ার্ড"
         error={errors.password}
-        hint={`At least ${PASSWORD_MIN} characters.`}
+        hint={`কমপক্ষে ${bn(PASSWORD_MIN)}টি অক্ষর।`}
       >
         {({ id, describedBy, invalid }) => (
           <PasswordInput
@@ -73,7 +74,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         )}
       </Field>
 
-      <Field label="Type it again" error={errors.confirm}>
+      <Field label="আবার লিখুন" error={errors.confirm}>
         {({ id, describedBy, invalid }) => (
           <PasswordInput
             className={AUTH_FIELD_CLASS}
@@ -96,7 +97,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         className="justify-center"
         disabled={pending}
       >
-        {pending ? 'Saving…' : 'Set the new password'}
+        {pending ? 'সংরক্ষণ হচ্ছে…' : 'নতুন পাসওয়ার্ড সেট করুন'}
       </Button>
     </form>
   );

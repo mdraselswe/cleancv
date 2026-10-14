@@ -19,19 +19,19 @@ export const ATS_CATEGORY_WEIGHT: Record<AtsCategory, number> = {
 };
 
 export const ATS_CATEGORY_LABEL: Record<AtsCategory, string> = {
-  parseability: 'Parseability',
-  completeness: 'Completeness',
-  impact: 'Content impact',
-  formatting: 'Formatting',
-  keywords: 'Keyword match',
+  parseability: 'পড়ার যোগ্যতা',
+  completeness: 'সম্পূর্ণতা',
+  impact: 'লেখার প্রভাব',
+  formatting: 'ফরম্যাটিং',
+  keywords: 'কীওয়ার্ড মিল',
 };
 
 export const ATS_CATEGORY_DESCRIPTION: Record<AtsCategory, string> = {
-  parseability: 'Whether an automated parser can read the document at all.',
-  completeness: 'Whether the sections and fields a recruiter expects are present.',
-  impact: 'Whether your bullets show measurable outcomes rather than duties.',
-  formatting: 'Consistency of dates, length and structure.',
-  keywords: 'Overlap with the job description you are targeting.',
+  parseability: 'স্বয়ংক্রিয় পার্সার আপনার ডকুমেন্টটি পড়তে পারে কি না।',
+  completeness: 'রিক্রুটার যেসব সেকশন আর তথ্য আশা করেন, সেগুলো আছে কি না।',
+  impact: 'বুলেটগুলোতে শুধু দায়িত্ব নয়, মাপা যায় এমন ফলাফল আছে কি না।',
+  formatting: 'তারিখ, দৈর্ঘ্য আর কাঠামোর সামঞ্জস্য।',
+  keywords: 'যে চাকরির বিজ্ঞপ্তির জন্য লিখছেন, তার সঙ্গে কতটা মিল।',
 };
 
 export type AtsStatus = 'pass' | 'warn' | 'error';
@@ -44,10 +44,10 @@ export const ATS_STATUS_CREDIT: Record<AtsStatus, number> = {
 };
 
 export const ATS_SCORE_BANDS = [
-  { min: 90, label: 'Excellent', tone: 'excellent' },
-  { min: 75, label: 'Strong', tone: 'strong' },
-  { min: 55, label: 'Needs work', tone: 'fair' },
-  { min: 0, label: 'At risk', tone: 'poor' },
+  { min: 90, label: 'চমৎকার', tone: 'excellent' },
+  { min: 75, label: 'ভালো', tone: 'strong' },
+  { min: 55, label: 'আরও কাজ দরকার', tone: 'fair' },
+  { min: 0, label: 'ঝুঁকিপূর্ণ', tone: 'poor' },
 ] as const;
 
 /**

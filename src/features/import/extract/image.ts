@@ -30,7 +30,7 @@ export const extractImage = async (
     logger: (message: { status: string; progress: number }) => {
       onProgress?.({
         ratio: message.status === 'recognizing text' ? message.progress : -1,
-        label: message.status === 'recognizing text' ? 'Reading the image' : 'Preparing OCR',
+        label: message.status === 'recognizing text' ? 'ছবি পড়া হচ্ছে' : 'OCR প্রস্তুত হচ্ছে',
       });
     },
   });

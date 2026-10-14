@@ -28,45 +28,45 @@ const escapeHtml = (value: string): string =>
  */
 const shell = (heading: string, body: string, action: { label: string; url: string }): string => `
 <div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.55;color:#161a21;max-width:520px;margin:0 auto;padding:32px 24px">
-  <p style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;margin:0 0 24px">${escapeHtml(APP_NAME)}</p>
+  <p style="font-size:14px;color:#6b7280;margin:0 0 24px">${escapeHtml(APP_NAME)}</p>
   <h1 style="font-size:20px;margin:0 0 12px">${escapeHtml(heading)}</h1>
   <p style="font-size:15px;margin:0 0 24px">${escapeHtml(body)}</p>
   <p style="margin:0 0 28px">
     <a href="${action.url}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:15px;font-weight:500;padding:11px 20px;border-radius:10px">${escapeHtml(action.label)}</a>
   </p>
-  <p style="font-size:13px;color:#6b7280;margin:0 0 8px">Or paste this into your browser:</p>
+  <p style="font-size:13px;color:#6b7280;margin:0 0 8px">অথবা এই ঠিকানাটি আপনার ব্রাউজারে পেস্ট করুন:</p>
   <p style="font-size:13px;color:#6b7280;word-break:break-all;margin:0">${escapeHtml(action.url)}</p>
 </div>`;
 
 export const verifyEmail = (url: string): EmailContent => ({
-  subject: `Confirm your email for ${APP_NAME}`,
+  subject: `${APP_NAME}-এর জন্য আপনার ইমেইল নিশ্চিত করুন`,
   html: shell(
-    'Confirm your email',
-    'One click and your account is ready. The link works for an hour.',
-    { label: 'Confirm email', url },
+    'আপনার ইমেইল নিশ্চিত করুন',
+    'এক ক্লিকেই আপনার অ্যাকাউন্ট প্রস্তুত। লিংকটি এক ঘণ্টা কাজ করবে।',
+    { label: 'ইমেইল নিশ্চিত করুন', url },
   ),
   text: [
-    `Confirm your email for ${APP_NAME}.`,
+    `${APP_NAME}-এর জন্য আপনার ইমেইল নিশ্চিত করুন।`,
     '',
     url,
     '',
-    'The link works for an hour. If you did not create an account, ignore this.',
+    'লিংকটি এক ঘণ্টা কাজ করবে। আপনি অ্যাকাউন্ট না খুলে থাকলে এটি উপেক্ষা করুন।',
   ].join('\n'),
 });
 
 export const resetPasswordEmail = (url: string): EmailContent => ({
-  subject: `Reset your ${APP_NAME} password`,
+  subject: `আপনার ${APP_NAME} পাসওয়ার্ড রিসেট করুন`,
   html: shell(
-    'Reset your password',
-    'Choose a new password with the link below. It works for an hour, and only once.',
-    { label: 'Choose a new password', url },
+    'আপনার পাসওয়ার্ড রিসেট করুন',
+    'নিচের লিংক দিয়ে নতুন পাসওয়ার্ড বেছে নিন। লিংকটি এক ঘণ্টা কাজ করবে, আর শুধু একবারই।',
+    { label: 'নতুন পাসওয়ার্ড বেছে নিন', url },
   ),
   text: [
-    `Reset your ${APP_NAME} password.`,
+    `আপনার ${APP_NAME} পাসওয়ার্ড রিসেট করুন।`,
     '',
     url,
     '',
-    'The link works for an hour, and only once. If you did not ask for this,',
-    'nothing has changed and you can ignore this email.',
+    'লিংকটি এক ঘণ্টা কাজ করবে, আর শুধু একবারই। আপনি এটি না চেয়ে থাকলে',
+    'কিছুই বদলায়নি, এই ইমেইল উপেক্ষা করতে পারেন।',
   ].join('\n'),
 });

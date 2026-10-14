@@ -88,7 +88,7 @@ export const useCredentialForm = <Schema extends CredentialSchema>({
           if (message) setFormError(message);
         })
         .catch((error: unknown) => {
-          setFormError(error instanceof Error ? error.message : 'Something went wrong. Try again.');
+          setFormError(error instanceof Error ? error.message : 'কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।');
         })
         .finally(() => setPending(false));
     },

@@ -27,9 +27,9 @@ const MAIN_SECTIONS = SECTION_KEYS.filter((key) => !RAIL_SECTIONS.includes(key))
 
 export const meta: TemplateMeta = {
   id: 'modern-sidebar',
-  name: 'Modern Sidebar',
+  name: 'আধুনিক সাইডবার',
   description:
-    'Coloured rail for contact and skills, narrative on the right. Reads top-down in the PDF despite the two-column look.',
+    'যোগাযোগ ও দক্ষতার জন্য রঙিন পাশের স্তম্ভ, ডানে মূল বর্ণনা। দুই-কলামের চেহারা হলেও PDF-এ ওপর থেকে নিচে পড়া যায়।',
   category: 'balanced',
   atsBaseline: 80,
   supports: {

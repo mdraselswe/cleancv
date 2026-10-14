@@ -207,7 +207,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
 
       // A first visit gets a document rather than an empty list, so there is
       // always somewhere for the first keystroke to go.
-      const first = documents[0] ?? createDocument(createEmptyResume(), 'My CV').meta;
+      const first = documents[0] ?? createDocument(createEmptyResume(), 'আমার CV').meta;
       if (documents.length === 0) {
         await writeDocument({ meta: first, resume: createEmptyResume() });
       }
@@ -248,8 +248,8 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
         workspace: { ...IDLE_WORKSPACE, supported: workspaceSupported() },
         error:
           error instanceof Error
-            ? `Storage is unavailable: ${error.message}. Your work will not be saved — export a backup before closing.`
-            : 'Storage is unavailable. Your work will not be saved.',
+            ? `স্টোরেজ পাওয়া যাচ্ছে না: ${error.message}। আপনার কাজ সংরক্ষিত হবে না — বন্ধ করার আগে একটি ব্যাকআপ এক্সপোর্ট করুন।`
+            : 'স্টোরেজ পাওয়া যাচ্ছে না। আপনার কাজ সংরক্ষিত হবে না।',
       });
     }
   };
@@ -378,7 +378,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
           documents: [],
           deleted: [...deleted.filter((entry) => entry.id !== id), { id, deletedAt }],
         });
-        await actions.createNew('My CV');
+        await actions.createNew('আমার CV');
 
         return;
       }
@@ -593,7 +593,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
       set({ documents, deleted: [], activeId });
 
       if (!activeId) {
-        await actions.createNew('My CV');
+        await actions.createNew('আমার CV');
         return;
       }
 

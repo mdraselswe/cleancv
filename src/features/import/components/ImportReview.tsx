@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 
 import { Button, SectionLabel, Switch, Tabs } from '@/components/ui';
 import type { Resume } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import {
@@ -27,8 +28,8 @@ import type { ImportResult } from '../types';
  */
 
 const STRATEGY_TABS: Array<{ value: ListStrategy; label: string }> = [
-  { value: 'replace', label: 'Replace' },
-  { value: 'append', label: 'Add to existing' },
+  { value: 'replace', label: 'বদলে দিন' },
+  { value: 'append', label: 'আগেরগুলোর সঙ্গে যোগ করুন' },
 ];
 
 export interface ImportReviewProps {
@@ -95,15 +96,15 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
   if (groups.length === 0) {
     return (
       <div className="flex flex-col gap-3 p-4">
-        <p className="text-fg text-[13.5px]">
-          Nothing recognisable was found in that file.
+        <p className="text-fg text-ui-md">
+          ফাইলে চেনার মতো কিছু পাওয়া যায়নি।
         </p>
-        <p className="text-fg-subtle text-[12.5px]">
-          A heavily designed CV often extracts as jumbled text. A DOCX version, or Smart import with
-          a model, will usually do better.
+        <p className="text-fg-subtle text-ui-xs">
+          ভারী ডিজাইনের CV থেকে প্রায়ই এলোমেলো লেখা বের হয়। DOCX সংস্করণ, অথবা মডেলসহ স্মার্ট ইমপোর্ট
+          সাধারণত ভালো ফল দেয়।
         </p>
         <Button variant="outline" className="self-start" onClick={onCancel}>
-          Back
+          পেছনে যান
         </Button>
       </div>
     );
@@ -115,31 +116,30 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
         {result.warnings.map((warning) => (
           <p
             key={warning}
-            className="border-warning text-warning mb-3 flex gap-2 rounded-lg border px-3 py-2 text-[12.5px]"
+            className="border-warning text-warning text-ui-xs mb-3 flex gap-2 rounded-lg border px-3 py-2"
           >
             <AlertTriangle size={15} className="mt-0.5 flex-none" />
             <span>{warning}</span>
           </p>
         ))}
 
-        <p className="text-fg-subtle mb-3 text-[12.5px]">
-          Nothing is written until you apply. Turn off anything that came out wrong — what you leave
-          off keeps whatever is in your CV now.
+        <p className="text-fg-subtle text-ui-xs mb-3">
+          আপনি প্রয়োগ না করা পর্যন্ত কিছুই লেখা হয় না। যা ভুল এসেছে তা বন্ধ করে দিন — যা বন্ধ রাখবেন, সেখানে আপনার CV-তে এখন যা আছে তা-ই থাকবে।
         </p>
 
         <div className="mb-3">
-          <SectionLabel>Lists already in this CV</SectionLabel>
+          <SectionLabel>এই CV-তে আগে থেকে থাকা তালিকা</SectionLabel>
           <Tabs
             items={STRATEGY_TABS}
             value={strategy}
             onChange={(value: ListStrategy) => setStrategy(value)}
-            ariaLabel="How to merge lists"
+            ariaLabel="তালিকা কীভাবে মেশাবেন"
             className="mt-1.5 self-start"
           />
-          <p className="text-fg-subtle mt-1.5 text-[11.5px]">
+          <p className="text-fg-subtle text-ui-2xs mt-1.5">
             {strategy === 'replace'
-              ? 'Imported roles, education and skills replace what is there now.'
-              : 'Imported entries are added after the ones already in the CV.'}
+              ? 'ইমপোর্ট করা পদ, শিক্ষা ও দক্ষতা এখন যা আছে তা বদলে দেবে।'
+              : 'ইমপোর্ট করা এন্ট্রিগুলো CV-তে আগে থাকা এন্ট্রির পরে যোগ হবে।'}
           </p>
         </div>
 
@@ -160,16 +160,16 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
                   checked={on}
                   onChange={(value) => toggle(group, value)}
                   label={MERGE_GROUP_LABEL[group]}
-                  description={`${groupSize(result.parsed, group)} found`}
+                  description={`${bn(groupSize(result.parsed, group))}টি পাওয়া গেছে`}
                 />
 
-                <ul className="text-fg-subtle mt-1.5 flex flex-col gap-0.5 pl-12 text-[12px]">
+                <ul className="text-fg-subtle text-ui-xs mt-1.5 flex flex-col gap-0.5 pl-12">
                   {lines.slice(0, 4).map((line, index) => (
                     <li key={index} className="truncate">
                       {line}
                     </li>
                   ))}
-                  {lines.length > 4 ? <li>+{lines.length - 4} more</li> : null}
+                  {lines.length > 4 ? <li>আরও {bn(lines.length - 4)}টি</li> : null}
                 </ul>
               </div>
             );
@@ -179,7 +179,7 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
 
       <footer className="border-border-base flex flex-none items-center justify-end gap-2 border-t px-4 py-3">
         <Button variant="ghost" onClick={onCancel}>
-          Cancel
+          বাতিল
         </Button>
         <Button
           variant="primary"
@@ -187,7 +187,7 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
           leading={<Check size={14} />}
           onClick={() => onApply(applyImport(resume, result.parsed, { accepted, strategy }))}
         >
-          Apply {accepted.size} of {groups.length}
+          {bn(groups.length)}টির মধ্যে {bn(accepted.size)}টি প্রয়োগ করুন
         </Button>
       </footer>
     </div>

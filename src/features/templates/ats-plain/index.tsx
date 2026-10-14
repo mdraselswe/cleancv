@@ -7,9 +7,9 @@ import './ats-plain.css';
 
 export const meta: TemplateMeta = {
   id: 'ats-plain',
-  name: 'ATS Plain',
+  name: 'ATS সাদামাটা',
   description:
-    'One column, black on white, no graphics. The safest thing to upload to a job portal.',
+    'এক কলাম, সাদার ওপর কালো, কোনো গ্রাফিক নেই। জব পোর্টালে আপলোডের জন্য সবচেয়ে নিরাপদ।',
   category: 'ats',
   atsBaseline: 100,
   supports: {

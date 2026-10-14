@@ -9,7 +9,7 @@ import { isAuthConfigured, isEmailAuthEnabled } from '@/server/env';
 
 import { AuthUnavailable } from '../unavailable';
 
-export const metadata: Metadata = { title: 'Choose a new password' };
+export const metadata: Metadata = { title: 'নতুন পাসওয়ার্ড বেছে নিন' };
 export const dynamic = 'force-dynamic';
 
 /**
@@ -32,7 +32,7 @@ export default async function ResetPasswordPage({
   const token = readParam(await searchParams, TOKEN_PARAM);
 
   return (
-    <AuthShell title="Choose a new password" subtitle="This signs out every other browser.">
+    <AuthShell title="নতুন পাসওয়ার্ড বেছে নিন" subtitle="এতে অন্য সব ব্রাউজার সাইন-আউট হয়ে যাবে।">
       <ResetPasswordForm token={token} />
     </AuthShell>
   );

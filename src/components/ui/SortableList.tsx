@@ -66,7 +66,13 @@ export const SortableList = ({
       collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
       onDragEnd={handleDragEnd}
-      accessibility={{ announcements: undefined }}
+      accessibility={{
+        announcements: undefined,
+        screenReaderInstructions: {
+          draggable:
+            'সরানোর জন্য একটি আইটেম তুলতে স্পেস বার চাপুন। টানার সময় তীর কী দিয়ে আইটেমটি সরান। আবার স্পেস বার চাপলে আইটেমটি নতুন জায়গায় বসবে, আর Esc চাপলে সরানো বাতিল হবে।',
+        },
+      }}
     >
       <SortableContext items={[...ids]} strategy={verticalListSortingStrategy}>
         <div role="list" aria-label={ariaLabel} className={className}>
@@ -98,7 +104,7 @@ export const SortableItem = ({ id, children }: SortableItemProps) => {
     <button
       ref={setActivatorNodeRef}
       type="button"
-      aria-label="Reorder"
+      aria-label="ক্রম বদলান"
       className="tap-target text-fg-subtle hover:bg-surface-2 hover:text-fg flex h-9 w-8 cursor-grab items-center justify-center rounded-lg transition active:cursor-grabbing"
       {...attributes}
       {...listeners}

@@ -17,6 +17,7 @@ import { Toaster as Sonner } from 'sonner';
 export const Toaster = () => (
   <Sonner
     position="bottom-center"
+    containerAriaLabel="বিজ্ঞপ্তি"
     offset={16}
     mobileOffset={{ bottom: 76 }}
     gap={8}

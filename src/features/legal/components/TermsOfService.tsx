@@ -8,6 +8,7 @@ import {
   LEGAL_ROUTES,
   PASSWORD_MIN,
 } from '@/constants';
+import { bn } from '@/lib/bn';
 
 import { LegalList, LegalSection, LegalShell } from './LegalShell';
 
@@ -32,131 +33,131 @@ export interface TermsOfServiceProps {
 
 export const TermsOfService = ({ emailAuth }: TermsOfServiceProps) => (
   <LegalShell
-    title="Terms of Service"
-    summary={`The rules for using ${APP_NAME}. Using the service means you accept them.`}
+    title="ব্যবহারের শর্তাবলি"
+    summary={`${APP_NAME} ব্যবহারের নিয়মকানুন। সার্ভিসটি ব্যবহার করা মানে আপনি এগুলো মেনে নিচ্ছেন।`}
   >
-    <LegalSection id="service" heading="What the service is">
+    <LegalSection id="service" heading="সার্ভিসটি কী">
       <p>
-        {APP_NAME} is a tool for writing a CV and exporting it as a PDF, run by {LEGAL_ENTITY}. The
-        document you write is stored by your browser; up to {CLOUD_SYNC.maxDocuments} CVs you
-        choose can also be kept on your account. The service renders a CV into a PDF when you ask
-        for one. Details are in the{' '}
+        {APP_NAME} একটি CV লিখে PDF হিসেবে এক্সপোর্ট করার টুল, যা চালান {LEGAL_ENTITY}। আপনার লেখা
+        ডকুমেন্ট আপনার ব্রাউজারে সংরক্ষিত হয়; আপনার বেছে নেওয়া {bn(CLOUD_SYNC.maxDocuments)}টি
+        পর্যন্ত CV অ্যাকাউন্টেও রাখা যায়। আপনি চাইলে সার্ভিসটি একটি CV থেকে PDF তৈরি করে দেয়।
+        বিস্তারিত আছে{' '}
         <Link href={LEGAL_ROUTES.privacy} className="text-fg underline">
-          Privacy Policy
+          গোপনীয়তা নীতিতে
         </Link>
-        .
+        ।
       </p>
-      <p>It is free to use. There is no charge, no subscription, and nothing to pay for.</p>
+      <p>এটি ব্যবহার করা ফ্রি। কোনো চার্জ নেই, কোনো সাবস্ক্রিপশন নেই, টাকা দেওয়ার মতো কিছু নেই।</p>
     </LegalSection>
 
-    <LegalSection id="account" heading="Your account">
+    <LegalSection id="account" heading="আপনার অ্যাকাউন্ট">
       <p>
-        A free account is required to download a PDF. It also lets you keep up to{' '}
-        {CLOUD_SYNC.maxDocuments} CVs of your choice on the server ({CLOUD_SYNC.maxBytes / 1024} KB
-        each); every other CV stays on your device. Editing and everything else works without one.
+        PDF ডাউনলোড করতে একটি ফ্রি অ্যাকাউন্ট লাগে। এতে আপনার পছন্দের {bn(CLOUD_SYNC.maxDocuments)}টি
+        পর্যন্ত CV সার্ভারে রাখা যায় (প্রতিটি {bn(CLOUD_SYNC.maxBytes / 1024)} KB); বাকি সব CV আপনার
+        ডিভাইসেই থাকে। সম্পাদনা আর বাকি সবকিছু অ্যাকাউন্ট ছাড়াই চলে।
       </p>
       <LegalList
         items={[
           ...(emailAuth
             ? [
-                'Use a real email address you control. You will be asked to confirm it before the account works, and it is the only way back in if you forget your password.',
-                `Choose a password of at least ${PASSWORD_MIN} characters, and do not reuse one from somewhere else.`,
+                'আপনার নিয়ন্ত্রণে থাকা একটি আসল ইমেইল ঠিকানা ব্যবহার করুন। অ্যাকাউন্ট কাজ করার আগে সেটি নিশ্চিত করতে বলা হবে, আর পাসওয়ার্ড ভুলে গেলে এটিই ফিরে আসার একমাত্র পথ।',
+                `কমপক্ষে ${bn(PASSWORD_MIN)}টি অক্ষরের একটি পাসওয়ার্ড বেছে নিন, আর অন্য কোথাও ব্যবহার করা পাসওয়ার্ড আবার ব্যবহার করবেন না।`,
               ]
-            : ['Sign in with a Google account you control. There is no separate password.']),
-          'Keep it to yourself. Anything done from your account is treated as done by you.',
-          'One account per person. Do not create one under somebody else’s name or address.',
+            : ['আপনার নিয়ন্ত্রণে থাকা একটি Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন। আলাদা কোনো পাসওয়ার্ড নেই।']),
+          'এটি নিজের কাছে রাখুন। আপনার অ্যাকাউন্ট থেকে যা করা হয়, তা আপনি করেছেন বলেই ধরা হয়।',
+          'একজন ব্যক্তির একটি অ্যাকাউন্ট। অন্য কারও নাম বা ঠিকানায় অ্যাকাউন্ট খুলবেন না।',
         ]}
       />
       <p>
-        Tell us at <Mail /> if you think somebody else has got into your account. {emailAuth
-          ? 'Resetting your password signs every other browser out, which is usually the fastest fix.'
-          : 'Signing out of Google on a shared device is the fastest fix.'}
+        কেউ আপনার অ্যাকাউন্টে ঢুকে পড়েছে বলে মনে হলে <Mail /> ঠিকানায় জানান।{' '}
+        {emailAuth
+          ? 'পাসওয়ার্ড রিসেট করলে অন্য সব ব্রাউজার সাইন-আউট হয়ে যায়, যা সাধারণত সবচেয়ে দ্রুত সমাধান।'
+          : 'শেয়ার করা ডিভাইসে Google থেকে সাইন-আউট করাই সবচেয়ে দ্রুত সমাধান।'}
       </p>
     </LegalSection>
 
-    <LegalSection id="your-content" heading="What you write stays yours">
+    <LegalSection id="your-content" heading="আপনার লেখা আপনারই থাকে">
       <p>
-        Your CV is your work and your property. We claim no rights over it, no licence to it, and no
-        ownership of anything you write, import or export. A CV is stored on the server only when
-        you switch it to sync, and only to provide that feature.
+        আপনার CV আপনার কাজ ও আপনার সম্পত্তি। আপনার লেখা, ইমপোর্ট বা এক্সপোর্ট করা কোনো কিছুর ওপর
+        আমরা কোনো অধিকার, লাইসেন্স বা মালিকানা দাবি করি না। CV শুধু তখনই সার্ভারে রাখা হয় যখন আপনি
+        সেটি সিঙ্ক চালু করেন, আর শুধু ওই সুবিধা দেওয়ার জন্যই।
       </p>
       <p>
-        You are responsible for what it says. Do not put someone else&apos;s personal details in it
-        without their agreement, and do not claim qualifications or employment you do not have —
-        that is between you and the employer reading it, but it is not something this tool will help
-        you do.
+        এতে কী লেখা আছে তার দায় আপনার। অন্য কারও ব্যক্তিগত তথ্য তাঁর সম্মতি ছাড়া এতে দেবেন না, আর
+        যে যোগ্যতা বা চাকরি আপনার নেই তা দাবি করবেন না — সেটি আপনার আর যে নিয়োগকর্তা পড়ছেন তাঁর
+        মধ্যকার বিষয়, কিন্তু এই টুল আপনাকে সেই কাজে সাহায্য করবে না।
       </p>
     </LegalSection>
 
-    <LegalSection id="acceptable-use" heading="What you may not do">
+    <LegalSection id="acceptable-use" heading="যা করা যাবে না">
       <LegalList
         items={[
-          'Attack the service — probing, overloading, or trying to reach parts of it that are not yours.',
-          'Use it to send bulk or automated requests. The PDF renderer is a real browser and a single request is expensive; script it and you will be rate-limited or blocked.',
-          'Use somebody else’s account, or create accounts to get around a block.',
-          'Use it to produce documents intended to defraud or impersonate.',
+          'সার্ভিসের ওপর হামলা — খোঁচানো, অতিরিক্ত চাপ দেওয়া, অথবা এর যে অংশ আপনার নয় সেখানে পৌঁছানোর চেষ্টা।',
+          'স্বয়ংক্রিয় বা গণ-অনুরোধ পাঠাতে এটি ব্যবহার করা। PDF রেন্ডারার একটি আসল ব্রাউজার, আর একটি অনুরোধই ব্যয়বহুল; স্ক্রিপ্ট চালালে আপনার হার সীমিত বা আপনাকে ব্লক করা হবে।',
+          'অন্য কারও অ্যাকাউন্ট ব্যবহার করা, অথবা ব্লক এড়াতে অ্যাকাউন্ট খোলা।',
+          'প্রতারণা বা ছদ্মবেশ ধারণের উদ্দেশ্যে ডকুমেন্ট বানাতে এটি ব্যবহার করা।',
         ]}
       />
       <p>
-        An account doing any of these can be suspended or removed without notice. In practice this
-        section exists so there is something to point at; it is not aimed at anyone using the tool
-        to write a CV.
+        এসবের কোনোটি করলে নোটিস ছাড়াই অ্যাকাউন্ট স্থগিত বা মুছে ফেলা হতে পারে। বাস্তবে এই অংশটি
+        আছে যাতে দেখানোর মতো কিছু থাকে; যাঁরা CV লিখতে টুলটি ব্যবহার করেন তাঁদের লক্ষ্য করে এটি নয়।
       </p>
     </LegalSection>
 
-    <LegalSection id="ats" heading="What we do not promise">
+    <LegalSection id="ats" heading="যে প্রতিশ্রুতি আমরা দিই না">
       <p>
-        Every design here is built and tested so its PDF carries a real, correctly ordered text
-        layer, and the ATS score tells you what a parser is likely to make of your document. That is
-        a well-founded estimate, not a guarantee. Applicant tracking systems differ, employers
-        configure them differently, and none of them publishes how it reads a file.{' '}
+        এখানকার প্রতিটি ডিজাইন এমনভাবে বানানো ও পরীক্ষা করা, যাতে এর PDF-এ সত্যিকারের, সঠিক ক্রমের
+        লেখার স্তর থাকে, আর ATS স্কোর বলে দেয় একটি পার্সার আপনার ডকুমেন্ট থেকে কী বুঝবে। এটি একটি
+        যুক্তিসঙ্গত অনুমান, নিশ্চয়তা নয়। অ্যাপ্লিক্যান্ট ট্র্যাকিং সিস্টেম একেকটি একেক রকম,
+        নিয়োগকর্তারা সেগুলো আলাদাভাবে সাজান, আর কেউই প্রকাশ করে না ফাইল কীভাবে পড়ে।{' '}
         <strong className="text-fg font-semibold">
-          We cannot promise any particular employer&apos;s system will parse your CV, and a good
-          score is not a promise of an interview.
+          কোনো নির্দিষ্ট নিয়োগকর্তার সিস্টেম আপনার CV পার্স করবে বলে আমরা প্রতিশ্রুতি দিতে পারি না,
+          আর ভালো স্কোর মানে ইন্টারভিউয়ের প্রতিশ্রুতি নয়।
         </strong>
       </p>
       <p>
-        The service is provided as it is, with no warranty. It may be unavailable, it may change,
-        and features may be removed. To the extent the law allows, {LEGAL_ENTITY} is not liable for
-        any loss arising from using it — including a lost document, a missed deadline, or an
-        application that was not read.
+        সার্ভিসটি যেমন আছে তেমনই দেওয়া হয়, কোনো ওয়ারেন্টি ছাড়া। এটি অনুপলব্ধ হতে পারে, বদলাতে
+        পারে, আর কোনো সুবিধা সরিয়ে নেওয়া হতে পারে। আইন যতদূর অনুমতি দেয়, এটি ব্যবহারের ফলে ঘটা
+        কোনো ক্ষতির জন্য — হারানো ডকুমেন্ট, মিস করা সময়সীমা বা না পড়া আবেদন সহ — {LEGAL_ENTITY}
+        দায়ী নন।
       </p>
     </LegalSection>
 
-    <LegalSection id="backups" heading="Keep your own copy">
+    <LegalSection id="backups" heading="নিজের কপি রাখুন">
       <p>
-        Most of your CVs live only on your device, so a cleared browser or a lost machine takes
-        them with it. Syncing up to {CLOUD_SYNC.maxDocuments} CVs protects those across devices,
-        but it is not a substitute for a backup: the service has no uptime or permanent-storage
-        guarantee, and may remove the server copies of an account that has been inactive for{' '}
-        {CLOUD_SYNC.inactiveMonths} months, without notice.
+        আপনার বেশির ভাগ CV শুধু আপনার ডিভাইসে থাকে, তাই ব্রাউজার মুছলে বা মেশিন হারালে সেগুলোও
+        চলে যায়। {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত CV সিঙ্ক করলে সেগুলো ডিভাইসগুলোর মধ্যে
+        সুরক্ষিত থাকে, কিন্তু এটি ব্যাকআপের বিকল্প নয়: সার্ভিসের আপটাইম বা স্থায়ী সংরক্ষণের কোনো
+        নিশ্চয়তা নেই, আর {bn(CLOUD_SYNC.inactiveMonths)} মাস নিষ্ক্রিয় অ্যাকাউন্টের সার্ভার কপি
+        নোটিস ছাড়াই সরিয়ে ফেলা হতে পারে।
       </p>
       <p>
-        Download a JSON backup, or point the app at a workspace folder that a sync service already
-        watches. Every PDF you export also carries the document inside it and can be imported back —
-        so a downloaded PDF is itself a backup.
-      </p>
-    </LegalSection>
-
-    <LegalSection id="ending" heading="Ending it">
-      <p>
-        You can stop using the service at any time, and ask us at <Mail /> to delete your account.
-        We may close an account that breaks these terms. Account deletion also removes its cloud CV
-        copies; local copies already stored in your browsers remain under your control.
+        একটি JSON ব্যাকআপ ডাউনলোড করুন, অথবা অ্যাপকে এমন একটি ওয়ার্কস্পেস ফোল্ডার দেখিয়ে দিন যেটি
+        কোনো সিঙ্ক সার্ভিস আগে থেকেই নজরে রাখে। আপনার এক্সপোর্ট করা প্রতিটি PDF-এর ভেতরেও
+        ডকুমেন্টটি থাকে আর সেটি আবার ইমপোর্ট করা যায় — তাই ডাউনলোড করা PDF নিজেই একটি ব্যাকআপ।
       </p>
     </LegalSection>
 
-    <LegalSection id="changes" heading="Changes">
+    <LegalSection id="ending" heading="ব্যবহার শেষ করা">
       <p>
-        These terms may change; the date at the top says when they last did. Continuing to use the
-        service after a change means accepting it. A change that materially affects account holders
-        will be emailed to the address on the account.
+        আপনি যেকোনো সময় সার্ভিস ব্যবহার বন্ধ করতে পারেন, আর <Mail /> ঠিকানায় অ্যাকাউন্ট মুছে
+        ফেলতে বলতে পারেন। এই শর্ত ভাঙলে আমরা কোনো অ্যাকাউন্ট বন্ধ করে দিতে পারি। অ্যাকাউন্ট মুছলে
+        ক্লাউডে থাকা CV কপিও মুছে যায়; আপনার ব্রাউজারে আগে থেকে থাকা লোকাল কপি আপনার নিয়ন্ত্রণেই
+        থাকে।
       </p>
     </LegalSection>
 
-    <LegalSection id="contact" heading="Contact">
+    <LegalSection id="changes" heading="পরিবর্তন">
       <p>
-        Anything at all: <Mail />.
+        এই শর্তাবলি বদলাতে পারে; ওপরের তারিখ বলে শেষবার কখন বদলেছে। বদলের পরে সার্ভিস ব্যবহার করা
+        মানে তা মেনে নেওয়া। অ্যাকাউন্টধারীদের ওপর উল্লেখযোগ্য প্রভাব ফেলে এমন পরিবর্তন অ্যাকাউন্টের
+        ইমেইল ঠিকানায় পাঠানো হবে।
+      </p>
+    </LegalSection>
+
+    <LegalSection id="contact" heading="যোগাযোগ">
+      <p>
+        যেকোনো বিষয়ে: <Mail />।
       </p>
     </LegalSection>
   </LegalShell>

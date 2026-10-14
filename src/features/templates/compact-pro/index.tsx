@@ -14,9 +14,9 @@ import './compact-pro.css';
 
 export const meta: TemplateMeta = {
   id: 'compact-pro',
-  name: 'Compact Professional',
+  name: 'কমপ্যাক্ট প্রফেশনাল',
   description:
-    'Name left, contact right, and a rule after every heading. Dense single column that fits a long history — dates sit right-aligned beside each role.',
+    'বাঁয়ে নাম, ডানে যোগাযোগ, আর প্রতিটি শিরোনামের পরে একটি রেখা। ঘন এক কলাম, লম্বা ইতিহাসেও আঁটে — তারিখ প্রতিটি পদের পাশে ডান দিকে বসে।',
   category: 'balanced',
   /*
    * Below the plain design for one reason worth stating: project and credential

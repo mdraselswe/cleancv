@@ -25,7 +25,7 @@ export const TagInput = ({
   value,
   onChange,
   id,
-  placeholder = 'Type and press Enter',
+  placeholder = 'লিখে Enter চাপুন',
   max = 40,
   suggestions,
   describedBy,
@@ -86,7 +86,7 @@ export const TagInput = ({
               type="button"
               onClick={() => removeAt(index)}
               disabled={disabled}
-              aria-label={`Remove ${tag}`}
+              aria-label={`${tag} সরান`}
               className="tap-target text-fg-subtle hover:bg-border-base hover:text-fg flex h-5 w-5 items-center justify-center rounded-lg transition"
             >
               <X size={12} />

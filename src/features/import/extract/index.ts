@@ -1,4 +1,5 @@
 import { IMPORT_MAX_BYTES, IMPORT_MIME } from '@/constants';
+import { bn } from '@/lib/bn';
 
 import type { ExtractedDocument, SourceKind } from '../types';
 import { extractDocx } from './docx';
@@ -25,7 +26,7 @@ export const extractDocument = async (
 ): Promise<ExtractedDocument> => {
   if (file.size > IMPORT_MAX_BYTES) {
     throw new Error(
-      `That file is ${Math.round(file.size / 1024 / 1024)} MB. Import handles files up to ${IMPORT_MAX_BYTES / 1024 / 1024} MB.`,
+      `ফাইলটি ${bn(Math.round(file.size / 1024 / 1024))} MB। ইমপোর্ট সর্বোচ্চ ${bn(IMPORT_MAX_BYTES / 1024 / 1024)} MB পর্যন্ত ফাইল নিতে পারে।`,
     );
   }
 
@@ -39,7 +40,7 @@ export const extractDocument = async (
     case 'image':
       return extractImage(file, options.onProgress);
     default:
-      throw new Error('Import reads PDF, DOCX and image files. A .doc file needs saving as .docx.');
+      throw new Error('ইমপোর্টে PDF, DOCX ও ছবি পড়া যায়। .doc ফাইলকে আগে .docx হিসেবে সংরক্ষণ করতে হবে।');
   }
 };
 

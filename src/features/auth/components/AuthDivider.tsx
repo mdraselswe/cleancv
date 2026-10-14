@@ -5,7 +5,7 @@
  * pseudo-element on a container, so the word sits on the background it is
  * actually over in either theme.
  */
-export const AuthDivider = ({ label = 'or' }: { label?: string }) => (
+export const AuthDivider = ({ label = 'অথবা' }: { label?: string }) => (
   <div className="flex items-center gap-3" aria-hidden="true">
     <span className="bg-border-base h-px flex-1" />
     <span className="text-fg-subtle text-ui-xs">{label}</span>

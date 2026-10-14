@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { Badge } from '@/components/ui';
 import { type TemplateId } from '@/constants';
 import { createSampleResume } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { TemplatePreview, getAvailableTemplates } from '@/features/templates';
 
 const THUMB_WIDTH = 188;
@@ -48,7 +49,7 @@ export const TemplateStrip = ({ onPick, disabled }: TemplateStripProps) => {
               />
             </span>
             <Badge tone={meta.atsBaseline >= 90 ? 'success' : 'warning'} className="self-start">
-              ATS ceiling {meta.atsBaseline}
+              ATS সীমা {bn(meta.atsBaseline)}
             </Badge>
           </span>
         </button>

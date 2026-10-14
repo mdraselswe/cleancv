@@ -3,11 +3,17 @@
 import { Field, Input, Select } from '@/components/ui';
 import { LIMITS, MARITAL_STATUSES } from '@/constants';
 import { useResume } from '@/features/resume';
-import { titleCase } from '@/lib/text';
 
 import { useResumeEdit } from '../../hooks/useResumeEdit';
 
-const MARITAL_OPTIONS = MARITAL_STATUSES.map((value) => ({ value, label: titleCase(value) }));
+const MARITAL_LABEL: Record<(typeof MARITAL_STATUSES)[number], string> = {
+  single: 'অবিবাহিত',
+  married: 'বিবাহিত',
+  divorced: 'বিবাহবিচ্ছিন্ন',
+  widowed: 'স্বামী/স্ত্রী মৃত',
+};
+
+const MARITAL_OPTIONS = MARITAL_STATUSES.map((value) => ({ value, label: MARITAL_LABEL[value] }));
 
 /**
  * Civil details.
@@ -37,23 +43,23 @@ export const PersonalSection = () => {
   return (
     <div className="flex flex-col gap-3">
       <p className="rounded-control bg-warning/10 text-ui-xs text-warning px-3 py-2 leading-relaxed">
-        Date of birth, gender, religion and marital status are expected on CVs in South Asia and the
-        Gulf. For US, UK, Canadian and most EU applications, leave this section off — it invites
-        discrimination screening and adds nothing.
+        দক্ষিণ এশিয়া ও উপসাগরীয় দেশের CV-তে জন্মতারিখ, লিঙ্গ, ধর্ম ও বৈবাহিক অবস্থা আশা করা হয়।
+        যুক্তরাষ্ট্র, যুক্তরাজ্য, কানাডা ও বেশির ভাগ ইউরোপীয় আবেদনে এই সেকশন বন্ধ রাখুন — এতে বৈষম্যমূলক
+        বাছাইয়ের ঝুঁকি থাকে, আর কোনো লাভ নেই।
       </p>
 
       <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-        {text('fatherName', "Father's name", undefined, LIMITS.nameChars)}
-        {text('motherName', "Mother's name", undefined, LIMITS.nameChars)}
-        {text('dateOfBirth', 'Date of birth', '01 January 1995', 20)}
-        {text('gender', 'Gender', undefined, 30)}
+        {text('fatherName', "বাবার নাম", undefined, LIMITS.nameChars)}
+        {text('motherName', "মায়ের নাম", undefined, LIMITS.nameChars)}
+        {text('dateOfBirth', 'জন্মতারিখ', '০১ জানুয়ারি ১৯৯৫', 20)}
+        {text('gender', 'লিঙ্গ', undefined, 30)}
 
-        <Field label="Marital status">
+        <Field label="বৈবাহিক অবস্থা">
           {({ id }) => (
             <Select
               id={id}
               options={MARITAL_OPTIONS}
-              placeholder="Not specified"
+              placeholder="উল্লেখ করা নেই"
               value={personal.maritalStatus}
               onChange={(event) =>
                 patch('personal', {
@@ -64,11 +70,11 @@ export const PersonalSection = () => {
           )}
         </Field>
 
-        {text('nationality', 'Nationality', 'Bangladeshi')}
-        {text('religion', 'Religion', undefined, 40)}
-        {text('bloodGroup', 'Blood group', 'O+', 10)}
-        {text('nationalId', 'National ID', undefined, 40)}
-        {text('passportNumber', 'Passport number', undefined, 40)}
+        {text('nationality', 'জাতীয়তা', 'বাংলাদেশি')}
+        {text('religion', 'ধর্ম', undefined, 40)}
+        {text('bloodGroup', 'রক্তের গ্রুপ', 'O+', 10)}
+        {text('nationalId', 'জাতীয় পরিচয়পত্র নম্বর', undefined, 40)}
+        {text('passportNumber', 'পাসপোর্ট নম্বর', undefined, 40)}
       </div>
     </div>
   );

@@ -16,8 +16,8 @@ export interface ShortcutsDialogProps {
  * the bindings cannot drift apart.
  */
 export const ShortcutsDialog = ({ onClose }: ShortcutsDialogProps) => (
-  <Modal onClose={onClose} label="Keyboard shortcuts" className="max-w-[420px]">
-    <ModalHeader title="Keyboard shortcuts" subtitle="Ctrl is Cmd on a Mac." onClose={onClose} />
+  <Modal onClose={onClose} label="কীবোর্ড শর্টকাট" className="max-w-[420px]">
+    <ModalHeader title="কীবোর্ড শর্টকাট" subtitle="ম্যাকে Ctrl-এর বদলে Cmd চাপুন।" onClose={onClose} />
 
     <dl className="divide-border-base scroll-slim min-h-0 divide-y overflow-y-auto px-4 py-1">
       {KEYBOARD_SHORTCUTS.map((shortcut) => (

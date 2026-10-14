@@ -14,9 +14,9 @@ import './classic-dc.css';
 
 export const meta: TemplateMeta = {
   id: 'classic-dc',
-  name: 'Classic Timeline',
+  name: 'ক্লাসিক টাইমলাইন',
   description:
-    'Dates and locations in a left rail, content on the right. Two-column look, single-column reading order.',
+    'বাঁ দিকের স্তম্ভে তারিখ ও অবস্থান, ডানে বিষয়বস্তু। চেহারায় দুই কলাম, পড়ার ক্রমে এক কলাম।',
   category: 'ats',
   atsBaseline: 95,
   supports: {

@@ -51,7 +51,7 @@ export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFo
       <div className="flex flex-col gap-4">
         {googleEnabled ? <GoogleButton callbackURL={redirectTo} /> : null}
         <p className="text-fg-subtle text-ui-md text-center leading-relaxed">
-          New here? The same button creates your account. There is no password to remember.
+          নতুন? একই বোতাম আপনার অ্যাকাউন্ট খুলে দেবে। মনে রাখার মতো কোনো পাসওয়ার্ড নেই।
         </p>
       </div>
     );
@@ -62,12 +62,12 @@ export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFo
       {googleEnabled ? (
         <>
           <GoogleButton callbackURL={redirectTo} />
-          <AuthDivider label="or use your email" />
+          <AuthDivider label="অথবা ইমেইল ব্যবহার করুন" />
         </>
       ) : null}
 
       <form className="flex flex-col gap-3.5" onSubmit={submit} noValidate>
-        <Field label="Email" error={errors.email}>
+        <Field label="ইমেইল" error={errors.email}>
           {({ id, describedBy, invalid }) => (
             <Input
               className={AUTH_FIELD_CLASS}
@@ -85,11 +85,11 @@ export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFo
         </Field>
 
         <Field
-          label="Password"
+          label="পাসওয়ার্ড"
           error={errors.password}
           adornment={
             <Link href={AUTH_ROUTES.forgotPassword} className="tap-target hover:text-fg underline">
-              Forgot it?
+              ভুলে গেছেন?
             </Link>
           }
         >
@@ -111,10 +111,10 @@ export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFo
         {/* The one failure the reader cannot fix by typing more carefully. */}
         {unverifiedEmail && !resent ? (
           <Button variant="ghost" size="sm" onClick={() => void resendVerification()}>
-            Send the confirmation link again
+            নিশ্চিতকরণ লিংক আবার পাঠান
           </Button>
         ) : null}
-        {resent ? <AuthNotice tone="success">Sent. Check {unverifiedEmail}.</AuthNotice> : null}
+        {resent ? <AuthNotice tone="success">পাঠানো হয়েছে। {unverifiedEmail} দেখুন।</AuthNotice> : null}
 
         <Button
           type="submit"
@@ -123,14 +123,14 @@ export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFo
           className="justify-center"
           disabled={pending}
         >
-          {pending ? 'Signing in…' : 'Sign in'}
+          {pending ? 'সাইন-ইন হচ্ছে…' : 'সাইন-ইন'}
         </Button>
       </form>
 
       <p className="text-fg-subtle text-ui-md text-center">
-        No account yet?{' '}
+        এখনো অ্যাকাউন্ট নেই?{' '}
         <Link href={signUpHref} className="tap-target text-fg font-medium underline">
-          Create one
+          একটি খুলুন
         </Link>
       </p>
     </div>

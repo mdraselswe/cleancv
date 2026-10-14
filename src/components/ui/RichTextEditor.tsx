@@ -368,7 +368,7 @@ export const RichTextEditor = ({
     const address = normaliseAddress(draft.address);
 
     if (!address) {
-      setDraft({ ...draft, error: 'Enter a web address like https://example.com, or an email.' });
+      setDraft({ ...draft, error: 'https://example.com-এর মতো একটি ওয়েব ঠিকানা বা একটি ইমেইল লিখুন।' });
 
       return;
     }
@@ -481,11 +481,11 @@ export const RichTextEditor = ({
 
       <div className="flex min-h-7 items-center gap-1.5">
         {/* `onMouseDown` keeps the selection in the editor while a button is pressed. */}
-        <div role="toolbar" aria-label="Text formatting" className="flex items-center gap-0.5">
+        <div role="toolbar" aria-label="লেখার ফরম্যাটিং" className="flex items-center gap-0.5">
           <button
             type="button"
-            aria-label="Bold"
-            title="Bold (Ctrl+B)"
+            aria-label="বোল্ড"
+            title="বোল্ড (Ctrl+B)"
             aria-pressed={active.bold}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => format('bold')}
@@ -495,8 +495,8 @@ export const RichTextEditor = ({
           </button>
           <button
             type="button"
-            aria-label="Italic"
-            title="Italic (Ctrl+I)"
+            aria-label="ইটালিক"
+            title="ইটালিক (Ctrl+I)"
             aria-pressed={active.italic}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => format('italic')}
@@ -506,8 +506,8 @@ export const RichTextEditor = ({
           </button>
           <button
             type="button"
-            aria-label="Underline"
-            title="Underline (Ctrl+U)"
+            aria-label="আন্ডারলাইন"
+            title="আন্ডারলাইন (Ctrl+U)"
             aria-pressed={active.underline}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => format('underline')}
@@ -517,8 +517,8 @@ export const RichTextEditor = ({
           </button>
           <button
             type="button"
-            aria-label="Link"
-            title={active.link ? 'Edit link' : 'Add link'}
+            aria-label="লিংক"
+            title={active.link ? 'লিংক সম্পাদনা' : 'লিংক যোগ করুন'}
             aria-pressed={active.link}
             onMouseDown={(event) => event.preventDefault()}
             onClick={openLink}
@@ -528,8 +528,8 @@ export const RichTextEditor = ({
           </button>
           <button
             type="button"
-            aria-label="Clear formatting"
-            title="Clear formatting"
+            aria-label="ফরম্যাটিং মুছুন"
+            title="ফরম্যাটিং মুছুন"
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => format('removeFormat')}
             className={toolbarButton}
@@ -548,7 +548,7 @@ export const RichTextEditor = ({
               autoFocus
               type="url"
               inputMode="url"
-              aria-label="Link address"
+              aria-label="লিংকের ঠিকানা"
               placeholder="https://example.com"
               value={draft.address}
               onChange={(event) => setDraft({ ...draft, address: event.target.value, error: '' })}
@@ -568,8 +568,8 @@ export const RichTextEditor = ({
             />
             <button
               type="button"
-              aria-label="Apply link"
-              title="Apply link"
+              aria-label="লিংক প্রয়োগ করুন"
+              title="লিংক প্রয়োগ করুন"
               onClick={applyLink}
               className="bg-primary text-primary-fg flex h-8 w-8 flex-none items-center justify-center rounded-lg"
             >
@@ -578,8 +578,8 @@ export const RichTextEditor = ({
             {draft.existing ? (
               <button
                 type="button"
-                aria-label="Remove link"
-                title="Remove link"
+                aria-label="লিংক সরান"
+                title="লিংক সরান"
                 onClick={removeLink}
                 className="text-danger hover:bg-danger/10 flex h-8 w-8 flex-none items-center justify-center rounded-lg"
               >
@@ -588,8 +588,8 @@ export const RichTextEditor = ({
             ) : null}
             <button
               type="button"
-              aria-label="Cancel"
-              title="Cancel"
+              aria-label="বাতিল"
+              title="বাতিল"
               onClick={closeLink}
               className="text-fg-muted hover:bg-surface flex h-8 w-8 flex-none items-center justify-center rounded-lg"
             >
@@ -598,7 +598,7 @@ export const RichTextEditor = ({
           </div>
           {draft.error ? <p className="text-danger text-ui-xs">{draft.error}</p> : null}
           <p className="text-fg-subtle text-ui-2xs leading-snug">
-            Select words first to link them. The ATS-safe PDF prints the address after the link.
+            আগে যে শব্দগুলোতে লিংক দেবেন সেগুলো নির্বাচন করুন। ATS-সেফ PDF-এ লিংকের পরে ঠিকানাটিও ছাপা হয়।
           </p>
         </div>
       ) : null}

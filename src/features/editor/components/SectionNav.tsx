@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 import { useScrollEdges } from '@/hooks';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import type { ActiveTarget, SectionTabItem } from '../hooks/useActiveSection';
@@ -36,14 +37,14 @@ export const SectionRail = ({ tabs, active, progress, onSelect }: SectionNavProp
 
   return (
     <nav
-      aria-label="Resume sections"
+      aria-label="CV-এর সেকশন"
       className="border-border-base bg-surface/70 scroll-slim flex w-[64px] flex-none flex-col gap-1 overflow-y-auto border-r px-2 py-3 xl:w-[252px] xl:px-3"
     >
       <div className="mb-2 hidden xl:block">
         <div className="mb-1.5 flex items-baseline justify-between">
-          <span className="text-fg text-ui font-bold">Your CV</span>
+          <span className="text-fg text-ui font-bold">আপনার CV</span>
           <span className="text-fg-subtle text-ui-xs tabular-nums">
-            {progress.completed}/{progress.total} sections
+            {bn(progress.completed)}/{bn(progress.total)} সেকশন
           </span>
         </div>
         <div className="bg-surface-2 h-2 overflow-hidden rounded-full">
@@ -130,7 +131,7 @@ const RailItem = ({ tab, selected, done, onSelect }: RailItemProps) => {
         {done ? (
           <span
             className="bg-success/15 text-success hidden h-5 w-5 flex-none items-center justify-center rounded-full xl:flex"
-            aria-label="Done"
+            aria-label="সম্পন্ন"
           >
             <Check size={12} strokeWidth={3} />
           </span>
@@ -156,7 +157,7 @@ export const SectionStrip = ({ tabs, active, progress, onSelect }: SectionNavPro
     <nav
       ref={stripRef}
       {...edgeProps}
-      aria-label="Resume sections"
+      aria-label="CV-এর সেকশন"
       className="scroll-fade scroll-none border-border-base bg-surface/85 sticky top-0 z-10 flex gap-1.5 overflow-x-auto scroll-smooth border-b px-3 py-2 backdrop-blur-xl"
     >
       {tabs.map((tab) => {

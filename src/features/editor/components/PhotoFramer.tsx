@@ -6,6 +6,7 @@ import { useRef, type PointerEvent as ReactPointerEvent } from 'react';
 import { Button, Slider } from '@/components/ui';
 import { PHOTO_FRAME } from '@/constants';
 import type { PhotoFrame } from '@/features/resume';
+import { bnPercent } from '@/lib/bn';
 
 export interface PhotoFramerProps {
   photo: string;
@@ -79,7 +80,7 @@ export const PhotoFramer = ({ photo, frame, onChange }: PhotoFramerProps) => {
         onPointerMove={drag}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        title="Drag to move the photo inside the frame"
+        title="ফ্রেমের ভেতরে ছবি সরাতে টেনে আনুন"
         className="border-border-base h-24 w-24 flex-none cursor-grab overflow-hidden rounded-xl border active:cursor-grabbing"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -98,17 +99,17 @@ export const PhotoFramer = ({ photo, frame, onChange }: PhotoFramerProps) => {
 
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <Slider
-          label="Zoom"
+          label="জুম"
           min={PHOTO_FRAME.zoom.min}
           max={PHOTO_FRAME.zoom.max}
           step={PHOTO_FRAME.zoom.step}
           value={frame.zoom}
-          display={`${Math.round(frame.zoom * 100)}%`}
+          display={bnPercent(frame.zoom * 100)}
           onChange={(zoom) => onChange({ ...frame, zoom })}
         />
 
-        <p className="text-fg-subtle text-[12px]">
-          Drag the photo to choose what the frame keeps. Nothing is cropped from the file.
+        <p className="text-fg-subtle text-ui-xs">
+          ফ্রেমে ছবির কোন অংশ থাকবে তা ঠিক করতে ছবিটি টানুন। মূল ফাইল থেকে কিছুই কাটা হয় না।
         </p>
 
         {!isDefault(frame) ? (
@@ -119,7 +120,7 @@ export const PhotoFramer = ({ photo, frame, onChange }: PhotoFramerProps) => {
             leading={<RotateCcw size={13} />}
             onClick={() => onChange(DEFAULT_FRAME)}
           >
-            Recentre
+            মাঝখানে আনুন
           </Button>
         ) : null}
       </div>

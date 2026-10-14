@@ -3,13 +3,14 @@
 import { Check, Loader2, Sparkles, Wand2 } from 'lucide-react';
 
 import { Button, Input, Modal, ModalHeader, Select, Switch, Tabs } from '@/components/ui';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import { useTailor, type TailorMode } from '../hooks/useTailor';
 
 const MODE_TABS = [
-  { value: 'update' as const, label: 'Update this CV' },
-  { value: 'copy' as const, label: 'Save as a new copy' },
+  { value: 'update' as const, label: 'এই CV হালনাগাদ করুন' },
+  { value: 'copy' as const, label: 'নতুন কপি হিসেবে রাখুন' },
 ];
 
 export interface TailorDialogProps {
@@ -37,17 +38,17 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
   const empty = analysis.keywords.length === 0;
   const groups = tailor.resume.skills.map((group) => ({
     value: group.id,
-    label: group.category || 'Skills',
+    label: group.category || 'দক্ষতা',
   }));
 
   return (
-    <Modal label="Tailor to this job" onClose={busy ? () => undefined : onClose} className="max-w-[620px]">
+    <Modal label="এই চাকরির জন্য সাজান" onClose={busy ? () => undefined : onClose} className="max-w-[620px]">
       <ModalHeader
-        title="Tailor to this job"
+        title="এই চাকরির জন্য সাজান"
         subtitle={
           tailor.mode === 'update'
-            ? 'Changes this CV. One undo puts everything back.'
-            : 'This CV stays exactly as it is. A new CV is added.'
+            ? 'এই CV-টিই বদলাবে। একবার “ফিরিয়ে নিন” চাপলেই সব আগের মতো হবে।'
+            : 'এই CV যেমন আছে তেমনই থাকবে। একটি নতুন CV যোগ হবে।'
         }
         onClose={busy ? () => undefined : onClose}
       />
@@ -55,8 +56,8 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
       <div className="scroll-slim flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-4">
         {empty ? (
           <p className="text-fg-muted text-ui-md rounded-control bg-surface-2 p-3 leading-relaxed">
-            Paste the job description in the <strong>Target job</strong> tab first. Without it
-            there is nothing to tailor to.
+            আগে <strong>লক্ষ্য চাকরি</strong> ট্যাবে চাকরির বিবরণ পেস্ট করুন। সেটি ছাড়া সাজানোর
+            মতো কিছু নেই।
           </p>
         ) : (
           <>
@@ -64,14 +65,14 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
               items={MODE_TABS}
               value={tailor.mode}
               onChange={(mode: TailorMode) => tailor.setMode(mode)}
-              ariaLabel="Where to put the result"
+              ariaLabel="ফলাফল কোথায় রাখবেন"
               className="self-start"
             />
 
-            <section aria-label="How well it matches">
+            <section aria-label="কতটা মিলেছে">
               <p className="text-fg text-ui-md font-semibold">
-                Your CV already covers {analysis.matched.length} of {analysis.keywords.length} key
-                terms in this posting.
+                এই বিজ্ঞপ্তির {bn(analysis.keywords.length)}টি মূল শব্দের মধ্যে আপনার CV-তে আগে
+                থেকেই {bn(analysis.matched.length)}টি আছে।
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {analysis.matched.slice(0, 18).map((keyword) => (
@@ -85,58 +86,58 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
               </div>
             </section>
 
-            <section className="flex flex-col gap-3.5" aria-label="What to change">
+            <section className="flex flex-col gap-3.5" aria-label="কী বদলাবে">
               <Switch
                 checked={options.reorderSkills}
                 onChange={(reorderSkills) => tailor.patch({ reorderSkills })}
-                label="Put the skills this job asks for first"
+                label="এই চাকরি যে দক্ষতা চায়, সেগুলো আগে রাখুন"
                 description={
                   stats.skillsMoved > 0
-                    ? `${stats.skillsMoved} skills or groups move up.`
-                    : 'Already in a good order.'
+                    ? `${bn(stats.skillsMoved)}টি দক্ষতা বা গ্রুপ ওপরে উঠবে।`
+                    : 'আগে থেকেই ভালো ক্রমে আছে।'
                 }
               />
               <Switch
                 checked={options.reorderBullets}
                 onChange={(reorderBullets) => tailor.patch({ reorderBullets })}
-                label="Put the most relevant bullets first in each role"
+                label="প্রতিটি পদে সবচেয়ে প্রাসঙ্গিক বুলেট আগে রাখুন"
                 description={
                   stats.bulletsMoved > 0
-                    ? `${stats.bulletsMoved} bullets move up. Roles stay in date order.`
-                    : 'Already in a good order. Roles stay in date order.'
+                    ? `${bn(stats.bulletsMoved)}টি বুলেট ওপরে উঠবে। পদগুলো তারিখের ক্রমেই থাকবে।`
+                    : 'আগে থেকেই ভালো ক্রমে আছে। পদগুলো তারিখের ক্রমেই থাকবে।'
                 }
               />
               <Switch
                 checked={options.boldKeywords}
                 onChange={(boldKeywords) => tailor.patch({ boldKeywords })}
-                label="Bold the job’s own words in your bullets"
+                label="বুলেটে বিজ্ঞপ্তির নিজস্ব শব্দগুলো বোল্ড করুন"
                 description={
                   stats.keywordsBolded > 0
-                    ? `${stats.keywordsBolded} terms are emphasised, at most two per bullet.`
-                    : 'No matching words to emphasise.'
+                    ? `${bn(stats.keywordsBolded)}টি শব্দ জোর পাবে, প্রতি বুলেটে সর্বোচ্চ দুটি।`
+                    : 'জোর দেওয়ার মতো মিলে যাওয়া শব্দ নেই।'
                 }
               />
               <Switch
                 checked={options.addSummaryLine}
                 onChange={(addSummaryLine) => tailor.patch({ addSummaryLine })}
-                label="Add a closing line to the summary"
+                label="সারসংক্ষেপের শেষে একটি লাইন যোগ করুন"
                 description={
                   analysis.matchedSkills.length >= 2
-                    ? `“Strong in ${analysis.matchedSkills.slice(0, 3).join(', ')}.” — only skills you already list.`
-                    : 'Needs two or more of your listed skills to match the posting.'
+                    ? `“Strong in ${analysis.matchedSkills.slice(0, 3).join(', ')}.” — শুধু আপনার তালিকায় আগে থেকে থাকা দক্ষতা।`
+                    : 'বিজ্ঞপ্তির সঙ্গে মেলে এমন দুটি বা বেশি দক্ষতা আপনার তালিকায় থাকতে হবে।'
                 }
               />
             </section>
 
-            <section aria-label="Skills you have that are missing">
-              <p className="text-fg text-ui-md font-semibold">Add skills you really have</p>
+            <section aria-label="আপনার আছে কিন্তু CV-তে নেই এমন দক্ষতা">
+              <p className="text-fg text-ui-md font-semibold">যে দক্ষতা সত্যিই আপনার আছে, তা যোগ করুন</p>
               <p className="text-fg-subtle text-ui-xs mt-0.5 leading-snug">
-                The posting uses these and your CV does not. Tick only what is honestly true of
-                you — nothing is added unless you tick it.
+                বিজ্ঞপ্তিতে এগুলো আছে, আপনার CV-তে নেই। শুধু যেগুলো সত্যিই আপনার সম্পর্কে সত্যি, সেগুলোতে
+                টিক দিন — টিক না দিলে কিছুই যোগ হয় না।
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {tailor.missingSuggestions.length === 0 ? (
-                  <span className="text-fg-subtle text-ui-xs">Nothing missing.</span>
+                  <span className="text-fg-subtle text-ui-xs">কিছুই বাদ পড়েনি।</span>
                 ) : (
                   tailor.missingSuggestions.map(({ keyword, label }) => {
                     const on = options.addSkills.includes(keyword);
@@ -164,7 +165,7 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
 
               {options.addSkills.length > 0 && groups.length > 0 ? (
                 <label className="mt-3 flex flex-col gap-1.5">
-                  <span className="text-ui text-fg-muted font-medium">Add them to</span>
+                  <span className="text-ui text-fg-muted font-medium">কোথায় যোগ করবেন</span>
                   <Select
                     options={groups}
                     value={options.addSkillsGroupId || groups[0].value}
@@ -179,15 +180,15 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
                 <Switch
                   checked={tailor.polishWithAi}
                   onChange={tailor.setPolishWithAi}
-                  label="Also polish the 6 most relevant bullets with AI"
-                  description="Uses your AI quota. It rewrites wording only and cannot add numbers. Undo reverts it with the rest."
+                  label="সবচেয়ে প্রাসঙ্গিক ৬টি বুলেটও AI দিয়ে পরিমার্জন করুন"
+                  description="আপনার AI কোটা খরচ হয়। এটি শুধু শব্দ বদলায়, সংখ্যা যোগ করতে পারে না। “ফিরিয়ে নিন” বাকিগুলোর সঙ্গে এটিও ফেরত দেয়।"
                 />
               </section>
             ) : null}
 
             {tailor.mode === 'copy' ? (
               <label className="flex flex-col gap-1.5">
-                <span className="text-ui text-fg-muted font-medium">Name of the new CV</span>
+                <span className="text-ui text-fg-muted font-medium">নতুন CV-র নাম</span>
                 <Input
                   value={tailor.name}
                   placeholder={tailor.defaultName}
@@ -206,7 +207,7 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
         </span>
         <div className="flex flex-none gap-2">
           <Button variant="ghost" onClick={onClose} disabled={Boolean(busy)}>
-            Cancel
+            বাতিল
           </Button>
           <Button
             variant="primary"
@@ -216,7 +217,7 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
             }
             onClick={() => void tailor.create()}
           >
-            {tailor.mode === 'copy' ? 'Create tailored copy' : 'Tailor this CV'}
+            {tailor.mode === 'copy' ? 'সাজানো কপি তৈরি করুন' : 'এই CV সাজান'}
           </Button>
         </div>
       </div>

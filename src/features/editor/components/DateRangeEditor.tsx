@@ -14,13 +14,13 @@ export interface DateRangeEditorProps {
  * Start, end and "current" as one control. `current` hides the end date rather
  * than merely ignoring it, so the two cannot disagree.
  */
-export const DateRangeEditor = ({ value, onChange, label = 'Dates' }: DateRangeEditorProps) => {
+export const DateRangeEditor = ({ value, onChange, label = 'তারিখ' }: DateRangeEditorProps) => {
   const reversed = isRangeReversed(value);
 
   return (
     <div className="col-span-full flex flex-col gap-2">
       <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-        <Field label={`${label} — start`}>
+        <Field label={`${label} — শুরু`}>
           {({ id }) => (
             <MonthInput
               id={id}
@@ -31,7 +31,7 @@ export const DateRangeEditor = ({ value, onChange, label = 'Dates' }: DateRangeE
         </Field>
 
         {!value.current ? (
-          <Field label={`${label} — end`} error={reversed ? 'End is before start.' : undefined}>
+          <Field label={`${label} — শেষ`} error={reversed ? 'শেষের তারিখ শুরুর আগে হতে পারে না।' : undefined}>
             {({ id, invalid }) => (
               <MonthInput
                 id={id}
@@ -42,14 +42,14 @@ export const DateRangeEditor = ({ value, onChange, label = 'Dates' }: DateRangeE
             )}
           </Field>
         ) : (
-          <div className="text-ui text-fg-subtle flex items-end pb-1.5">Ongoing</div>
+          <div className="text-ui text-fg-subtle flex items-end pb-1.5">চলমান</div>
         )}
       </div>
 
       <Switch
         checked={value.current}
         onChange={(current) => onChange({ ...value, current })}
-        label="I currently hold this position"
+        label="আমি এখনো এই পদে আছি"
       />
     </div>
   );

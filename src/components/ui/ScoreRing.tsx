@@ -1,5 +1,6 @@
 'use client';
 
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 export type ScoreTone = 'excellent' | 'strong' | 'fair' | 'poor';
@@ -41,7 +42,7 @@ export const ScoreRing = ({ score, tone, label, size = 116, className }: ScoreRi
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         role="img"
-        aria-label={`ATS score ${clamped} out of 100`}
+        aria-label={`ATS স্কোর ${bn(clamped)}, ১০০-এর মধ্যে`}
       >
         {/*
           The track is drawn thinner than the arc that covers it. At the same
@@ -77,10 +78,10 @@ export const ScoreRing = ({ score, tone, label, size = 116, className }: ScoreRi
           className="font-semibold tabular-nums"
           style={{ color: TONE_VAR[tone], fontSize: size * 0.26, lineHeight: 1 }}
         >
-          {clamped}
+          {bn(clamped)}
         </span>
         {label ? (
-          <span className="text-fg-subtle text-ui-2xs mt-1 font-medium tracking-[0.08em] uppercase">
+          <span className="text-fg-subtle text-ui-2xs mt-1 font-medium">
             {label}
           </span>
         ) : null}

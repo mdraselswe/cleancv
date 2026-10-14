@@ -46,8 +46,8 @@ export const CustomSectionEditor = ({ slot }: CustomSectionEditorProps) => {
   return (
     <div className="flex flex-col gap-3">
       <Field
-        label="Heading"
-        hint="This is what a recruiter and a parser both read. Keep it plain."
+        label="শিরোনাম"
+        hint="রিক্রুটার আর পার্সার দুজনেই এটি পড়ে। সহজ ও সাদামাটা রাখুন।"
       >
         {({ id: fieldId, describedBy }) => (
           <Input
@@ -67,28 +67,28 @@ export const CustomSectionEditor = ({ slot }: CustomSectionEditorProps) => {
         items={LAYOUT_TABS}
         value={section.layout}
         onChange={(layout: CustomSectionLayout) => actions.updateCustomSection(id, { layout })}
-        ariaLabel="Section layout"
+        ariaLabel="সেকশনের লেআউট"
         className="self-start"
       />
 
       {section.layout === 'paragraph' ? (
-        <Field label="Text">
+        <Field label="লেখা">
           {({ id: fieldId, describedBy }) => (
             <RichTextEditor
               id={fieldId}
-              aria-label="Text"
+              aria-label="লেখা"
               aria-describedby={describedBy}
               rows={5}
               maxLength={LIMITS.summaryChars}
               value={section.text}
-              placeholder="A short paragraph."
+              placeholder="একটি ছোট অনুচ্ছেদ।"
               onChange={(text) => actions.updateCustomSection(id, { text }, `custom:${id}:text`)}
             />
           )}
         </Field>
       ) : (
         <BulletsEditor
-          label="Points"
+          label="পয়েন্ট"
           value={section.bullets}
           onChange={(bullets) => actions.updateCustomSection(id, { bullets })}
         />

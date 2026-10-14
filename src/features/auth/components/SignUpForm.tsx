@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Button, Field, Input } from '@/components/ui';
 import { AUTH_ROUTES, LEGAL_ROUTES, PASSWORD_MIN, REDIRECT_PARAM } from '@/constants';
+import { bn } from '@/lib/bn';
 
 import { useSignUp } from '../hooks/useSignUp';
 import { AuthDivider } from './AuthDivider';
@@ -41,13 +42,13 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
     return (
       <div className="flex flex-col gap-4">
         {googleEnabled ? (
-          <GoogleButton callbackURL={redirectTo} label="Sign up with Google" />
+          <GoogleButton callbackURL={redirectTo} label="Google দিয়ে সাইন-আপ করুন" />
         ) : null}
         <p className="text-fg-subtle text-ui-md text-center leading-relaxed">
-          Accounts are made with Google: one click, no password, and nothing to confirm. We only
-          ask Google for your name, email address and picture.{' '}
+          অ্যাকাউন্ট Google দিয়ে খোলা হয়: এক ক্লিক, কোনো পাসওয়ার্ড নেই, নিশ্চিত করারও কিছু নেই।
+          আমরা Google-এর কাছে শুধু আপনার নাম, ইমেইল ঠিকানা আর ছবি চাই।{' '}
           <Link href={signInHref} className="tap-target text-fg underline">
-            Already have an account?
+            আগে থেকেই অ্যাকাউন্ট আছে?
           </Link>
         </p>
       </div>
@@ -58,15 +59,15 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
     return (
       <div className="flex flex-col gap-4">
         <AuthNotice tone="success">
-          Check <strong className="font-semibold">{sentTo}</strong> for a confirmation link. It
-          works for an hour.
+          নিশ্চিতকরণ লিংকের জন্য <strong className="font-semibold">{sentTo}</strong> দেখুন। লিংকটি
+          এক ঘণ্টা কাজ করবে।
         </AuthNotice>
         <p className="text-fg-subtle text-ui-md leading-relaxed">
-          Nothing arrived? Look in spam, then{' '}
+          কিছু আসেনি? স্প্যাম ফোল্ডার দেখুন, তারপর{' '}
           <Link href={signInHref} className="tap-target text-fg underline">
-            sign in
+            সাইন-ইন
           </Link>{' '}
-          to ask for another one.
+          করে আরেকটি চান।
         </p>
       </div>
     );
@@ -76,13 +77,13 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
     <div className="flex flex-col gap-4">
       {googleEnabled ? (
         <>
-          <GoogleButton callbackURL={redirectTo} label="Sign up with Google" />
-          <AuthDivider label="or use your email" />
+          <GoogleButton callbackURL={redirectTo} label="Google দিয়ে সাইন-আপ করুন" />
+          <AuthDivider label="অথবা ইমেইল ব্যবহার করুন" />
         </>
       ) : null}
 
       <form className="flex flex-col gap-3.5" onSubmit={submit} noValidate>
-        <Field label="Name" error={errors.name} hint="Shown on your account, not on your CV.">
+        <Field label="নাম" error={errors.name} hint="আপনার অ্যাকাউন্টে দেখানো হয়, CV-তে নয়।">
           {({ id, describedBy, invalid }) => (
             <Input
               className={AUTH_FIELD_CLASS}
@@ -97,7 +98,7 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
           )}
         </Field>
 
-        <Field label="Email" error={errors.email}>
+        <Field label="ইমেইল" error={errors.email}>
           {({ id, describedBy, invalid }) => (
             <Input
               className={AUTH_FIELD_CLASS}
@@ -114,9 +115,9 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
         </Field>
 
         <Field
-          label="Password"
+          label="পাসওয়ার্ড"
           error={errors.password}
-          hint={`At least ${PASSWORD_MIN} characters.`}
+          hint={`কমপক্ষে ${bn(PASSWORD_MIN)}টি অক্ষর।`}
         >
           {({ id, describedBy, invalid }) => (
             <PasswordInput
@@ -140,7 +141,7 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
           className="justify-center"
           disabled={pending}
         >
-          {pending ? 'Creating your account…' : 'Create account'}
+          {pending ? 'অ্যাকাউন্ট খোলা হচ্ছে…' : 'অ্যাকাউন্ট খুলুন'}
         </Button>
 
         {/*
@@ -149,22 +150,22 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
           moment of the act is the honest version, and the links are real.
         */}
         <p className="text-fg-subtle text-ui-xs text-center leading-relaxed">
-          By creating an account you agree to the{' '}
+          অ্যাকাউন্ট খুলে আপনি{' '}
           <Link href={LEGAL_ROUTES.terms} className="hover:text-fg underline">
-            Terms
+            শর্তাবলি
           </Link>{' '}
-          and the{' '}
+          এবং{' '}
           <Link href={LEGAL_ROUTES.privacy} className="hover:text-fg underline">
-            Privacy Policy
+            গোপনীয়তা নীতিতে
           </Link>
-          .
+          সম্মত হচ্ছেন।
         </p>
       </form>
 
       <p className="text-fg-subtle text-ui-md text-center">
-        Already have an account?{' '}
+        আগে থেকেই অ্যাকাউন্ট আছে?{' '}
         <Link href={signInHref} className="tap-target text-fg font-medium underline">
-          Sign in
+          সাইন-ইন
         </Link>
       </p>
     </div>

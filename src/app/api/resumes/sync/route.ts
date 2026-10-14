@@ -40,7 +40,7 @@ const syncRequestSchema = z.object({
 });
 
 const unauthorized = () =>
-  Response.json({ error: 'Sign in to sync CVs across your devices.' }, { status: 401 });
+  Response.json({ error: 'সব ডিভাইসে CV সিঙ্ক করতে সাইন-ইন করুন।' }, { status: 401 });
 
 /**
  * Merge the CVs a browser chose to sync into the account's cloud copies.
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   try {
     input = syncRequestSchema.parse(await request.json());
   } catch {
-    return Response.json({ error: 'The CV sync payload is invalid.' }, { status: 400 });
+    return Response.json({ error: 'CV সিঙ্কের তথ্য সঠিক নয়।' }, { status: 400 });
   }
 
   const database = db();

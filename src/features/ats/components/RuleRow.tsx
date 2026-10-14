@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
 
 import type { AtsFixTarget, AtsStatus } from '@/constants';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 import type { AtsQuickFix, EvaluatedRule } from '../types';
@@ -67,16 +68,16 @@ export const RuleRow = ({ rule, onNavigate, onQuickFix }: RuleRowProps) => {
           {rule.gain ? (
             <span
               className="text-success text-ui-xs flex-none font-bold tabular-nums"
-              title="What the overall score gains if this passes"
+              title="এটি ঠিক হলে সামগ্রিক স্কোর যতটা বাড়বে"
             >
-              +{rule.gain} pts
+              +{bn(rule.gain)} পয়েন্ট
             </span>
           ) : rule.rawGain ? (
             <span
               className="text-fg-subtle text-ui-2xs flex-none tabular-nums"
-              title="Worth this much once the content is no longer holding the score down"
+              title="লেখার জোর বাড়লে স্কোরে এর এতটা মূল্য থাকবে"
             >
-              +{rule.rawGain} once content improves
+              +{bn(rule.rawGain)} লেখা ভালো হলে
             </span>
           ) : null}
         </div>
@@ -100,7 +101,7 @@ export const RuleRow = ({ rule, onNavigate, onQuickFix }: RuleRowProps) => {
                   onClick={() => setShowAll((value) => !value)}
                   className="text-primary text-ui-2xs font-medium"
                 >
-                  {showAll ? 'Show fewer' : `Show all ${rule.details.length}`}
+                  {showAll ? 'কম দেখান' : `সব ${bn(rule.details.length)}টি দেখান`}
                 </button>
               </li>
             ) : null}
@@ -123,7 +124,7 @@ export const RuleRow = ({ rule, onNavigate, onQuickFix }: RuleRowProps) => {
             onClick={() => onNavigate(target)}
             className="text-ui-xs text-primary mt-1.5 inline-flex items-center gap-1 font-medium transition hover:gap-1.5"
           >
-            Fix it
+            ঠিক করুন
             <ArrowRight size={12} />
           </button>
         ) : null}

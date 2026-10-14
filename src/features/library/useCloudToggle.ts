@@ -40,7 +40,7 @@ export const useCloudToggle = () => {
       if (!result.ok) {
         toast.error(
           result.reason === 'missing'
-            ? 'That CV could not be found.'
+            ? 'ওই CV খুঁজে পাওয়া যায়নি।'
             : CLOUD_REFUSAL_MESSAGE[result.reason],
         );
 
@@ -49,8 +49,8 @@ export const useCloudToggle = () => {
 
       toast.success(
         enabled
-          ? 'This CV now syncs to your account.'
-          : 'Stopped syncing. It stays on this device.',
+          ? 'এই CV এখন আপনার অ্যাকাউন্টে সিঙ্ক হচ্ছে।'
+          : 'সিঙ্ক বন্ধ হয়েছে। CV-টি এই ডিভাইসে থাকবে।',
       );
     },
     [pathname, router, setCloud, signedIn],

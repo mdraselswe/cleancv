@@ -7,6 +7,7 @@ import { Button, RichTextEditor } from '@/components/ui';
 import { AiPolish } from '@/features/ai';
 import { useResume } from '@/features/resume';
 import { BULLET_WORD_RANGE, LIMITS } from '@/constants';
+import { bn } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 import { hasMetric } from '@/lib/metrics';
 import { stripEmphasis, wordCount } from '@/lib/text';
@@ -79,7 +80,7 @@ export const BulletsEditor = ({
       <div className="flex items-baseline justify-between">
         <span className="text-ui text-fg-muted font-medium">{label}</span>
         <span className="text-ui-2xs text-fg-subtle">
-          {value.length}/{max}
+          {bn(value.length)}/{bn(max)}
         </span>
       </div>
 
@@ -97,7 +98,7 @@ export const BulletsEditor = ({
                 type="button"
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
-                aria-label="Move bullet up"
+                aria-label="বুলেট উপরে নিন"
                 className="tap-target text-fg-subtle hover:text-fg flex h-6 w-6 items-center justify-center rounded-md transition disabled:opacity-30"
               >
                 <ArrowUp size={14} />
@@ -106,7 +107,7 @@ export const BulletsEditor = ({
                 type="button"
                 onClick={() => move(index, 1)}
                 disabled={index === value.length - 1}
-                aria-label="Move bullet down"
+                aria-label="বুলেট নিচে নিন"
                 className="tap-target text-fg-subtle hover:text-fg flex h-6 w-6 items-center justify-center rounded-md transition disabled:opacity-30"
               >
                 <ArrowDown size={14} />
@@ -119,7 +120,7 @@ export const BulletsEditor = ({
                 value={bullet}
                 rows={2}
                 maxLength={LIMITS.bulletChars}
-                placeholder="Start with a verb, end with a number."
+                placeholder="একটি ক্রিয়া দিয়ে শুরু করুন, একটি সংখ্যা দিয়ে শেষ করুন।"
                 autoFocus={focusRequest?.index === index}
                 focusToken={focusRequest?.token}
                 onChange={(text) => update(index, text)}
@@ -128,11 +129,11 @@ export const BulletsEditor = ({
                 footer={
                   <span className="text-ui-2xs flex flex-wrap items-center justify-end gap-x-2">
                     {count > 0 && !measured ? (
-                      <span className="text-warning">No number yet — what changed, by how much?</span>
+                      <span className="text-warning">এখনো সংখ্যা নেই — কী বদলেছে, কতটা?</span>
                     ) : null}
-                    {tooLong ? <span className="text-warning">Trim to two lines.</span> : null}
+                    {tooLong ? <span className="text-warning">দুই লাইনে ছোট করুন।</span> : null}
                     <span className={cn(tooLong || tooShort ? 'text-warning' : 'text-fg-subtle')}>
-                      {count} words
+                      {bn(count)} শব্দ
                     </span>
                   </span>
                 }
@@ -149,7 +150,7 @@ export const BulletsEditor = ({
             <button
               type="button"
               onClick={() => remove(index)}
-              aria-label="Remove bullet"
+              aria-label="বুলেট মুছুন"
               className="tap-target text-fg-subtle hover:bg-surface-2 hover:text-danger mt-1 flex h-8 w-8 flex-none items-center justify-center rounded-lg transition"
             >
               <Trash2 size={14} />
@@ -169,7 +170,7 @@ export const BulletsEditor = ({
             onChange([...value, '']);
           }}
         >
-          Add bullet
+          বুলেট যোগ করুন
         </Button>
       ) : null}
 

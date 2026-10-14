@@ -24,15 +24,15 @@ export const TEMPLATE_CATEGORIES = ['ats', 'balanced', 'creative'] as const;
 export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 
 export const TEMPLATE_CATEGORY_LABEL: Record<TemplateCategory, string> = {
-  ats: 'ATS-safe',
-  balanced: 'Balanced',
-  creative: 'Creative',
+  ats: 'ATS-সেফ',
+  balanced: 'ভারসাম্যপূর্ণ',
+  creative: 'সৃজনশীল',
 };
 
 export const TEMPLATE_CATEGORY_HINT: Record<TemplateCategory, string> = {
-  ats: 'Maximum parse reliability. Use these when applying through a job portal.',
-  balanced: 'Distinctive layout that still parses cleanly.',
-  creative: 'Strong visual identity. Pair with the ATS export when applying online.',
+  ats: 'পার্সারের পড়ার নির্ভরযোগ্যতা সবচেয়ে বেশি। জব পোর্টালে আবেদন করার সময় এগুলো ব্যবহার করুন।',
+  balanced: 'আলাদা লেআউট, তবুও পার্সার সহজেই পড়তে পারে।',
+  creative: 'চোখে পড়ার মতো ডিজাইন। অনলাইনে আবেদনের সময় ATS এক্সপোর্টের সঙ্গে ব্যবহার করুন।',
 };
 
 /** Font stacks are limited to faces that embed and subset cleanly in print. */
@@ -48,19 +48,19 @@ export const FONT_FAMILY_LABEL: Record<FontFamilyKey, string> = {
 
 /** CSS variable each font key resolves to; set on the document root by next/font. */
 export const FONT_FAMILY_VAR: Record<FontFamilyKey, string> = {
-  sans: 'var(--font-resume-sans)',
-  humanist: 'var(--font-resume-humanist)',
-  serif: 'var(--font-resume-serif)',
-  grotesk: 'var(--font-resume-grotesk)',
+  sans: 'var(--font-resume-sans), var(--font-bangla)',
+  humanist: 'var(--font-resume-humanist), var(--font-bangla)',
+  serif: 'var(--font-resume-serif), var(--font-bangla)',
+  grotesk: 'var(--font-resume-grotesk), var(--font-bangla)',
 };
 
 export const DENSITIES = ['compact', 'normal', 'relaxed'] as const;
 export type Density = (typeof DENSITIES)[number];
 
 export const DENSITY_LABEL: Record<Density, string> = {
-  compact: 'Compact',
-  normal: 'Normal',
-  relaxed: 'Relaxed',
+  compact: 'ঘন',
+  normal: 'স্বাভাবিক',
+  relaxed: 'খোলামেলা',
 };
 
 /** Multiplier applied to the template's base line-height and section spacing. */
@@ -71,14 +71,14 @@ export const DENSITY_SCALE: Record<Density, number> = {
 };
 
 export const ACCENT_PRESETS = [
-  { name: 'Ink', value: '#1f2937' },
-  { name: 'Navy', value: '#1e3a5f' },
-  { name: 'Teal', value: '#0f766e' },
-  { name: 'Emerald', value: '#047857' },
-  { name: 'Plum', value: '#6d28d9' },
-  { name: 'Crimson', value: '#b91c1c' },
-  { name: 'Amber', value: '#b45309' },
-  { name: 'Slate blue', value: '#3b5bdb' },
+  { name: 'কালি', value: '#1f2937' },
+  { name: 'নেভি', value: '#1e3a5f' },
+  { name: 'টিল', value: '#0f766e' },
+  { name: 'পান্না সবুজ', value: '#047857' },
+  { name: 'বেগুনি', value: '#6d28d9' },
+  { name: 'গাঢ় লাল', value: '#b91c1c' },
+  { name: 'অ্যাম্বার', value: '#b45309' },
+  { name: 'স্লেট নীল', value: '#3b5bdb' },
 ] as const;
 
 export const DEFAULT_ACCENT = ACCENT_PRESETS[1].value;
@@ -104,9 +104,9 @@ export const FONT_SCALE = { min: 0.8, max: 1.4, step: 0.05, default: 1 } as cons
 export const PHOTO_RADIUS = { min: 0, max: 50, step: 1, default: 50 } as const;
 
 export const PHOTO_SHAPES = [
-  { id: 'square', label: 'Square', radius: 0 },
-  { id: 'rounded', label: 'Rounded', radius: 12 },
-  { id: 'circle', label: 'Circle', radius: PHOTO_RADIUS.max },
+  { id: 'square', label: 'চৌকো', radius: 0 },
+  { id: 'rounded', label: 'গোলাকার কোণ', radius: 12 },
+  { id: 'circle', label: 'বৃত্ত', radius: PHOTO_RADIUS.max },
 ] as const;
 
 export type PhotoShapeId = (typeof PHOTO_SHAPES)[number]['id'];

@@ -12,9 +12,9 @@ import { useTheme, type ThemePreference } from '@/hooks';
 
 const THEME_ICON = { light: Sun, dark: Moon, system: Monitor } as const;
 const THEME_LABEL: Record<ThemePreference, string> = {
-  light: 'Theme: light',
-  dark: 'Theme: dark',
-  system: 'Theme: system',
+  light: 'থিম: লাইট',
+  dark: 'থিম: ডার্ক',
+  system: 'থিম: সিস্টেম অনুযায়ী',
 };
 
 /*
@@ -22,14 +22,14 @@ const THEME_LABEL: Record<ThemePreference, string> = {
  * features page, which shares this header.
  */
 const NAV = [
-  { href: `${ROUTES.home}#my-cvs`, label: 'My CVs' },
-  { href: `${ROUTES.home}#designs`, label: 'Designs' },
-  { href: ROUTES.features, label: 'What’s included' },
+  { href: `${ROUTES.home}#my-cvs`, label: 'আমার CV' },
+  { href: `${ROUTES.home}#designs`, label: 'ডিজাইন' },
+  { href: ROUTES.features, label: 'কী কী আছে' },
 ] as const;
 
 const LEGAL = [
-  { href: LEGAL_ROUTES.privacy, label: 'Privacy' },
-  { href: LEGAL_ROUTES.terms, label: 'Terms' },
+  { href: LEGAL_ROUTES.privacy, label: 'গোপনীয়তা' },
+  { href: LEGAL_ROUTES.terms, label: 'শর্তাবলি' },
 ] as const;
 
 /**
@@ -58,13 +58,13 @@ export const HomeHeader = () => {
           { id: 'sep', separator: true } as const,
           {
             id: 'sign-in',
-            label: 'Sign in',
+            label: 'সাইন-ইন',
             icon: <LogIn size={15} />,
             onSelect: () => router.push(AUTH_ROUTES.signIn),
           },
           {
             id: 'sign-up',
-            label: 'Create account',
+            label: 'অ্যাকাউন্ট খুলুন',
             icon: <UserPlus size={15} />,
             onSelect: () => router.push(AUTH_ROUTES.signUp),
           },
@@ -82,7 +82,7 @@ export const HomeHeader = () => {
           </span>
         </Link>
 
-        <nav aria-label="Primary" className="ml-4 hidden items-center gap-0.5 lg:flex">
+        <nav aria-label="প্রধান মেনু" className="ml-4 hidden items-center gap-0.5 lg:flex">
           {[...NAV, ...LEGAL].map((item) => (
             <Link
               key={item.href}
@@ -96,11 +96,11 @@ export const HomeHeader = () => {
 
         <div className="ml-auto flex items-center gap-1.5">
           <Menu
-            label="Site menu"
+            label="সাইট মেনু"
             entries={menuEntries}
             className="lg:hidden"
             trigger={(props) => (
-              <Button size="icon" variant="ghost" aria-label="Site menu" {...props}>
+              <Button size="icon" variant="ghost" aria-label="সাইট মেনু" {...props}>
                 <MenuIcon size={18} />
               </Button>
             )}

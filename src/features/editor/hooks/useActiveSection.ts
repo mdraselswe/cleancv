@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 
-import { SECTION_META, isCustomSlot, type SectionSlot } from '@/constants';
+import { SECTION_META, SECTION_UI_LABEL, isCustomSlot, type SectionSlot } from '@/constants';
 import { getEnabledSections, getSectionHeading, useResume } from '@/features/resume';
 
 /** Panels the editor column can show beyond the resume's own sections. */
@@ -28,16 +28,16 @@ export interface ActiveSectionController {
 
 const PANEL_META: Record<EditorPanel, { label: string; description: string }> = {
   job: {
-    label: 'Job match',
-    description: 'Paste a job posting, see how your CV matches it, and make a tailored copy.',
+    label: 'জব ম্যাচ',
+    description: 'চাকরির বিজ্ঞপ্তি পেস্ট করুন, দেখুন আপনার CV কতটা মেলে, আর চাইলে সেই অনুযায়ী একটি কপি বানান।',
   },
   design: {
-    label: 'Design',
-    description: 'Choose a template and tune type, spacing and colour.',
+    label: 'ডিজাইন',
+    description: 'একটি টেমপ্লেট বেছে নিন, তারপর লেখার ধরন, ফাঁকা জায়গা আর রং ঠিক করুন।',
   },
   sections: {
-    label: 'Sections',
-    description: 'Turn sections on or off, rename them, and set their order.',
+    label: 'সেকশন',
+    description: 'সেকশন চালু বা বন্ধ করুন, নাম বদলান আর ক্রম ঠিক করুন।',
   },
 };
 
@@ -55,17 +55,17 @@ export const useActiveSection = (): ActiveSectionController => {
 
   const tabs = useMemo<SectionTabItem[]>(
     () => [
-      { id: 'contact', label: 'Profile', target: { kind: 'section', key: 'contact' } },
+      { id: 'contact', label: SECTION_UI_LABEL.contact, target: { kind: 'section', key: 'contact' } },
       ...enabled
         .filter((slot) => slot !== 'contact')
         .map((slot) => ({
           id: slot,
-          label: isCustomSlot(slot) ? getSectionHeading(resume, slot) : SECTION_META[slot].defaultHeading,
+          label: isCustomSlot(slot) ? getSectionHeading(resume, slot) : SECTION_UI_LABEL[slot],
           target: { kind: 'section' as const, key: slot },
         })),
-      { id: 'sections', label: 'Sections', target: { kind: 'panel', key: 'sections' } },
-      { id: 'job', label: 'Job match', target: { kind: 'panel', key: 'job' } },
-      { id: 'design', label: 'Design', target: { kind: 'panel', key: 'design' } },
+      { id: 'sections', label: 'সেকশন', target: { kind: 'panel', key: 'sections' } },
+      { id: 'job', label: 'জব ম্যাচ', target: { kind: 'panel', key: 'job' } },
+      { id: 'design', label: 'ডিজাইন', target: { kind: 'panel', key: 'design' } },
     ],
     [enabled, resume],
   );
@@ -78,14 +78,14 @@ export const useActiveSection = (): ActiveSectionController => {
     if (isCustomSlot(active.key)) {
       return {
         title: getSectionHeading(resume, active.key),
-        description: 'A section of your own. Rename it under Sections.',
+        description: 'আপনার নিজের বানানো একটি সেকশন। নাম বদলাতে “সেকশন” প্যানেলে যান।',
       };
     }
 
     const meta = SECTION_META[active.key];
 
     return {
-      title: active.key === 'contact' ? 'Profile' : meta.defaultHeading,
+      title: SECTION_UI_LABEL[active.key],
       description: meta.description,
     };
   }, [active, resume]);

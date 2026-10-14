@@ -11,6 +11,7 @@ import {
   SortableList,
 } from '@/components/ui';
 import type { EntryListKey } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { isBlank } from '@/lib/text';
 
 import { ENTRY_SECTIONS } from '../fields/entrySections';
@@ -69,12 +70,12 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                   onOpenChange={(open) => section.setExpanded(id, open)}
                   title={
                     isBlank(title as string)
-                      ? `Untitled ${config.addLabel.replace(/^Add /, '')}`
+                      ? `নামহীন ${config.noun}`
                       : String(title)
                   }
                   subtitle={
                     section.isHidden(id)
-                      ? `Hidden from your CV${isBlank(subtitle as string) ? '' : ` · ${String(subtitle)}`}`
+                      ? `আপনার CV থেকে লুকানো${isBlank(subtitle as string) ? '' : ` · ${String(subtitle)}`}`
                       : isBlank(subtitle as string)
                         ? undefined
                         : String(subtitle)
@@ -90,45 +91,45 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                         "delete" was to press one. See ADR-047.
                       */}
                       <Menu
-                        label={`Actions for ${config.addLabel.replace(/^Add /, '')} ${index + 1}`}
+                        label={`${config.noun} ${bn(index + 1)}-এর অ্যাকশন`}
                         entries={[
                           {
                             id: 'up',
-                            label: 'Move up',
+                            label: 'উপরে নিন',
                             icon: <ArrowUp size={15} />,
                             disabled: index === 0,
                             onSelect: () => section.move(index, index - 1),
                           },
                           {
                             id: 'down',
-                            label: 'Move down',
+                            label: 'নিচে নিন',
                             icon: <ArrowDown size={15} />,
                             disabled: index === section.entries.length - 1,
                             onSelect: () => section.move(index, index + 1),
                           },
                           {
                             id: 'duplicate',
-                            label: 'Duplicate',
+                            label: 'কপি করুন',
                             icon: <Copy size={15} />,
                             onSelect: () => section.duplicate(id),
                           },
                           {
                             id: 'hide',
-                            label: section.isHidden(id) ? 'Show on CV' : 'Hide from CV',
+                            label: section.isHidden(id) ? 'CV-তে দেখান' : 'CV থেকে লুকান',
                             icon: section.isHidden(id) ? <Eye size={15} /> : <EyeOff size={15} />,
                             onSelect: () => section.setHidden(id, !section.isHidden(id)),
                           },
                           { id: 'sep', separator: true },
                           {
                             id: 'remove',
-                            label: 'Remove',
+                            label: 'মুছে ফেলুন',
                             icon: <Trash2 size={15} />,
                             danger: true,
                             onSelect: () => section.remove(id),
                           },
                         ]}
                         trigger={(props) => (
-                          <Button size="icon" variant="ghost" aria-label="Entry actions" {...props}>
+                          <Button size="icon" variant="ghost" aria-label="এন্ট্রির অ্যাকশন" {...props}>
                             <MoreVertical size={16} />
                           </Button>
                         )}

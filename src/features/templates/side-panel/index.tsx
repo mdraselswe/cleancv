@@ -24,9 +24,9 @@ const MAIN_SECTIONS: SectionKey[] = ['summary', 'experience', 'skills', 'volunte
 
 export const meta: TemplateMeta = {
   id: 'side-panel',
-  name: 'Right Panel',
+  name: 'ডান প্যানেল',
   description:
-    'Narrative on the left, education, projects and achievements in a narrower panel on the right. Each column is read through in full, so the text comes out in the order a person would read it.',
+    'বাঁয়ে মূল বর্ণনা, ডানে সরু প্যানেলে শিক্ষা, প্রজেক্ট ও অর্জন। প্রতিটি কলাম পুরোটা পড়া হয়, তাই লেখা মানুষ যে ক্রমে পড়ে সেভাবেই বের হয়।',
   category: 'balanced',
   /*
    * Two genuine columns, so a parser using positional heuristics can interleave

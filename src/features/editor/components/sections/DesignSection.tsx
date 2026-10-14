@@ -21,6 +21,7 @@ import {
 import type { Density, FontFamilyKey } from '@/constants';
 import { useResume, useResumeActions } from '@/features/resume';
 import { TemplatePreview, getTemplate, getTemplatesByCategory } from '@/features/templates';
+import { bn, bnPercent } from '@/lib/bn';
 import { cn } from '@/lib/cn';
 
 const FONT_OPTIONS = FONT_FAMILIES.map((value) => ({ value, label: FONT_FAMILY_LABEL[value] }));
@@ -54,7 +55,7 @@ export const DesignSection = () => {
     <div className="flex flex-col gap-6">
       <div
         role="group"
-        aria-label="Filter designs"
+        aria-label="ডিজাইন ছাঁকুন"
         className="scroll-none -mx-1 flex gap-1.5 overflow-x-auto px-1 py-0.5"
       >
         {(['all', ...TEMPLATE_CATEGORIES] as const).map((value) => (
@@ -70,7 +71,7 @@ export const DesignSection = () => {
                 : 'border-border-base bg-surface text-fg-muted hover:border-primary/40 hover:text-fg',
             )}
           >
-            {value === 'all' ? 'All designs' : TEMPLATE_CATEGORY_LABEL[value]}
+            {value === 'all' ? 'সব ডিজাইন' : TEMPLATE_CATEGORY_LABEL[value]}
           </button>
         ))}
       </div>
@@ -133,7 +134,7 @@ export const DesignSection = () => {
                         tone={meta.atsBaseline >= 90 ? 'success' : 'warning'}
                         className="self-start"
                       >
-                        ATS ceiling {meta.atsBaseline}
+                        ATS সীমা {bn(meta.atsBaseline)}
                       </Badge>
                     </span>
                   </button>
@@ -149,12 +150,12 @@ export const DesignSection = () => {
           <HueIcon hue="violet" size="sm">
             <Type size={15} />
           </HueIcon>
-          <SectionLabel>Typography and spacing</SectionLabel>
+          <SectionLabel>লেখার ধরন ও ফাঁকা জায়গা</SectionLabel>
         </div>
 
         <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
           <label className="flex flex-col gap-1.5">
-            <span className="text-ui text-fg-muted font-medium">Font</span>
+            <span className="text-ui text-fg-muted font-medium">ফন্ট</span>
             <Select
               options={FONT_OPTIONS}
               value={theme.font}
@@ -163,7 +164,7 @@ export const DesignSection = () => {
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className="text-ui text-fg-muted font-medium">Density</span>
+            <span className="text-ui text-fg-muted font-medium">ঘনত্ব</span>
             <Select
               options={DENSITY_OPTIONS}
               value={theme.density}
@@ -173,36 +174,36 @@ export const DesignSection = () => {
         </div>
 
         <Slider
-          label="Text size"
+          label="লেখার আকার"
           min={FONT_SCALE.min}
           max={FONT_SCALE.max}
           step={FONT_SCALE.step}
           value={theme.fontScale}
-          display={`${Math.round(theme.fontScale * 100)}%`}
+          display={bnPercent(theme.fontScale * 100)}
           onChange={(fontScale) => actions.setTheme({ fontScale })}
         />
 
         <Slider
-          label="Page margin"
+          label="পেজের মার্জিন"
           min={PAGE_MARGIN_MM.min}
           max={PAGE_MARGIN_MM.max}
           step={PAGE_MARGIN_MM.step}
           value={theme.marginMm}
-          display={`${theme.marginMm} mm`}
+          display={`${bn(theme.marginMm)} মিমি`}
           onChange={(marginMm) => actions.setTheme({ marginMm })}
         />
 
         {active.meta.supports.accentColor ? (
           <ColorPicker
-            label="Accent colour"
+            label="প্রধান রং"
             value={theme.accent}
             swatches={ACCENT_PRESETS}
             onChange={(accent) => actions.setTheme({ accent })}
           />
         ) : (
           <p className="text-ui-xs text-fg-subtle">
-            {active.meta.name} prints in black for maximum parse reliability, so the accent colour
-            is not used.
+            {active.meta.name} সর্বোচ্চ পার্সিং নির্ভরযোগ্যতার জন্য কালো রঙে ছাপা হয়, তাই প্রধান রং
+            এখানে কাজ করে না।
           </p>
         )}
 
@@ -211,8 +212,8 @@ export const DesignSection = () => {
             <Switch
               checked={theme.showPhoto}
               onChange={(showPhoto) => actions.setTheme({ showPhoto })}
-              label="Show photo"
-              description="Upload it in the Profile section."
+              label="ছবি দেখান"
+              description="ছবিটি “প্রোফাইল” সেকশনে আপলোড করুন।"
             />
 
             {/*
@@ -247,12 +248,12 @@ export const DesignSection = () => {
                 </div>
 
                 <Slider
-                  label="Corner radius"
+                  label="কোণের গোলাকার ভাব"
                   min={PHOTO_RADIUS.min}
                   max={PHOTO_RADIUS.max}
                   step={PHOTO_RADIUS.step}
                   value={theme.photoRadius}
-                  display={`${theme.photoRadius}%`}
+                  display={bnPercent(theme.photoRadius)}
                   onChange={(photoRadius) => actions.setTheme({ photoRadius })}
                 />
               </div>
@@ -260,7 +261,7 @@ export const DesignSection = () => {
           </>
         ) : (
           <p className="text-ui-xs text-fg-subtle">
-            {active.meta.name} does not print a photo — the single biggest parse hazard.
+            {active.meta.name} ছবি ছাপে না — পার্সারের জন্য ছবিই সবচেয়ে বড় ঝুঁকি।
           </p>
         )}
       </div>

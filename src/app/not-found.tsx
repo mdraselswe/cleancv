@@ -9,15 +9,15 @@ export default function NotFound() {
       <div className="w-56">
         <EmptyIllustration />
       </div>
-      <h1 className="text-fg text-3xl font-extrabold tracking-tight">Page not found</h1>
+      <h1 className="text-fg text-3xl font-extrabold tracking-tight">পেজটি পাওয়া যায়নি</h1>
       <p className="text-fg-muted text-ui-md max-w-sm">
-        That page does not exist. Your CVs are safe — head back and pick up where you left off.
+        ওই পেজটি নেই। আপনার CV নিরাপদ আছে — ফিরে যান আর যেখানে ছেড়েছিলেন সেখান থেকে শুরু করুন।
       </p>
       <Link
         href={ROUTES.home}
         className="app-button-primary glint rounded-control text-ui-md inline-flex h-10 items-center px-5 font-medium text-white"
       >
-        Back to home
+        হোমে ফিরে যান
       </Link>
     </main>
   );

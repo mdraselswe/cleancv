@@ -36,15 +36,15 @@ export const MERGE_GROUPS: MergeGroup[] = [
 ];
 
 export const MERGE_GROUP_LABEL: Record<MergeGroup, string> = {
-  basics: 'Name and headline',
-  contact: 'Contact details',
-  summary: 'Summary',
-  experience: 'Work experience',
-  education: 'Education',
-  skills: 'Skills',
-  projects: 'Projects',
-  certifications: 'Certifications',
-  languages: 'Languages',
+  basics: 'নাম ও শিরোনাম',
+  contact: 'যোগাযোগের তথ্য',
+  summary: 'সারসংক্ষেপ',
+  experience: 'কাজের অভিজ্ঞতা',
+  education: 'শিক্ষা',
+  skills: 'দক্ষতা',
+  projects: 'প্রজেক্ট',
+  certifications: 'সার্টিফিকেশন',
+  languages: 'ভাষা',
 };
 
 /** How a list group joins what is already in the document. */

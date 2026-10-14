@@ -42,7 +42,7 @@ const GoogleMark = () => (
 
 export const GoogleButton = ({
   callbackURL,
-  label = 'Continue with Google',
+  label = 'Google দিয়ে চালিয়ে যান',
 }: GoogleButtonProps) => {
   const { signInWithGoogle, pending, error } = useGoogleSignIn(callbackURL);
 
@@ -56,7 +56,7 @@ export const GoogleButton = ({
         leading={<GoogleMark />}
         onClick={() => void signInWithGoogle()}
       >
-        {pending ? 'Opening Google…' : label}
+        {pending ? 'Google খোলা হচ্ছে…' : label}
       </Button>
 
       {error ? <p className="text-ui-xs text-danger">{error}</p> : null}

@@ -16,8 +16,8 @@ export const RenameDialog = ({ document, fallbackName, onConfirm, onClose }: Ren
   const [name, setName] = useState(document.name || fallbackName);
 
   return (
-    <Modal label="Rename CV" onClose={onClose} className="max-w-[420px]">
-      <ModalHeader title="Rename CV" subtitle="Only you see this name." onClose={onClose} />
+    <Modal label="CV-এর নাম বদলান" onClose={onClose} className="max-w-[420px]">
+      <ModalHeader title="CV-এর নাম বদলান" subtitle="এই নামটি শুধু আপনি দেখতে পাবেন।" onClose={onClose} />
       <form
         className="flex flex-col gap-4 p-4"
         onSubmit={(event) => {
@@ -29,16 +29,16 @@ export const RenameDialog = ({ document, fallbackName, onConfirm, onClose }: Ren
           autoFocus
           value={name}
           maxLength={120}
-          aria-label="CV name"
+          aria-label="CV-এর নাম"
           onChange={(event) => setName(event.target.value)}
           onFocus={(event) => event.target.select()}
         />
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onClose}>
-            Cancel
+            বাতিল
           </Button>
           <Button variant="primary" type="submit">
-            Save name
+            নাম সংরক্ষণ করুন
           </Button>
         </div>
       </form>
@@ -53,19 +53,19 @@ export interface DeleteDialogProps {
 }
 
 export const DeleteDialog = ({ title, onConfirm, onClose }: DeleteDialogProps) => (
-  <Modal label="Delete CV" onClose={onClose} className="max-w-[420px]">
-    <ModalHeader title="Delete this CV?" onClose={onClose} />
+  <Modal label="CV মুছে ফেলুন" onClose={onClose} className="max-w-[420px]">
+    <ModalHeader title="এই CV মুছে ফেলবেন?" onClose={onClose} />
     <div className="flex flex-col gap-4 p-4">
       <p className="text-fg-muted text-ui-md leading-relaxed">
-        <strong className="text-fg">{title}</strong> will be removed from this browser. Download a
-        backup first if you might want it back.
+        <strong className="text-fg">{title}</strong> এই ব্রাউজার থেকে মুছে যাবে। পরে ফিরে পেতে
+        চাইলে আগে একটি ব্যাকআপ ডাউনলোড করে নিন।
       </p>
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose}>
-          Keep it
+          রেখে দিন
         </Button>
         <Button variant="danger" onClick={onConfirm}>
-          Delete
+          মুছে ফেলুন
         </Button>
       </div>
     </div>

@@ -68,14 +68,14 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
       } | null;
 
       if (!response.ok || !body?.suggestion) {
-        setError(body?.error ?? 'The AI service could not rewrite that.');
+        setError(body?.error ?? 'AI এটি নতুন করে লিখতে পারেনি।');
 
         return;
       }
 
       setOffer({ suggestion: body.suggestion, basedOn: text });
     } catch {
-      setError('Could not reach the AI service.');
+      setError('AI সার্ভিসে পৌঁছানো যায়নি।');
     } finally {
       setPending(false);
     }
@@ -86,14 +86,14 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
 
     return (
       <div className="border-primary/25 bg-primary-soft/40 rounded-control mt-1.5 flex flex-col gap-2 border p-2.5">
-        <p className="text-primary text-ui-2xs flex items-center gap-1 font-bold tracking-wide uppercase">
-          <Sparkles size={12} aria-hidden="true" /> AI suggestion
+        <p className="text-primary text-ui-2xs flex items-center gap-1 font-bold">
+          <Sparkles size={12} aria-hidden="true" /> AI-র পরামর্শ
         </p>
         <p className="text-fg text-ui-md leading-relaxed">{offer.suggestion}</p>
         <p className="text-fg-subtle text-ui-2xs leading-snug">
-          Read it against what is true. It was told to add no new facts or numbers, but you are the
-          one who knows.
-          {stale ? ' The text changed since this was made.' : ''}
+          সত্যের সঙ্গে মিলিয়ে পড়ুন। এটিকে নতুন কোনো তথ্য বা সংখ্যা না যোগ করতে বলা হয়েছিল, কিন্তু
+          সত্য আপনিই জানেন।
+          {stale ? ' এটি তৈরির পর লেখাটি বদলে গেছে।' : ''}
         </p>
         <div className="flex flex-wrap gap-1.5">
           <Button
@@ -106,7 +106,7 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
               setOffer(null);
             }}
           >
-            Use this
+            এটি ব্যবহার করুন
           </Button>
           <Button
             size="sm"
@@ -115,10 +115,10 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
             disabled={pending}
             onClick={() => void run()}
           >
-            {pending ? 'Rewriting…' : 'Try again'}
+            {pending ? 'আবার লেখা হচ্ছে…' : 'আবার চেষ্টা করুন'}
           </Button>
           <Button size="sm" variant="ghost" leading={<X size={14} />} onClick={() => setOffer(null)}>
-            Dismiss
+            বাদ দিন
           </Button>
         </div>
       </div>
@@ -131,13 +131,13 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
         size="sm"
         variant="outline"
         disabled={pending || tooShort}
-        title={tooShort ? 'Write a little first, then polish it.' : 'Rewrite this with AI'}
+        title={tooShort ? 'আগে একটু লিখুন, তারপর পরিমার্জন করুন।' : 'AI দিয়ে এটি নতুন করে লিখুন'}
         leading={
           pending ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />
         }
         onClick={() => void run()}
       >
-        {pending ? 'Polishing…' : 'Polish with AI'}
+        {pending ? 'পরিমার্জন হচ্ছে…' : 'AI দিয়ে পরিমার্জন করুন'}
       </Button>
       {error ? <span className="text-danger text-ui-xs">{error}</span> : null}
     </div>

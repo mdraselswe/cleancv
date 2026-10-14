@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 
 import { Button, Textarea } from '@/components/ui';
 import { useResume, useResumeActions } from '@/features/resume';
+import { bn, bnPercent } from '@/lib/bn';
 
 import { analyzeTailor } from '../engine';
 import { TailorDialog } from './TailorDialog';
@@ -30,25 +31,25 @@ export const JobMatchPanel = () => {
   return (
     <div className="flex flex-col gap-4">
       <label className="flex flex-col gap-1.5">
-        <span className="text-ui text-fg-muted font-medium">Job posting</span>
+        <span className="text-ui text-fg-muted font-medium">চাকরির বিজ্ঞপ্তি</span>
         <Textarea
           rows={10}
           value={jobDescription}
-          placeholder="Paste the whole job posting here — the title, the responsibilities, the requirements. It is used only on this device for matching and is never printed on your CV."
+          placeholder="পুরো বিজ্ঞপ্তিটি এখানে পেস্ট করুন — পদের নাম, দায়িত্ব, যোগ্যতা সব। এটি শুধু এই ডিভাইসে মেলানোর কাজে ব্যবহৃত হয়, আপনার CV-তে কখনো ছাপা হয় না।"
           onChange={(event) => actions.setJobDescription(event.target.value)}
         />
       </label>
 
       {hasPosting ? (
         <section
-          aria-label="Match"
+          aria-label="মিল"
           className="border-border-base bg-surface/70 rounded-card flex flex-col gap-2.5 border p-3.5"
         >
           <div className="flex items-baseline justify-between gap-3">
             <p className="text-fg text-ui-md font-bold">
-              {analysis.matched.length} of {analysis.keywords.length} key terms are on your CV
+              {bn(analysis.keywords.length)}টি মূল শব্দের মধ্যে {bn(analysis.matched.length)}টি আপনার CV-তে আছে
             </p>
-            <span className="text-fg-subtle text-ui-xs tabular-nums">{percent}%</span>
+            <span className="text-fg-subtle text-ui-xs tabular-nums">{bnPercent(percent)}</span>
           </div>
 
           <div className="bg-surface-2 h-2 overflow-hidden rounded-full">
@@ -60,7 +61,7 @@ export const JobMatchPanel = () => {
 
           {analysis.missing.length > 0 ? (
             <div>
-              <p className="text-fg-muted text-ui-xs mb-1.5 font-semibold">Not on your CV yet</p>
+              <p className="text-fg-muted text-ui-xs mb-1.5 font-semibold">আপনার CV-তে এখনো নেই</p>
               <div className="flex flex-wrap gap-1.5">
                 {analysis.missing.slice(0, 20).map((keyword) => (
                   <span
@@ -72,17 +73,17 @@ export const JobMatchPanel = () => {
                 ))}
               </div>
               <p className="text-fg-subtle text-ui-2xs mt-2 leading-snug">
-                Add only what is honestly true of you. The next step lets you tick the ones that
-                are.
+                শুধু যা সত্যিই আপনার সম্পর্কে সত্যি, তা-ই যোগ করুন। পরের ধাপে যেগুলো সত্যি সেগুলোতে
+                টিক দিতে পারবেন।
               </p>
             </div>
           ) : (
-            <p className="text-success text-ui-xs font-medium">Every key term is already there.</p>
+            <p className="text-success text-ui-xs font-medium">সব মূল শব্দ আগে থেকেই আছে।</p>
           )}
         </section>
       ) : (
         <p className="text-fg-subtle text-ui-xs leading-snug">
-          Paste a posting above and this panel shows how well your CV matches it.
+          ওপরে একটি বিজ্ঞপ্তি পেস্ট করুন, এই প্যানেল দেখাবে আপনার CV কতটা মেলে।
         </p>
       )}
 
@@ -92,11 +93,11 @@ export const JobMatchPanel = () => {
             <Target size={16} aria-hidden="true" />
           </span>
           <div>
-            <p className="text-fg text-ui-md font-bold">Tailor this CV to the job</p>
+            <p className="text-fg text-ui-md font-bold">চাকরির জন্য এই CV সাজান</p>
             <p className="text-fg-muted text-ui-xs mt-0.5 leading-snug">
-              Puts the matching skills and bullets first and the posting&apos;s own words in bold.
-              Nothing is added that you do not tick, and one undo reverts it. Prefer to keep this
-              CV as it is? Choose &quot;Save as a new copy&quot;.
+              মিলে যাওয়া দক্ষতা ও বুলেট আগে বসায়, আর বিজ্ঞপ্তির নিজস্ব শব্দগুলো বোল্ড করে। আপনি টিক
+              না দিলে কিছুই যোগ হয় না, আর একবার “ফিরিয়ে নিন” চাপলে সব ফেরত আসে। এই CV যেমন আছে
+              তেমন রাখতে চান? “নতুন কপি হিসেবে রাখুন” বেছে নিন।
             </p>
           </div>
         </div>
@@ -108,7 +109,7 @@ export const JobMatchPanel = () => {
           leading={<Wand2 size={15} />}
           onClick={() => setDialogOpen(true)}
         >
-          Tailor this CV
+          এই CV সাজান
         </Button>
       </div>
 

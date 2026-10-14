@@ -71,7 +71,7 @@ export const useExportPdf = () => {
             return;
           }
 
-          throw new Error(detail?.error ?? 'The server could not render the PDF.');
+          throw new Error(detail?.error ?? 'সার্ভার PDF তৈরি করতে পারেনি।');
         }
 
         const stem = toFileStem(resume.meta.documentName || resume.basics.fullName || 'resume');
@@ -86,11 +86,11 @@ export const useExportPdf = () => {
          * button it came from looks exactly as it did before. Without this
          * line a successful export and a silent failure are the same event.
          */
-        toast.success('PDF downloaded', { description: filename });
+        toast.success('PDF ডাউনলোড হয়েছে', { description: filename });
       } catch (error) {
         setState({
           pending: null,
-          error: error instanceof Error ? error.message : 'The PDF could not be created.',
+          error: error instanceof Error ? error.message : 'PDF তৈরি করা যায়নি।',
           failedMode: mode,
           signInRequired: false,
         });

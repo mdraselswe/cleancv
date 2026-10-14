@@ -56,7 +56,7 @@ export const ModalHeader = ({ title, subtitle, onClose, actions }: ModalHeaderPr
 
     <div className="flex flex-none items-center gap-1">
       {actions}
-      <Button size="icon" variant="ghost" onClick={onClose} aria-label="Close">
+      <Button size="icon" variant="ghost" onClick={onClose} aria-label="বন্ধ করুন">
         <X size={16} />
       </Button>
     </div>
@@ -91,7 +91,7 @@ export const Modal = ({ onClose, label, children, className }: ModalProps) => {
     <>
       <button
         type="button"
-        aria-label={`Close ${label.toLowerCase()}`}
+        aria-label={`বন্ধ করুন: ${label}`}
         onClick={onClose}
         className="animate-fade fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
       />
@@ -139,7 +139,7 @@ export const Drawer = ({ onClose, label, children, className }: DrawerProps) => 
     <>
       <button
         type="button"
-        aria-label={`Close ${label.toLowerCase()}`}
+        aria-label={`বন্ধ করুন: ${label}`}
         onClick={onClose}
         className="animate-fade fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
       />

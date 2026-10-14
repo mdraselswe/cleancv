@@ -29,8 +29,8 @@ export const SignInRequiredDialog = ({ onClose }: SignInRequiredDialogProps) => 
     `${path}?${REDIRECT_PARAM}=${encodeURIComponent(ROUTES.editor)}`;
 
   return (
-    <Modal label="Sign in to download" onClose={onClose} className="max-w-[400px]">
-      <ModalHeader title="Sign in to download" onClose={onClose} />
+    <Modal label="ডাউনলোডের জন্য সাইন-ইন করুন" onClose={onClose} className="max-w-[400px]">
+      <ModalHeader title="ডাউনলোডের জন্য সাইন-ইন করুন" onClose={onClose} />
 
       <div className="flex flex-col gap-4 p-4">
         <div className="text-fg-muted text-ui-md flex items-start gap-3 leading-relaxed">
@@ -41,7 +41,7 @@ export const SignInRequiredDialog = ({ onClose }: SignInRequiredDialogProps) => 
         </div>
 
         <p className="text-fg-subtle text-ui leading-relaxed">
-          Your CV stays in this browser. Signing in does not upload it. You can later choose up to 3 CVs to keep on your account. It is free.
+          আপনার CV এই ব্রাউজারেই থাকে। সাইন-ইন করলে সেটি আপলোড হয় না। পরে চাইলে অ্যাকাউন্টে রাখার জন্য সর্বোচ্চ ৩টি CV বেছে নিতে পারবেন। এটি ফ্রি।
         </p>
 
         <div className="flex flex-col gap-2">
@@ -52,7 +52,7 @@ export const SignInRequiredDialog = ({ onClose }: SignInRequiredDialogProps) => 
             leading={<LogIn size={16} />}
             onClick={() => router.push(withReturn(AUTH_ROUTES.signIn))}
           >
-            Sign in
+            সাইন-ইন
           </Button>
           <Button
             variant="outline"
@@ -60,10 +60,10 @@ export const SignInRequiredDialog = ({ onClose }: SignInRequiredDialogProps) => 
             className="justify-center"
             onClick={() => router.push(withReturn(AUTH_ROUTES.signUp))}
           >
-            Create an account
+            অ্যাকাউন্ট খুলুন
           </Button>
           <Button variant="ghost" size="md" className="justify-center" onClick={onClose}>
-            Not now
+            এখন নয়
           </Button>
         </div>
       </div>

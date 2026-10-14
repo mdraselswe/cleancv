@@ -61,7 +61,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Date of birth, nationality, marital status and similar civil details.',
+    description: 'জন্মতারিখ, জাতীয়তা, বৈবাহিক অবস্থা ও এ ধরনের ব্যক্তিগত তথ্য।',
   },
   contact: {
     key: 'contact',
@@ -71,7 +71,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: true,
     defaultEnabled: true,
     headless: true,
-    description: 'Phone, email, address and profile links. Rendered under your name.',
+    description: 'ফোন, ইমেইল, ঠিকানা আর প্রোফাইল লিংক। নামের নিচে বসে।',
   },
   summary: {
     key: 'summary',
@@ -81,7 +81,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'Two to four lines positioning you for the role you want.',
+    description: 'যে পদের জন্য আবেদন করছেন, তার জন্য নিজেকে তুলে ধরার দুই থেকে চার লাইন।',
   },
   experience: {
     key: 'experience',
@@ -91,7 +91,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'Roles in reverse-chronological order with measurable bullets.',
+    description: 'সাম্প্রতিক থেকে পুরনো ক্রমে পদগুলো, সঙ্গে মাপা যায় এমন বুলেট।',
   },
   education: {
     key: 'education',
@@ -101,7 +101,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'Degrees, institutions and results.',
+    description: 'ডিগ্রি, প্রতিষ্ঠান আর ফলাফল।',
   },
   skills: {
     key: 'skills',
@@ -111,7 +111,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'Grouped technical and professional skills.',
+    description: 'গ্রুপ করে সাজানো টেকনিক্যাল ও পেশাগত দক্ষতা।',
   },
   projects: {
     key: 'projects',
@@ -121,7 +121,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'Personal or professional work with links and outcomes.',
+    description: 'লিংক ও ফলাফলসহ ব্যক্তিগত বা পেশাগত কাজ।',
   },
   certifications: {
     key: 'certifications',
@@ -131,7 +131,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'Credentials with issuer and issue date.',
+    description: 'প্রদানকারী প্রতিষ্ঠান ও তারিখসহ সার্টিফিকেট।',
   },
   achievements: {
     key: 'achievements',
@@ -141,7 +141,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Standout outcomes that deserve their own callout.',
+    description: 'আলাদা করে তুলে ধরার মতো উল্লেখযোগ্য অর্জন।',
   },
   awards: {
     key: 'awards',
@@ -151,7 +151,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Prizes, scholarships and formal recognition.',
+    description: 'পুরস্কার, বৃত্তি ও আনুষ্ঠানিক স্বীকৃতি।',
   },
   publications: {
     key: 'publications',
@@ -161,7 +161,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Papers, articles and research output.',
+    description: 'গবেষণাপত্র, প্রবন্ধ ও গবেষণার ফলাফল।',
   },
   training: {
     key: 'training',
@@ -171,7 +171,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Courses and workshops that are not formal certifications.',
+    description: 'আনুষ্ঠানিক সার্টিফিকেট নয়, এমন কোর্স ও ওয়ার্কশপ।',
   },
   languages: {
     key: 'languages',
@@ -181,7 +181,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Spoken and written languages with proficiency.',
+    description: 'কথা বলা ও লেখার ভাষা, সঙ্গে দক্ষতার স্তর।',
   },
   volunteering: {
     key: 'volunteering',
@@ -191,7 +191,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Community and unpaid work.',
+    description: 'সমাজসেবা ও বিনা পারিশ্রমিকের কাজ।',
   },
   extracurricular: {
     key: 'extracurricular',
@@ -201,7 +201,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Clubs, societies and leadership roles.',
+    description: 'ক্লাব, সংগঠন ও নেতৃত্বের ভূমিকা।',
   },
   memberships: {
     key: 'memberships',
@@ -211,7 +211,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Bodies and associations you belong to.',
+    description: 'আপনি যেসব পেশাগত সংগঠনের সদস্য।',
   },
   conferences: {
     key: 'conferences',
@@ -221,7 +221,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Talks given and conferences attended.',
+    description: 'দেওয়া বক্তব্য ও অংশ নেওয়া সম্মেলন।',
   },
   patents: {
     key: 'patents',
@@ -231,7 +231,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Granted or pending patents with numbers.',
+    description: 'নম্বরসহ অনুমোদিত বা অপেক্ষমাণ পেটেন্ট।',
   },
   interests: {
     key: 'interests',
@@ -241,7 +241,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'A short, specific list. Generic hobbies add nothing.',
+    description: 'ছোট ও নির্দিষ্ট একটি তালিকা। সাধারণ শখ লিখে লাভ নেই।',
   },
   references: {
     key: 'references',
@@ -251,7 +251,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Referees with designation and contact, or a statement on request.',
+    description: 'পদবি ও যোগাযোগসহ রেফারি, অথবা "চাইলে দেওয়া হবে" লেখা।',
   },
   declaration: {
     key: 'declaration',
@@ -261,7 +261,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'Formal statement of accuracy, common on South Asian CVs.',
+    description: 'তথ্য সঠিক হওয়ার আনুষ্ঠানিক ঘোষণা। দক্ষিণ এশিয়ার CV-তে প্রচলিত।',
   },
   signature: {
     key: 'signature',
@@ -271,8 +271,40 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: true,
-    description: 'Typed or uploaded signature placed at the end of the document.',
+    description: 'ডকুমেন্টের শেষে বসানো টাইপ করা বা আপলোড করা স্বাক্ষর।',
   },
+};
+
+/**
+ * The name the *interface* gives a section.
+ *
+ * Separate from `defaultHeading` on purpose: that one is printed on the CV and
+ * is the English an ATS looks for, while this one labels tabs and settings in
+ * the editor, in the language the reader works in.
+ */
+export const SECTION_UI_LABEL: Record<SectionKey, string> = {
+  personal: 'ব্যক্তিগত তথ্য',
+  contact: 'প্রোফাইল',
+  summary: 'সারসংক্ষেপ',
+  experience: 'কাজের অভিজ্ঞতা',
+  education: 'শিক্ষা',
+  skills: 'দক্ষতা',
+  projects: 'প্রজেক্ট',
+  certifications: 'সার্টিফিকেশন',
+  achievements: 'প্রধান অর্জন',
+  awards: 'পুরস্কার ও সম্মাননা',
+  publications: 'প্রকাশনা',
+  training: 'প্রশিক্ষণ ও ওয়ার্কশপ',
+  languages: 'ভাষা',
+  volunteering: 'স্বেচ্ছাসেবা',
+  extracurricular: 'সহশিক্ষা ও নেতৃত্ব',
+  memberships: 'পেশাগত সদস্যপদ',
+  conferences: 'সম্মেলন ও বক্তব্য',
+  patents: 'পেটেন্ট',
+  interests: 'আগ্রহ ও শখ',
+  references: 'রেফারেন্স',
+  declaration: 'ঘোষণা',
+  signature: 'স্বাক্ষর',
 };
 
 /**
@@ -397,8 +429,8 @@ export const CUSTOM_SECTION_LAYOUTS = ['paragraph', 'bullets'] as const;
 export type CustomSectionLayout = (typeof CUSTOM_SECTION_LAYOUTS)[number];
 
 export const CUSTOM_SECTION_LAYOUT_LABEL: Record<CustomSectionLayout, string> = {
-  paragraph: 'Paragraph',
-  bullets: 'Bullet list',
+  paragraph: 'অনুচ্ছেদ',
+  bullets: 'বুলেট তালিকা',
 };
 
 /** Custom sections a single resume may hold. Keeps the order list sane. */
@@ -434,14 +466,14 @@ export interface SectionOrderPreset {
 export const SECTION_ORDER_PRESETS: SectionOrderPreset[] = [
   {
     id: 'standard',
-    label: 'Experienced',
-    description: 'Work first. The default, and what most recruiters expect.',
+    label: 'অভিজ্ঞ',
+    description: 'অভিজ্ঞতা আগে। এটিই ডিফল্ট, আর বেশির ভাগ রিক্রুটার এটাই আশা করেন।',
     order: [...DEFAULT_SECTION_ORDER],
   },
   {
     id: 'fresher',
-    label: 'Fresher / Student',
-    description: 'Education and projects lead, before a short work history.',
+    label: 'ফ্রেশার / শিক্ষার্থী',
+    description: 'শিক্ষা আর প্রজেক্ট আগে, তারপর সংক্ষিপ্ত কাজের ইতিহাস।',
     order: [
       'summary',
       'education',
@@ -468,8 +500,8 @@ export const SECTION_ORDER_PRESETS: SectionOrderPreset[] = [
   },
   {
     id: 'academic',
-    label: 'Academic CV',
-    description: 'Education, publications and conferences ahead of employment.',
+    label: 'একাডেমিক CV',
+    description: 'চাকরির আগে শিক্ষা, প্রকাশনা ও সম্মেলন।',
     order: [
       'summary',
       'education',
@@ -496,8 +528,8 @@ export const SECTION_ORDER_PRESETS: SectionOrderPreset[] = [
   },
   {
     id: 'formal',
-    label: 'Formal / Government',
-    description: 'Opens with personal details and closes with a declaration.',
+    label: 'আনুষ্ঠানিক / সরকারি',
+    description: 'ব্যক্তিগত তথ্য দিয়ে শুরু, ঘোষণা দিয়ে শেষ।',
     order: [
       'personal',
       'summary',

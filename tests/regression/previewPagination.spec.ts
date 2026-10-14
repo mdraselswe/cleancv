@@ -53,7 +53,7 @@ beforeAll(async () => {
   // A fresh profile boots an empty document; the sample is the shared fixture.
   await page.evaluate(() => {
     const button = [...document.querySelectorAll('button')].find(
-      (element) => (element.textContent ?? '').trim() === 'Fill with example data',
+      (element) => (element.textContent ?? '').trim() === 'উদাহরণ তথ্য দিয়ে ভরুন',
     );
     button?.click();
   });
@@ -80,8 +80,8 @@ interface PreviewState {
  */
 const showTemplate = async (id: string, name: string): Promise<PreviewState> => {
   const switched = await page.evaluate((designName) => {
-    const rail = [...document.querySelectorAll('nav[aria-label="Resume sections"] button')].find(
-      (element) => (element.getAttribute('title') ?? '') === 'Design',
+    const rail = [...document.querySelectorAll('nav[aria-label="CV-এর সেকশন"] button')].find(
+      (element) => (element.getAttribute('title') ?? '') === 'ডিজাইন',
     ) as HTMLElement | undefined;
     rail?.click();
 
@@ -142,7 +142,7 @@ const captureExport = async (): Promise<{ resume: unknown; pageBreaks: number[] 
   await page.evaluate(() => {
     (window as unknown as { __exports: unknown[] }).__exports = [];
     const button = [...document.querySelectorAll('button')].find(
-      (element) => (element.textContent ?? '').trim() === 'Download',
+      (element) => (element.textContent ?? '').trim() === 'ডাউনলোড',
     );
     (button as HTMLButtonElement | undefined)?.click();
   });

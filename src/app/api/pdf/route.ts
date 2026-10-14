@@ -79,7 +79,7 @@ const requireDownloadAccess = async (request: Request): Promise<Access> => {
 
     return {
       denied: Response.json(
-        { error: 'Downloads are unavailable: this deployment has no auth configured.' },
+        { error: 'ডাউনলোড এখন বন্ধ: এই ডেপ্লয়মেন্টে সাইন-ইন সেট করা নেই।' },
         { status: 503 },
       ),
       userId: '',
@@ -103,7 +103,7 @@ const requireDownloadAccess = async (request: Request): Promise<Access> => {
 
     return {
       denied: Response.json(
-        { error: 'Could not check your sign-in just now. Try again in a moment.' },
+        { error: 'এখন আপনার সাইন-ইন যাচাই করা যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।' },
         { status: 503 },
       ),
       userId: '',
@@ -176,7 +176,7 @@ const checkPdfRateLimit = async (request: Request, userId: string): Promise<Resp
 
       if (wait !== null) {
         return tooMany(
-          `You have made ${PDF_RATE_LIMIT.max} PDFs in ${PDF_RATE_LIMIT.windowMs / 60000} minutes. Try again in about ${Math.ceil(wait / 60)} minute(s).`,
+          `আপনি ${PDF_RATE_LIMIT.windowMs / 60000} মিনিটে ${PDF_RATE_LIMIT.max}টি PDF বানিয়েছেন। প্রায় ${Math.ceil(wait / 60)} মিনিট পরে আবার চেষ্টা করুন।`,
           wait,
         );
       }
@@ -187,7 +187,7 @@ const checkPdfRateLimit = async (request: Request, userId: string): Promise<Resp
 
       if (wait !== null) {
         return tooMany(
-          'Too many PDFs from this network. Try again in a few minutes.',
+          'এই নেটওয়ার্ক থেকে অনেক বেশি PDF বানানো হয়েছে। কয়েক মিনিট পরে আবার চেষ্টা করুন।',
           wait,
         );
       }
@@ -212,11 +212,11 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as PdfRequestBody;
   } catch {
-    return badRequest('Request body must be JSON.');
+    return badRequest('অনুরোধের বডি অবশ্যই JSON হতে হবে।');
   }
 
   if (!body.resume || typeof body.resume !== 'object') {
-    return badRequest('Missing resume payload.');
+    return badRequest('CV-র তথ্য পাওয়া যায়নি।');
   }
 
   const resume = normalizeResume(body.resume);
@@ -279,7 +279,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         error:
-          'Could not render the PDF. If this is a fresh install, run `npm run chrome` to download the browser puppeteer needs.',
+          'PDF তৈরি করা যায়নি। নতুন ইনস্টল হলে puppeteer-এর ব্রাউজার ডাউনলোড করতে `npm run chrome` চালান।',
       },
       { status: 500 },
     );

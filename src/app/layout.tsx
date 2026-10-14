@@ -1,5 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, PT_Sans, Rubik, Source_Serif_4, Space_Grotesk, Volkhov } from 'next/font/google';
+import {
+  Hind_Siliguri,
+  Inter,
+  PT_Sans,
+  Rubik,
+  Source_Serif_4,
+  Space_Grotesk,
+  Volkhov,
+} from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 
 import { AnonymousVisitorTracker } from '@/components/analytics/AnonymousVisitorTracker';
@@ -14,6 +22,21 @@ import '@/styles/resume.css';
  * in the PDF. A web font that fails to load falls back to a metric-different
  * system face and silently changes pagination.
  */
+/**
+ * The Bangla face, for the app and for the CV text a reader types.
+ *
+ * Inter has no Bengali glyphs, so without this a Bangla word falls through to
+ * whatever the operating system offers - which on a Linux print server is a row
+ * of empty boxes. next/font self-hosts it, so the PDF embeds the real face and
+ * conjuncts shape the same on the screen, in the preview and on paper.
+ */
+const bangla = Hind_Siliguri({
+  subsets: ['bengali', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-bangla',
+  display: 'swap',
+});
+
 const appSans = Inter({
   subsets: ['latin'],
   variable: '--font-app-sans',
@@ -96,8 +119,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
-      className={`${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable}`}
+      lang="bn"
+      className={`${bangla.variable} ${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable}`}
       suppressHydrationWarning
     >
       <head>

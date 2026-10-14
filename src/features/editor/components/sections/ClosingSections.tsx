@@ -18,7 +18,6 @@ import {
   LIMITS,
   ON_REQUEST_TEXT,
   REFERENCE_MODES,
-  REFERENCE_MODE_LABEL,
   SIGNATURE_MODES,
 } from '@/constants';
 import type { ReferenceMode } from '@/constants';
@@ -35,15 +34,15 @@ export const InterestsSection = () => {
 
   return (
     <Field
-      label="Interests"
-      hint="Be specific. 'Reading' says nothing; 'competitive bridge' starts a conversation."
+      label="আগ্রহ ও শখ"
+      hint="নির্দিষ্ট করে লিখুন। “বই পড়া” কিছুই বলে না; “দাবা প্রতিযোগিতা” কথোপকথন শুরু করে।"
     >
       {({ id, describedBy }) => (
         <TagInput
           id={id}
           describedBy={describedBy}
           value={interests.items}
-          placeholder="Long-distance running"
+          placeholder="দূরপাল্লার দৌড়"
           onChange={(items) => patch('interests', { items })}
         />
       )}
@@ -51,9 +50,14 @@ export const InterestsSection = () => {
   );
 };
 
+const REFERENCE_UI_LABEL: Record<ReferenceMode, string> = {
+  listed: 'রেফারি তালিকা করুন',
+  'on-request': 'চাইলে দেওয়া হবে',
+};
+
 const REFERENCE_TABS = REFERENCE_MODES.map((value) => ({
   value,
-  label: REFERENCE_MODE_LABEL[value],
+  label: REFERENCE_UI_LABEL[value],
 }));
 
 export const ReferencesSection = () => {
@@ -74,14 +78,14 @@ export const ReferencesSection = () => {
         items={REFERENCE_TABS}
         value={references.mode}
         onChange={(mode: ReferenceMode) => patch('references', { mode })}
-        ariaLabel="Reference style"
+        ariaLabel="রেফারেন্সের ধরন"
         className="self-start"
       />
 
       {references.mode === 'on-request' ? (
         <p className="rounded-control bg-surface-2 text-ui text-fg-muted px-3 py-2">
-          Your resume will print: “{ON_REQUEST_TEXT}” — the usual choice unless the employer asked
-          for referees up front.
+          আপনার CV-তে এটি ছাপা হবে: “{ON_REQUEST_TEXT}” — নিয়োগকর্তা আগেই রেফারি চেয়ে না থাকলে সাধারণত
+          এটিই ঠিক পছন্দ।
         </p>
       ) : (
         <>
@@ -90,7 +94,7 @@ export const ReferencesSection = () => {
               <div className="mb-2 flex justify-end">
                 <button
                   type="button"
-                  aria-label="Remove referee"
+                  aria-label="রেফারি সরান"
                   onClick={() =>
                     actions.edit((draft) => {
                       draft.references.entries = draft.references.entries.filter(
@@ -105,7 +109,7 @@ export const ReferencesSection = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-                <Field label="Name">
+                <Field label="নাম">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -114,7 +118,7 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="Designation">
+                <Field label="পদবি">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -123,7 +127,7 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="Organisation" className="col-span-full">
+                <Field label="প্রতিষ্ঠান" className="col-span-full">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -132,7 +136,7 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="Email">
+                <Field label="ইমেইল">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -142,7 +146,7 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="Phone">
+                <Field label="ফোন">
                   {({ id }) => (
                     <Input
                       id={id}
@@ -152,12 +156,12 @@ export const ReferencesSection = () => {
                     />
                   )}
                 </Field>
-                <Field label="How they know you" className="col-span-full">
+                <Field label="আপনাকে কীভাবে চেনেন" className="col-span-full">
                   {({ id }) => (
                     <Input
                       id={id}
                       value={entry.relationship}
-                      placeholder="Former line manager"
+                      placeholder="আগের লাইন ম্যানেজার"
                       onChange={(event) => setEntry(entry.id, { relationship: event.target.value })}
                     />
                   )}
@@ -177,7 +181,7 @@ export const ReferencesSection = () => {
               })
             }
           >
-            Add referee
+            রেফারি যোগ করুন
           </Button>
         </>
       )}
@@ -191,7 +195,7 @@ export const DeclarationSection = () => {
 
   return (
     <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-      <Field label="Statement" className="col-span-full">
+      <Field label="ঘোষণার বিবৃতি" className="col-span-full">
         {({ id }) => (
           <Textarea
             id={id}
@@ -204,19 +208,19 @@ export const DeclarationSection = () => {
         )}
       </Field>
 
-      <Field label="Place">
+      <Field label="স্থান">
         {({ id }) => (
           <Input
             id={id}
             value={declaration.place}
-            placeholder="Dhaka"
+            placeholder="ঢাকা"
             onChange={(event) => patch('declaration', { place: event.target.value })}
           />
         )}
       </Field>
 
       {declaration.showDate ? (
-        <Field label="Date" hint={`Leave blank to print today's date (${formatToday()}).`}>
+        <Field label="তারিখ" hint={`ফাঁকা রাখলে আজকের তারিখ (${formatToday()}) ছাপা হবে।`}>
           {({ id, describedBy }) => (
             <Input
               id={id}
@@ -231,8 +235,8 @@ export const DeclarationSection = () => {
 
       <div className="col-span-full">
         <Switch
-          label="Print a date"
-          description="Off leaves the declaration undated, so the same PDF keeps working months from now."
+          label="তারিখ ছাপুন"
+          description="বন্ধ রাখলে ঘোষণায় কোনো তারিখ থাকে না, ফলে একই PDF কয়েক মাস পরেও ব্যবহার করা যায়।"
           checked={declaration.showDate}
           onChange={(showDate) => patch('declaration', { showDate })}
         />
@@ -243,7 +247,7 @@ export const DeclarationSection = () => {
 
 const SIGNATURE_TABS = SIGNATURE_MODES.map((value) => ({
   value,
-  label: value === 'typed' ? 'Typed' : 'Upload image',
+  label: value === 'typed' ? 'টাইপ করা' : 'ছবি আপলোড',
 }));
 
 export const SignatureSection = () => {
@@ -256,13 +260,13 @@ export const SignatureSection = () => {
         items={SIGNATURE_TABS}
         value={signature.mode}
         onChange={(mode: (typeof SIGNATURE_MODES)[number]) => patch('signature', { mode })}
-        ariaLabel="Signature style"
+        ariaLabel="স্বাক্ষরের ধরন"
         className="self-start"
       />
 
       {signature.mode === 'typed' ? (
         <Field
-          label="Signature name"
+          label="স্বাক্ষরের নাম"
           hint={`Blank uses your full name (${basics.fullName || '—'}).`}
         >
           {({ id, describedBy }) => (
@@ -277,16 +281,16 @@ export const SignatureSection = () => {
         </Field>
       ) : (
         <ImageUpload
-          label="Signature image"
+          label="স্বাক্ষরের ছবি"
           shape="wide"
           value={signature.image}
           budget={IMAGE_BUDGET}
-          hint="A transparent PNG reads best."
+          hint="স্বচ্ছ PNG সবচেয়ে ভালো দেখায়।"
           onChange={(image) => patch('signature', { image })}
         />
       )}
 
-      <Field label="Caption" hint="Printed under the rule.">
+      <Field label="ক্যাপশন" hint="রেখার নিচে ছাপা হবে।">
         {({ id, describedBy }) => (
           <Input
             id={id}
@@ -309,8 +313,8 @@ export const DocumentNameSection = () => {
   return (
     <div className="flex flex-col gap-3">
       <Field
-        label="Document name"
-        hint="Used for the downloaded file. Recruiters see the filename before they see the resume."
+        label="ডকুমেন্টের নাম"
+        hint="ডাউনলোড করা ফাইলের নাম হিসেবে ব্যবহৃত হয়। রিক্রুটার CV দেখার আগেই ফাইলের নামটি দেখেন।"
       >
         {({ id, describedBy }) => (
           <Input
@@ -318,7 +322,7 @@ export const DocumentNameSection = () => {
             aria-describedby={describedBy}
             value={resume.meta.documentName}
             maxLength={80}
-            placeholder={`${resume.basics.fullName || 'Your name'} - ${resume.basics.headline || 'Role'}`}
+            placeholder={`${resume.basics.fullName || 'আপনার নাম'} - ${resume.basics.headline || 'পদ'}`}
             onChange={(event) =>
               actions.edit((draft) => {
                 draft.meta.documentName = event.target.value;

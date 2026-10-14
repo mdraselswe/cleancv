@@ -83,7 +83,7 @@ export const useGoogleSignIn = (callbackURL: string) => {
     });
 
     if (failure) {
-      setError(failure.message || 'Could not reach Google. Try again.');
+      setError(failure.message || 'Google-এ পৌঁছানো যায়নি। আবার চেষ্টা করুন।');
       setPending(false);
 
       return;

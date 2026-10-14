@@ -14,20 +14,20 @@ import { NAME_MAX, PASSWORD_MAX, PASSWORD_MIN } from '@/constants';
 export const emailField = z
   .string()
   .trim()
-  .min(1, 'Enter your email address.')
-  .email('That does not look like an email address.')
-  .max(254, 'That email address is too long.');
+  .min(1, 'আপনার ইমেইল ঠিকানা লিখুন।')
+  .email('এটি ইমেইল ঠিকানার মতো দেখাচ্ছে না।')
+  .max(254, 'ইমেইল ঠিকানাটি অনেক লম্বা।');
 
 export const passwordField = z
   .string()
-  .min(PASSWORD_MIN, `Use at least ${PASSWORD_MIN} characters.`)
-  .max(PASSWORD_MAX, `Use at most ${PASSWORD_MAX} characters.`);
+  .min(PASSWORD_MIN, `কমপক্ষে ${PASSWORD_MIN}টি অক্ষর ব্যবহার করুন।`)
+  .max(PASSWORD_MAX, `সর্বোচ্চ ${PASSWORD_MAX}টি অক্ষর ব্যবহার করুন।`);
 
 export const nameField = z
   .string()
   .trim()
-  .min(1, 'Enter your name.')
-  .max(NAME_MAX, `Use at most ${NAME_MAX} characters.`);
+  .min(1, 'আপনার নাম লিখুন।')
+  .max(NAME_MAX, `সর্বোচ্চ ${NAME_MAX}টি অক্ষর ব্যবহার করুন।`);
 
 export const signInSchema = z.object({
   email: emailField,
@@ -36,7 +36,7 @@ export const signInSchema = z.object({
    * minimum, and refusing to *send* their password would lock them out of the
    * account with a message about a rule they never agreed to.
    */
-  password: z.string().min(1, 'Enter your password.'),
+  password: z.string().min(1, 'আপনার পাসওয়ার্ড লিখুন।'),
 });
 
 export const signUpSchema = z.object({
@@ -53,7 +53,7 @@ export const resetPasswordSchema = z
     confirm: z.string(),
   })
   .refine((values) => values.password === values.confirm, {
-    message: 'The two passwords do not match.',
+    message: 'দুটি পাসওয়ার্ড মেলেনি।',
     path: ['confirm'],
   });
 

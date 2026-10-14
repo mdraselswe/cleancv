@@ -37,7 +37,7 @@ export const useExportJson = (onImport: (resume: Resume) => void) => {
       const result = parseResumeFile(await file.text());
 
       if (!result.ok) {
-        setError(result.error ?? 'That file could not be read.');
+        setError(result.error ?? 'ফাইলটি পড়া যায়নি।');
         return;
       }
 

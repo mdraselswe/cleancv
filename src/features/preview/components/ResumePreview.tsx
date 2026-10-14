@@ -5,6 +5,7 @@ import { useEffect, useMemo } from 'react';
 import { PAGE_SIZE_PX, PX_PER_MM } from '@/constants';
 import { withoutHiddenEntries, type Resume } from '@/features/resume';
 import { getTemplate, resolvePageBleed } from '@/features/templates';
+import { bn } from '@/lib/bn';
 import { pageBleedBackground } from '@/lib/pageBleed';
 
 import { usePreviewMetrics } from '../hooks/usePreviewMetrics';
@@ -183,7 +184,7 @@ export const ResumePreview = ({
                 aria-hidden="true"
                 className="text-fg-subtle text-ui-2xs absolute right-0 -bottom-5 tabular-nums"
               >
-                Page {index + 1} of {pageCount}
+                পৃষ্ঠা {bn(index + 1)} / {bn(pageCount)}
               </span>
             ) : null}
           </div>

@@ -5,8 +5,8 @@ import { PrivacyPolicy } from '@/features/legal';
 import { isAiConfigured, isEmailAuthEnabled } from '@/server/env';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy',
-  description: `How ${APP_NAME} handles your CV, optional cloud sync, and your account.`,
+  title: 'গোপনীয়তা নীতি',
+  description: `${APP_NAME} আপনার CV, ঐচ্ছিক ক্লাউড সিঙ্ক আর অ্যাকাউন্ট কীভাবে সামলায়।`,
 };
 
 export default function PrivacyPage() {

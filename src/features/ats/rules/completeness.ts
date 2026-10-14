@@ -1,3 +1,4 @@
+import { bn } from '@/lib/bn';
 import { isBlank } from '@/lib/text';
 
 import type { AtsRule } from '../types';
@@ -8,21 +9,21 @@ export const rules: AtsRule[] = [
     id: 'contact-essentials',
     category: 'completeness',
     weight: 5,
-    label: 'Phone and email',
+    label: 'ফোন ও ইমেইল',
     evaluate: (resume) => {
       const missing = [
-        isBlank(resume.contact.phone) ? 'phone' : '',
-        isBlank(resume.contact.email) ? 'email' : '',
+        isBlank(resume.contact.phone) ? 'ফোন নম্বর' : '',
+        isBlank(resume.contact.email) ? 'ইমেইল' : '',
       ].filter(Boolean);
 
       if (missing.length === 0) {
-        return { status: 'pass', message: 'Both a phone number and an email address are present.' };
+        return { status: 'pass', message: 'ফোন নম্বর ও ইমেইল ঠিকানা দুটোই আছে।' };
       }
 
       return {
         status: 'error',
-        message: `No ${missing.join(' or ')} on the document.`,
-        fixHint: 'A resume a recruiter cannot reply to is a resume that gets skipped.',
+        message: `ডকুমেন্টে ${missing.join(' ও ')} নেই।`,
+        fixHint: 'যে CV-তে রিক্রুটার উত্তর দিতে পারেন না, সেটি বাদ পড়ে যায়।',
         targets: ['contact'],
       };
     },
@@ -32,65 +33,65 @@ export const rules: AtsRule[] = [
     id: 'name-present',
     category: 'completeness',
     weight: 3,
-    label: 'Name',
+    label: 'নাম',
     evaluate: (resume) =>
       isBlank(resume.basics.fullName)
         ? {
             status: 'error',
-            message: 'The document has no name on it.',
+            message: 'ডকুমেন্টে কোনো নাম নেই।',
             targets: ['contact'],
           }
-        : { status: 'pass', message: 'Your name is the first thing on the page.' },
+        : { status: 'pass', message: 'আপনার নাম পেজের সবার আগে আছে।' },
   },
 
   {
     id: 'headline-present',
     category: 'completeness',
     weight: 2,
-    label: 'Headline',
+    label: 'শিরোনাম',
     evaluate: (resume) =>
       isBlank(resume.basics.headline)
         ? {
             status: 'warn',
-            message: 'No professional headline.',
-            fixHint: 'One line naming the role you want. Parsers often use it as the job-title match.',
+            message: 'কোনো পেশাগত শিরোনাম নেই।',
+            fixHint: 'যে পদে আবেদন করছেন তার নাম এক লাইনে লিখুন। পার্সার প্রায়ই এটিকে পদের নাম হিসেবে মেলায়।',
             targets: ['contact'],
           }
-        : { status: 'pass', message: 'A headline states the role you are targeting.' },
+        : { status: 'pass', message: 'শিরোনামে আপনার লক্ষ্যের পদটি বলা আছে।' },
   },
 
   {
     id: 'summary-present',
     category: 'completeness',
     weight: 2,
-    label: 'Summary',
+    label: 'সারসংক্ষেপ',
     evaluate: (resume) =>
       isBlank(resume.summary.text)
         ? {
             status: 'warn',
-            message: 'No summary or objective.',
-            fixHint: 'Two to four lines. It is the only place you get to frame everything below it.',
+            message: 'কোনো সারসংক্ষেপ বা উদ্দেশ্য লেখা নেই।',
+            fixHint: 'দুই থেকে চার লাইন লিখুন। এটিই একমাত্র জায়গা, যেখানে নিচের সবকিছুকে নিজের মতো করে সাজিয়ে বলতে পারেন।',
             targets: ['summary'],
           }
-        : { status: 'pass', message: 'A summary frames the rest of the document.' },
+        : { status: 'pass', message: 'সারসংক্ষেপ বাকি ডকুমেন্টের একটি ভূমিকা দিয়েছে।' },
   },
 
   {
     id: 'experience-present',
     category: 'completeness',
     weight: 4,
-    label: 'Work experience',
+    label: 'কাজের অভিজ্ঞতা',
     evaluate: (resume) =>
       resume.experience.length === 0
         ? {
             status: 'error',
-            message: 'No roles listed.',
-            fixHint: 'Internships, freelance and volunteer work all count.',
+            message: 'কোনো পদ যোগ করা হয়নি।',
+            fixHint: 'ইন্টার্নশিপ, ফ্রিল্যান্স আর স্বেচ্ছাসেবার কাজও গণ্য হয়।',
             targets: ['experience'],
           }
         : {
             status: 'pass',
-            message: `${resume.experience.length} role${resume.experience.length === 1 ? '' : 's'} listed.`,
+            message: `${bn(resume.experience.length)}টি পদ যোগ করা আছে।`,
           },
   },
 
@@ -98,26 +99,26 @@ export const rules: AtsRule[] = [
     id: 'education-present',
     category: 'completeness',
     weight: 2,
-    label: 'Education',
+    label: 'শিক্ষা',
     evaluate: (resume) =>
       resume.education.length === 0
-        ? { status: 'warn', message: 'No education listed.', targets: ['education'] }
-        : { status: 'pass', message: 'Education is listed.' },
+        ? { status: 'warn', message: 'কোনো শিক্ষাগত যোগ্যতা যোগ করা হয়নি।', targets: ['education'] }
+        : { status: 'pass', message: 'শিক্ষাগত যোগ্যতা যোগ করা আছে।' },
   },
 
   {
     id: 'skills-present',
     category: 'completeness',
     weight: 3,
-    label: 'Skills',
+    label: 'দক্ষতা',
     evaluate: (resume) => {
       const total = resume.skills.reduce((count, group) => count + group.items.length, 0);
 
       if (total === 0) {
         return {
           status: 'error',
-          message: 'No skills listed.',
-          fixHint: 'This is the section keyword matching leans on hardest.',
+          message: 'কোনো দক্ষতা যোগ করা হয়নি।',
+          fixHint: 'কীওয়ার্ড মেলানোর কাজ সবচেয়ে বেশি এই সেকশনের ওপরই নির্ভর করে।',
           targets: ['skills'],
         };
       }
@@ -125,13 +126,16 @@ export const rules: AtsRule[] = [
       if (total < 8) {
         return {
           status: 'warn',
-          message: `Only ${total} skills listed.`,
-          fixHint: 'Aim for 12–25 across a few groups, using the exact spellings the posting uses.',
+          message: `মাত্র ${bn(total)}টি দক্ষতা যোগ করা আছে।`,
+          fixHint: 'কয়েকটি গ্রুপে মোট ১২ থেকে ২৫টি রাখুন, আর বিজ্ঞপ্তিতে যে বানানে লেখা আছে ঠিক সেভাবে লিখুন।',
           targets: ['skills'],
         };
       }
 
-      return { status: 'pass', message: `${total} skills listed across ${resume.skills.length} groups.` };
+      return {
+        status: 'pass',
+        message: `${bn(resume.skills.length)}টি গ্রুপে মোট ${bn(total)}টি দক্ষতা যোগ করা আছে।`,
+      };
     },
   },
 
@@ -139,7 +143,7 @@ export const rules: AtsRule[] = [
     id: 'dates-complete',
     category: 'completeness',
     weight: 3,
-    label: 'Dates on every entry',
+    label: 'প্রতিটি এন্ট্রিতে তারিখ',
     evaluate: (resume) => {
       const undated = [
         ...resume.experience.filter((entry) => isBlank(entry.dates.start)),
@@ -147,13 +151,13 @@ export const rules: AtsRule[] = [
       ];
 
       if (undated.length === 0) {
-        return { status: 'pass', message: 'Every role and qualification has a start date.' };
+        return { status: 'pass', message: 'প্রতিটি পদ ও শিক্ষাগত যোগ্যতায় শুরুর তারিখ আছে।' };
       }
 
       return {
         status: 'warn',
-        message: `${undated.length} entr${undated.length === 1 ? 'y is' : 'ies are'} missing a start date.`,
-        fixHint: 'Parsers compute years of experience from these. A missing date reads as a gap.',
+        message: `${bn(undated.length)}টি এন্ট্রিতে শুরুর তারিখ নেই।`,
+        fixHint: 'পার্সার এই তারিখ থেকে অভিজ্ঞতার বছর হিসাব করে। তারিখ না থাকলে সেটি ফাঁক বলে ধরা হয়।',
         targets: ['experience', 'education'],
       };
     },
@@ -163,17 +167,17 @@ export const rules: AtsRule[] = [
     id: 'profile-links',
     category: 'completeness',
     weight: 1,
-    label: 'Profile links',
+    label: 'প্রোফাইল লিংক',
     evaluate: (resume) => {
       const links = [resume.contact.linkedin, resume.contact.github, resume.contact.portfolio].filter(
         (link) => !isBlank(link),
       );
 
       return links.length > 0
-        ? { status: 'pass', message: `${links.length} profile link${links.length === 1 ? '' : 's'} included.` }
+        ? { status: 'pass', message: `${bn(links.length)}টি প্রোফাইল লিংক দেওয়া আছে।` }
         : {
             status: 'warn',
-            message: 'No LinkedIn, GitHub or portfolio link.',
+            message: 'LinkedIn, GitHub বা পোর্টফোলিওর কোনো লিংক নেই।',
             targets: ['contact'],
           };
     },

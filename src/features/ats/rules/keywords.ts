@@ -1,4 +1,5 @@
 import { KEYWORD_MATCH_TARGET } from '@/constants';
+import { bn } from '@/lib/bn';
 import { tokenSet } from '@/lib/text';
 
 import { collectBullets, collectSkills, matchKeywords } from '../utils/collect';
@@ -16,13 +17,13 @@ export const rules: AtsRule[] = [
     id: 'jd-coverage',
     category: 'keywords',
     weight: 6,
-    label: 'Job description match',
+    label: 'চাকরির বিবরণের সঙ্গে মিল',
     evaluate: (resume, { jobKeywords }) => {
       if (jobKeywords.length === 0) {
         return {
           status: 'pass',
-          message: 'No job description pasted yet.',
-          fixHint: 'Paste one to see which of its terms your resume is missing.',
+          message: 'এখনো কোনো চাকরির বিবরণ পেস্ট করা হয়নি।',
+          fixHint: 'একটি পেস্ট করুন, দেখবেন আপনার CV-তে এর কোন শব্দগুলো নেই।',
         };
       }
 
@@ -32,17 +33,17 @@ export const rules: AtsRule[] = [
       if (coverage >= KEYWORD_MATCH_TARGET) {
         return {
           status: 'pass',
-          message: `${percent}% of the posting's key terms appear (${matched.length}/${jobKeywords.length}).`,
+          message: `বিজ্ঞপ্তির মূল শব্দের ${bn(percent)}% আছে (${bn(matched.length)}/${bn(jobKeywords.length)})।`,
         };
       }
 
       return {
         status: coverage >= KEYWORD_MATCH_TARGET / 2 ? 'warn' : 'error',
-        message: `Only ${percent}% of the posting's key terms appear.`,
-        fixHint: `Missing: ${missing.slice(0, 8).join(', ')}. Use the posting's own spellings where they are honestly true of you.`,
+        message: `বিজ্ঞপ্তির মূল শব্দের মাত্র ${bn(percent)}% আছে।`,
+        fixHint: `নেই: ${missing.slice(0, 8).join(', ')}। যেগুলো সত্যিই আপনার সম্পর্কে সত্যি, সেগুলো বিজ্ঞপ্তির নিজস্ব বানানে লিখুন।`,
         details: [
-          `Not on your CV: ${missing.slice(0, 16).join(', ')}`,
-          'Where to put them: the headline and summary opening for the role-level terms, one skills group for tools, and a bullet that proves each. Only the ones that are true.',
+          `আপনার CV-তে নেই: ${missing.slice(0, 16).join(', ')}`,
+          'কোথায় বসাবেন: পদ-সংক্রান্ত শব্দ শিরোনামে ও সারসংক্ষেপের শুরুতে, টুলগুলোর জন্য একটি দক্ষতার গ্রুপে, আর প্রতিটির প্রমাণ দেওয়ার মতো একটি বুলেটে। শুধু যেগুলো সত্যি, সেগুলোই।',
         ],
         targets: ['skills', 'summary', 'experience'],
       };
@@ -53,11 +54,11 @@ export const rules: AtsRule[] = [
     id: 'skills-evidenced',
     category: 'keywords',
     weight: 3,
-    label: 'Skills backed by experience',
+    label: 'অভিজ্ঞতায় প্রমাণিত দক্ষতা',
     evaluate: (resume) => {
       const skills = collectSkills(resume);
       if (skills.length === 0) {
-        return { status: 'error', message: 'No skills listed.', targets: ['skills'] };
+        return { status: 'error', message: 'কোনো দক্ষতা যোগ করা হয়নি।', targets: ['skills'] };
       }
 
       const evidence = tokenSet(
@@ -81,7 +82,7 @@ export const rules: AtsRule[] = [
       if (ratio >= 0.4) {
         return {
           status: 'pass',
-          message: `${backed.length} of ${skills.length} skills also appear in your experience.`,
+          message: `${bn(skills.length)}টি দক্ষতার মধ্যে ${bn(backed.length)}টি আপনার অভিজ্ঞতার বর্ণনাতেও আছে।`,
         };
       }
 
@@ -89,10 +90,10 @@ export const rules: AtsRule[] = [
 
       return {
         status: 'warn',
-        message: `Only ${backed.length} of ${skills.length} skills appear anywhere else on the resume.`,
+        message: `${bn(skills.length)}টি দক্ষতার মধ্যে মাত্র ${bn(backed.length)}টি CV-র অন্য কোথাও আছে।`,
         fixHint:
-          'Pick the few you most want to be hired for and name each inside a bullet where you used it, e.g. "…built the checkout in Next.js and GraphQL". Delete the ones you cannot defend.',
-        details: [`Not mentioned anywhere else: ${unbacked.slice(0, 14).join(', ')}${unbacked.length > 14 ? `, +${unbacked.length - 14} more` : ''}`],
+          'যে কয়েকটির জন্য চাকরি পেতে চান সেগুলো বেছে নিন, আর যে বুলেটে ব্যবহার করেছেন সেখানে নাম দিন, যেমন “…built the checkout in Next.js and GraphQL”। যেগুলোর পক্ষে দাঁড়াতে পারবেন না, সেগুলো মুছে দিন।',
+        details: [`অন্য কোথাও উল্লেখ নেই: ${unbacked.slice(0, 14).join(', ')}${unbacked.length > 14 ? `, আরও ${bn(unbacked.length - 14)}টি` : ''}`],
         targets: ['experience', 'skills'],
       };
     },

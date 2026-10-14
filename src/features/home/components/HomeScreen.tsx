@@ -8,6 +8,7 @@ import { Button, Toaster, type Hue } from '@/components/ui';
 import { ImportDialog } from '@/features/import';
 import { useCloudSync, useLibrarySync } from '@/features/library';
 import { useResume } from '@/features/resume';
+import { bn } from '@/lib/bn';
 
 import { useHome } from '../hooks/useHome';
 import { DeleteDialog, RenameDialog } from './DocumentDialogs';
@@ -41,7 +42,7 @@ export const HomeScreen = () => {
   const nameOf = (id: string): string => {
     const meta = home.documents.find((entry) => entry.id === id);
 
-    return meta?.name || meta?.personName || home.resumes[id]?.basics.fullName || 'Untitled CV';
+    return meta?.name || meta?.personName || home.resumes[id]?.basics.fullName || 'নামহীন CV';
   };
 
   return (
@@ -60,11 +61,11 @@ export const HomeScreen = () => {
         <section id="my-cvs" className="mx-auto w-full max-w-6xl scroll-mt-20 px-4 py-10 sm:px-6">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-fg text-2xl font-extrabold tracking-tight">My CVs</h2>
+              <h2 className="text-fg text-2xl font-extrabold tracking-tight">আমার CV</h2>
               <p className="text-fg-subtle text-ui-md mt-0.5">
                 {loading
-                  ? 'Opening your library…'
-                  : `${home.documents.length} saved in this browser. Pick one to keep editing.`}
+                  ? 'আপনার লাইব্রেরি খোলা হচ্ছে…'
+                  : `এই ব্রাউজারে ${bn(home.documents.length)}টি সংরক্ষিত আছে। সম্পাদনা চালিয়ে যেতে একটি বেছে নিন।`}
               </p>
             </div>
 
@@ -75,7 +76,7 @@ export const HomeScreen = () => {
                 onClick={() => restoreInput.current?.click()}
                 leading={<DatabaseBackup size={14} />}
               >
-                Restore backup
+                ব্যাকআপ ফিরিয়ে আনুন
               </Button>
               <Button
                 size="sm"
@@ -84,7 +85,7 @@ export const HomeScreen = () => {
                 disabled={loading || home.documents.length === 0}
                 leading={<HardDriveDownload size={14} />}
               >
-                Back up all
+                সবগুলোর ব্যাকআপ নিন
               </Button>
             </div>
           </div>
@@ -113,8 +114,8 @@ export const HomeScreen = () => {
                   <span className="app-gradient-bg flex h-14 w-14 items-center justify-center rounded-full text-white shadow-pop">
                     <Plus size={26} />
                   </span>
-                  <span className="text-ui-md font-bold">New CV</span>
-                  <span className="text-fg-subtle text-ui-xs">Start from a blank page</span>
+                  <span className="text-ui-md font-bold">নতুন CV</span>
+                  <span className="text-fg-subtle text-ui-xs">ফাঁকা পেজ থেকে শুরু করুন</span>
                 </button>
               </li>
 
@@ -148,15 +149,15 @@ export const HomeScreen = () => {
           {!loading && home.documents.length === 0 ? (
             <div className="mx-auto mt-4 max-w-xs text-center">
               <EmptyIllustration />
-              <p className="text-fg-muted text-ui-md">Nothing here yet. Start your first CV.</p>
+              <p className="text-fg-muted text-ui-md">এখনো কিছু নেই। আপনার প্রথম CV শুরু করুন।</p>
             </div>
           ) : null}
         </section>
 
         <section id="designs" className="mx-auto w-full max-w-6xl scroll-mt-20 px-4 py-10 sm:px-6">
-          <h2 className="text-fg text-2xl font-extrabold tracking-tight">Start from a design</h2>
+          <h2 className="text-fg text-2xl font-extrabold tracking-tight">একটি ডিজাইন থেকে শুরু করুন</h2>
           <p className="text-fg-subtle text-ui-md mt-0.5 mb-5">
-            Every design below is ATS-tested. Pick one and it opens as a new CV.
+            নিচের প্রতিটি ডিজাইন ATS-পরীক্ষিত। একটি বেছে নিলে সেটি নতুন CV হিসেবে খুলবে।
           </p>
           <TemplateStrip
             onPick={(templateId) => void home.createFromTemplate(templateId)}
@@ -165,7 +166,7 @@ export const HomeScreen = () => {
         </section>
 
         <section id="how" className="mx-auto w-full max-w-6xl scroll-mt-20 px-4 py-10 sm:px-6">
-          <h2 className="text-fg mb-5 text-2xl font-extrabold tracking-tight">How it works</h2>
+          <h2 className="text-fg mb-5 text-2xl font-extrabold tracking-tight">কীভাবে কাজ করে</h2>
           <HowItWorks />
         </section>
       </main>
@@ -178,7 +179,7 @@ export const HomeScreen = () => {
         accept="application/json,.json"
         className="sr-only"
         tabIndex={-1}
-        aria-label="Restore a backup file"
+        aria-label="ব্যাকআপ ফাইল ফিরিয়ে আনুন"
         onChange={(event) => {
           const file = event.target.files?.[0];
 

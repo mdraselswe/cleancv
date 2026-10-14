@@ -19,6 +19,7 @@ import {
   SECTION_ENTRY_ICON,
   SECTION_META,
   SECTION_ORDER_PRESETS,
+  SECTION_UI_LABEL,
   customIdOf,
   isCustomSlot,
   type SectionSlot,
@@ -31,11 +32,12 @@ import {
   type Resume,
 } from '@/features/resume';
 import { getTemplate, resolveSectionColumn } from '@/features/templates';
+import { bn } from '@/lib/bn';
 
 import { SectionMap } from './SectionMap';
 
 const PRESET_HINT =
-  'A preset reorders the built-in sections only — your own sections and every toggle stay put.';
+  'একটি প্রিসেট শুধু তৈরি করা সেকশনগুলোর ক্রম বদলায় — আপনার নিজের সেকশন আর প্রতিটি চালু/বন্ধ অবস্থা যেমন আছে তেমনই থাকে।';
 
 const PRESET_OPTIONS = SECTION_ORDER_PRESETS.map((preset) => ({
   value: preset.id,
@@ -45,6 +47,8 @@ const PRESET_OPTIONS = SECTION_ORDER_PRESETS.map((preset) => ({
 /** What a row needs to render, resolved the same way for built-in and custom slots. */
 interface SlotRow {
   label: string;
+  /** The heading the CV prints when the reader has not renamed it. */
+  defaultHeading: string;
   description: string;
   /** Heading a parser looks for; custom sections have none to compare against. */
   canonicalHeading: string | null;
@@ -63,7 +67,8 @@ const resolveRow = (resume: Resume, slot: SectionSlot): SlotRow => {
 
     return {
       label: section?.heading?.trim() || UNTITLED_CUSTOM_HEADING,
-      description: 'Your own section.',
+      defaultHeading: UNTITLED_CUSTOM_HEADING,
+      description: 'আপনার নিজের সেকশন।',
       canonicalHeading: null,
       heading: section?.heading ?? '',
       enabled: section?.enabled ?? false,
@@ -78,7 +83,8 @@ const resolveRow = (resume: Resume, slot: SectionSlot): SlotRow => {
   const setting = resume.meta.sections[slot];
 
   return {
-    label: meta.defaultHeading,
+    label: SECTION_UI_LABEL[slot],
+    defaultHeading: meta.defaultHeading,
     description: meta.description,
     canonicalHeading: meta.canonicalHeading,
     heading: setting?.heading ?? '',
@@ -133,19 +139,19 @@ export const SectionManager = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <SectionLabel className="mb-1">Sections</SectionLabel>
+      <SectionLabel className="mb-1">সেকশন</SectionLabel>
       <p className="text-fg-subtle text-ui-xs mb-1">
-        Order here is the order on the page. A section with no content is hidden automatically.
+        এখানকার ক্রমই পেজের ক্রম। কোনো লেখা না থাকলে সেকশনটি নিজে থেকেই লুকিয়ে যায়।
       </p>
 
       <div className="border-border-base rounded-card mb-2 border p-3">
-        <Field label="Start from an arrangement" hint={activePreset?.description ?? PRESET_HINT}>
+        <Field label="একটি সাজানো ক্রম থেকে শুরু করুন" hint={activePreset?.description ?? PRESET_HINT}>
           {({ id, describedBy }) => (
             <Select
               id={id}
               aria-describedby={describedBy}
               value=""
-              placeholder="Choose a preset…"
+              placeholder="একটি প্রিসেট বেছে নিন…"
               options={PRESET_OPTIONS}
               onChange={(event) => {
                 const presetId = event.target.value;
@@ -168,7 +174,7 @@ export const SectionManager = () => {
               actions.applySectionPreset(DEFAULT_PRESET_ID);
             }}
           >
-            Reset to the standard order
+            স্ট্যান্ডার্ড ক্রমে ফিরুন
           </Button>
 
           {/* The list says what the order is; the map says what it does. */}
@@ -178,7 +184,7 @@ export const SectionManager = () => {
             leading={<LayoutTemplate size={13} />}
             onClick={() => setMapOpen(true)}
           >
-            Rearrange on the page
+            পেজের ওপর সাজান
           </Button>
         </div>
       </div>
@@ -190,7 +196,7 @@ export const SectionManager = () => {
       <SortableList
         ids={sectionOrder}
         onReorder={actions.moveSection}
-        ariaLabel="Section order"
+        ariaLabel="সেকশনের ক্রম"
         className="flex flex-col gap-2"
       >
         {sectionOrder.map((slot, index) => {
@@ -216,8 +222,8 @@ export const SectionManager = () => {
                       <Button
                         size="icon"
                         variant="ghost"
-                        aria-label={`Delete ${row.label}`}
-                        title="Delete this section"
+                        aria-label={`মুছুন: ${row.label}`}
+                        title="এই সেকশন মুছুন"
                         onClick={() => actions.removeCustomSection(row.customId as string)}
                       >
                         <Trash2 size={14} />
@@ -227,7 +233,7 @@ export const SectionManager = () => {
                     <div className="flex flex-none flex-col">
                       <button
                         type="button"
-                        aria-label={`Move ${row.label} up`}
+                        aria-label={`${row.label} উপরে নিন`}
                         disabled={index === 0}
                         onClick={() => actions.moveSection(index, index - 1)}
                         className="tap-target text-fg-subtle hover:text-fg hover:bg-surface-2 flex h-7 w-7 items-center justify-center rounded-lg transition disabled:opacity-25"
@@ -236,7 +242,7 @@ export const SectionManager = () => {
                       </button>
                       <button
                         type="button"
-                        aria-label={`Move ${row.label} down`}
+                        aria-label={`${row.label} নিচে নিন`}
                         disabled={index === sectionOrder.length - 1}
                         onClick={() => actions.moveSection(index, index + 1)}
                         className="tap-target text-fg-subtle hover:text-fg hover:bg-surface-2 flex h-7 w-7 items-center justify-center rounded-lg transition disabled:opacity-25"
@@ -250,8 +256,8 @@ export const SectionManager = () => {
                     <div className="mt-2 flex items-center gap-2 pl-12">
                       <Input
                         value={row.heading}
-                        placeholder={row.customId ? UNTITLED_CUSTOM_HEADING : row.label}
-                        aria-label={`Heading for ${row.label}`}
+                        placeholder={row.defaultHeading}
+                        aria-label={`${row.label}-এর শিরোনাম`}
                         className="text-ui h-8"
                         onChange={(event) => actions.setSectionHeading(slot, event.target.value)}
                       />
@@ -259,8 +265,8 @@ export const SectionManager = () => {
                         <Button
                           size="icon"
                           variant="ghost"
-                          aria-label="Reset heading"
-                          title={`Reset to “${row.label}”`}
+                          aria-label="শিরোনাম আগের অবস্থায় ফেরান"
+                          title={`“${row.defaultHeading}” এ ফিরুন`}
                           onClick={() => actions.setSectionHeading(slot, '')}
                         >
                           <RotateCcw size={13} />
@@ -276,7 +282,7 @@ export const SectionManager = () => {
                   */}
                   {row.enabled && !row.headless && design.columns === 2 ? (
                     <div className="mt-2 flex items-center gap-1.5 pl-12">
-                      <span className="text-fg-subtle text-ui-xs">Column</span>
+                      <span className="text-fg-subtle text-ui-xs">কলাম</span>
                       {(['main', 'side'] as const).map((column) => (
                         <Button
                           key={column}
@@ -289,7 +295,7 @@ export const SectionManager = () => {
                           aria-pressed={resolveSectionColumn(resume, template, slot) === column}
                           onClick={() => actions.placeSection(slot, index, column)}
                         >
-                          {column === 'main' ? 'Main' : 'Panel'}
+                          {column === 'main' ? 'প্রধান' : 'পাশের প্যানেল'}
                         </Button>
                       ))}
                     </div>
@@ -300,8 +306,8 @@ export const SectionManager = () => {
                       <Switch
                         checked={row.showIcons}
                         onChange={(value) => actions.setSectionIcons(slot, value)}
-                        label="Icons"
-                        description="The marker in front of each entry, and the glyphs on groups."
+                        label="আইকন"
+                        description="প্রতিটি এন্ট্রির সামনের চিহ্ন, আর গ্রুপের আইকন।"
                         className="text-ui"
                       />
                     </div>
@@ -310,10 +316,10 @@ export const SectionManager = () => {
                   {row.enabled &&
                   row.canonicalHeading &&
                   row.heading &&
-                  row.heading !== row.label ? (
+                  row.heading !== row.defaultHeading ? (
                     <p className="text-warning text-ui-2xs mt-1 pl-12">
-                      Parsers look for “{row.canonicalHeading}”. A custom name can cost you this
-                      section.
+                      পার্সার “{row.canonicalHeading}” খোঁজে। নিজের দেওয়া নাম হলে পার্সার এই সেকশনটি
+                      চিনতে নাও পারে।
                     </p>
                   ) : null}
                 </div>
@@ -330,12 +336,12 @@ export const SectionManager = () => {
           disabled={atLimit}
           onClick={() => actions.addCustomSection()}
         >
-          Add a custom section
+          নিজের একটি সেকশন যোগ করুন
         </Button>
         <p className="text-fg-subtle text-ui-2xs mt-1.5">
           {atLimit
-            ? `You have reached the limit of ${MAX_CUSTOM_SECTIONS} custom sections.`
-            : 'For anything the list above does not cover. Give it a heading a recruiter would recognise.'}
+            ? `আপনি সর্বোচ্চ ${bn(MAX_CUSTOM_SECTIONS)}টি নিজের সেকশন বানাতে পারেন, সীমায় পৌঁছে গেছেন।`
+            : 'উপরের তালিকায় নেই এমন কিছুর জন্য। এমন একটি শিরোনাম দিন, যা রিক্রুটার সহজে চিনতে পারেন।'}
         </p>
       </div>
     </div>

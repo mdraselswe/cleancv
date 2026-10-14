@@ -8,6 +8,7 @@ import { useAiStatus } from '@/features/ai';
 import { useActiveDocument, useLibraryActions, useLibraryStore } from '@/features/library';
 import { useResume, useResumeActions, type Resume } from '@/features/resume';
 import { AI_POLISH } from '@/lib/aiPolish';
+import { bn } from '@/lib/bn';
 import { stripEmphasis } from '@/lib/text';
 
 import {
@@ -132,7 +133,7 @@ export const useTailor = (onDone: () => void) => {
     let done = 0;
 
     for (const [position, candidate] of candidates.entries()) {
-      setBusy(`Polishing bullet ${position + 1} of ${candidates.length}…`);
+      setBusy(`বুলেট পরিমার্জন হচ্ছে: ${bn(position + 1)} / ${bn(candidates.length)}…`);
 
       try {
         const response = await fetch('/api/ai/polish', {
@@ -169,12 +170,12 @@ export const useTailor = (onDone: () => void) => {
 
   const create = async () => {
     if (mode === 'copy' && documentCount >= MAX_DOCUMENTS) {
-      toast.error(`You can keep ${MAX_DOCUMENTS} CVs. Delete one to make room.`);
+      toast.error(`আপনি সর্বোচ্চ ${bn(MAX_DOCUMENTS)}টি CV রাখতে পারেন। জায়গা করতে একটি মুছে ফেলুন।`);
 
       return;
     }
 
-    setBusy(mode === 'copy' ? 'Creating your copy…' : 'Updating your CV…');
+    setBusy(mode === 'copy' ? 'আপনার কপি তৈরি হচ্ছে…' : 'আপনার CV হালনাগাদ হচ্ছে…');
 
     try {
       const { resume: tailored, stats } = applyTailor(resume, jobDescription, options);
@@ -182,7 +183,7 @@ export const useTailor = (onDone: () => void) => {
 
       if (polishWithAi && aiAvailable) polished = await polishBullets(tailored);
 
-      setBusy('Saving…');
+      setBusy('সংরক্ষণ হচ্ছে…');
 
       if (mode === 'copy') {
         await libraryActions.createNew((name.trim() || defaultName).slice(0, 120));
@@ -193,19 +194,19 @@ export const useTailor = (onDone: () => void) => {
       }
 
       const parts = [
-        stats.bulletsMoved > 0 ? `${stats.bulletsMoved} bullets reordered` : '',
-        stats.keywordsBolded > 0 ? `${stats.keywordsBolded} terms bolded` : '',
-        stats.skillsAdded > 0 ? `${stats.skillsAdded} skills added` : '',
-        polished > 0 ? `${polished} bullets polished by AI` : '',
+        stats.bulletsMoved > 0 ? `${bn(stats.bulletsMoved)}টি বুলেট সাজানো হয়েছে` : '',
+        stats.keywordsBolded > 0 ? `${bn(stats.keywordsBolded)}টি শব্দ বোল্ড হয়েছে` : '',
+        stats.skillsAdded > 0 ? `${bn(stats.skillsAdded)}টি দক্ষতা যোগ হয়েছে` : '',
+        polished > 0 ? `${bn(polished)}টি বুলেট AI দিয়ে পরিমার্জিত হয়েছে` : '',
       ].filter(Boolean);
 
-      toast.success(mode === 'copy' ? 'Tailored copy created' : 'CV tailored to this job', {
+      toast.success(mode === 'copy' ? 'সাজানো কপি তৈরি হয়েছে' : 'এই চাকরির জন্য CV সাজানো হয়েছে', {
         description:
           mode === 'copy'
-            ? `${parts.join(' · ') || 'No changes were needed'}. Your original is unchanged.`
-            : parts.join(' · ') || 'No changes were needed.',
+            ? `${parts.join(' · ') || 'কোনো পরিবর্তন লাগেনি'}। আপনার মূল CV অপরিবর্তিত আছে।`
+            : parts.join(' · ') || 'কোনো পরিবর্তন লাগেনি।',
         action:
-          mode === 'update' ? { label: 'Undo', onClick: () => resumeActions.undo() } : undefined,
+          mode === 'update' ? { label: 'ফিরিয়ে নিন', onClick: () => resumeActions.undo() } : undefined,
       });
       onDone();
     } finally {

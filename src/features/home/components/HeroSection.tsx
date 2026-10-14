@@ -13,9 +13,9 @@ export interface HeroSectionProps {
 }
 
 const PERKS = [
-  { icon: Gauge, label: 'Live ATS score', hue: 'emerald' },
-  { icon: Layers, label: 'Designed + ATS-safe PDF', hue: 'violet' },
-  { icon: Lock, label: 'Saved in your browser', hue: 'amber' },
+  { icon: Gauge, label: 'লাইভ ATS স্কোর', hue: 'emerald' },
+  { icon: Layers, label: 'ডিজাইন করা + ATS-সেফ PDF', hue: 'violet' },
+  { icon: Lock, label: 'ব্রাউজারেই সংরক্ষিত', hue: 'amber' },
 ] as const;
 
 /** The first screen: what this is, the three ways in, and a picture of the result. */
@@ -32,17 +32,18 @@ export const HeroSection = ({ onCreate, onSample, onImport, disabled }: HeroSect
       <div className="stagger flex flex-col items-start gap-5">
         <span className="border-primary/20 bg-primary-soft text-primary text-ui-xs inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-semibold">
           <Sparkles size={13} className="animate-wiggle" />
-          Free resume studio
+          ফ্রি CV স্টুডিও
         </span>
 
         <h1 className="text-fg text-4xl leading-[1.08] font-extrabold tracking-tight sm:text-5xl">
-          Build a CV that <span className="app-gradient-text animate-gradient">people</span> and{' '}
-          <span className="app-gradient-text animate-gradient">parsers</span> both read.
+          এমন একটি CV বানান, যা <span className="app-gradient-text animate-gradient">মানুষ</span>{' '}
+          আর <span className="app-gradient-text animate-gradient">ATS</span> দুজনেই পড়তে পারে।
         </h1>
 
         <p className="text-fg-muted text-ui-lg max-w-xl leading-relaxed">
-          Fill in a simple form, watch the page build itself, and check your ATS score as you go.
-          Export a designed PDF for people and a plain one for job portals.
+          সহজ একটি ফর্ম পূরণ করুন, পাশেই পেজ তৈরি হতে দেখুন, আর লিখতে লিখতেই ATS স্কোর যাচাই
+          করুন। মানুষের জন্য ডিজাইন করা PDF আর জব পোর্টালের জন্য সাদামাটা PDF, দুটোই এক্সপোর্ট
+          করা যায়।
         </p>
 
         <div className="flex flex-wrap items-center gap-2.5">
@@ -53,7 +54,7 @@ export const HeroSection = ({ onCreate, onSample, onImport, disabled }: HeroSect
             disabled={disabled}
             leading={<Plus size={18} />}
           >
-            Create a new CV
+            নতুন CV বানান
           </Button>
           <Button
             variant="outline"
@@ -62,7 +63,7 @@ export const HeroSection = ({ onCreate, onSample, onImport, disabled }: HeroSect
             disabled={disabled}
             leading={<FileUp size={17} />}
           >
-            Import a CV
+            CV ইমপোর্ট করুন
           </Button>
           <Button
             variant="ghost"
@@ -71,7 +72,7 @@ export const HeroSection = ({ onCreate, onSample, onImport, disabled }: HeroSect
             disabled={disabled}
             leading={<Wand2 size={17} />}
           >
-            See an example CV
+            একটি উদাহরণ CV দেখুন
           </Button>
         </div>
 

@@ -23,6 +23,7 @@ import {
   useSaveState,
 } from '@/features/library';
 import { useResume, useResumeActions, useResumeStore } from '@/features/resume';
+import { bn } from '@/lib/bn';
 
 import { useActiveSection } from '../hooks/useActiveSection';
 import { useEditorLayout, type EditorTab } from '../hooks/useEditorLayout';
@@ -34,9 +35,9 @@ import { ShortcutsDialog } from './ShortcutsDialog';
 import { Toolbar } from './Toolbar';
 
 const TABS = [
-  { value: 'edit' as const, label: 'Edit', icon: <PencilLine size={17} /> },
-  { value: 'preview' as const, label: 'Preview', icon: <FileText size={17} /> },
-  { value: 'score' as const, label: 'Score', icon: <Gauge size={17} /> },
+  { value: 'edit' as const, label: 'সম্পাদনা', icon: <PencilLine size={17} /> },
+  { value: 'preview' as const, label: 'প্রিভিউ', icon: <FileText size={17} /> },
+  { value: 'score' as const, label: 'স্কোর', icon: <Gauge size={17} /> },
 ];
 
 /**
@@ -127,7 +128,7 @@ export const EditorScreen = () => {
     toast.error(pdfError, {
       action: failedMode
         ? {
-            label: 'Try again',
+            label: 'আবার চেষ্টা করুন',
             onClick: () =>
               void pdf.exportPdf(resume, failedMode, failedMode === 'ats' ? [] : pageBreaks),
           }
@@ -235,7 +236,7 @@ export const EditorScreen = () => {
             value={layout.tab}
             onChange={(value: EditorTab) => layout.setTab(value)}
             variant="bar"
-            ariaLabel="Editor view"
+            ariaLabel="এডিটর ভিউ"
           />
         ) : undefined
       }
@@ -265,10 +266,10 @@ export const EditorScreen = () => {
 
       {/* Beside the work it would crowd it, so the breakdown arrives over it and leaves again. */}
       {layout.mode !== 'compact' && layout.scoreOpen ? (
-        <Drawer label="ATS score" onClose={layout.closeScore} className="max-w-sm">
+        <Drawer label="ATS স্কোর" onClose={layout.closeScore} className="max-w-sm">
           <ModalHeader
-            title="ATS score"
-            subtitle={`${score.total} out of 100`}
+            title="ATS স্কোর"
+            subtitle={`${bn(score.total)} / ১০০`}
             onClose={layout.closeScore}
           />
           <div className="scroll-slim min-h-0 flex-1 overflow-y-auto">{atsPanel}</div>

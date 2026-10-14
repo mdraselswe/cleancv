@@ -2,6 +2,7 @@ import { Heart } from 'lucide-react';
 import Link from 'next/link';
 
 import { CLOUD_SYNC, MAX_DOCUMENTS, PDF_RATE_LIMIT, ROUTES } from '@/constants';
+import { bn } from '@/lib/bn';
 
 /**
  * The one line that says what this costs, and the only conditions.
@@ -16,13 +17,13 @@ export const FreeBanner = () => (
     <p className="text-ui-xs mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-2 gap-y-0.5 px-4 py-2 text-center font-medium sm:px-6">
       <Heart size={13} className="flex-none" aria-hidden="true" fill="currentColor" />
       <span>
-        <strong className="font-extrabold">100% free</strong> — edit with no account; a free
-        account is needed only to download. Limits: {MAX_DOCUMENTS} CVs per browser (up to{' '}
-        {CLOUD_SYNC.maxDocuments} sync to your account), {PDF_RATE_LIMIT.max} PDFs per{' '}
-        {PDF_RATE_LIMIT.windowMs / 60000} minutes.
+        <strong className="font-extrabold">১০০% ফ্রি</strong> — সম্পাদনায় অ্যাকাউন্ট লাগে না;
+        শুধু ডাউনলোডের জন্য একটি ফ্রি অ্যাকাউন্ট দরকার। সীমা: প্রতি ব্রাউজারে{' '}
+        {bn(MAX_DOCUMENTS)}টি CV (এর মধ্যে {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত অ্যাকাউন্টে সিঙ্ক
+        করা যায়), প্রতি {bn(PDF_RATE_LIMIT.windowMs / 60000)} মিনিটে {bn(PDF_RATE_LIMIT.max)}টি PDF।
       </span>
       <Link href={ROUTES.features} className="font-bold underline underline-offset-2">
-        See everything included
+        কী কী আছে সব দেখুন
       </Link>
     </p>
   </div>

@@ -33,7 +33,7 @@ export const PasswordInput = ({ className, ...rest }: Omit<InputProps, 'type'>) 
       <button
         type="button"
         onClick={() => setShown((current) => !current)}
-        aria-label={shown ? 'Hide password' : 'Show password'}
+        aria-label={shown ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখান'}
         aria-pressed={shown}
         className="text-fg-subtle hover:text-fg absolute inset-y-0 right-0 flex w-11 items-center justify-center transition"
       >
