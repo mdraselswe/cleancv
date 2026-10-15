@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -38,17 +38,17 @@ export interface IconPickerProps {
 
 const COPY = {
   bn: {
-    auto: 'à¦…à¦Ÿà§‹',
-    autoHint: 'à¦¸à§à¦¬à¦¯à¦¼à¦‚à¦•à§à¦°à¦¿à¦¯à¦¼ â€” à¦†à¦ªà¦¨à¦¾à¦° à¦²à§‡à¦–à¦¾ à¦¨à¦¾à¦® à¦¥à§‡à¦•à§‡',
-    search: 'à¦†à¦‡à¦•à¦¨ à¦–à§à¦à¦œà§à¦¨: à¦•à§‹à¦¡, à¦¡à§‡à¦Ÿà¦¾, à¦¡à¦¾à¦•à§à¦¤à¦¾à¦°â€¦',
-    clear: 'à¦–à§‹à¦à¦œà¦¾ à¦®à§à¦›à§à¦¨',
-    none: 'à¦à¦‡ à¦¨à¦¾à¦®à§‡ à¦•à§‹à¦¨à§‹ à¦†à¦‡à¦•à¦¨ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦…à¦¨à§à¦¯ à¦à¦•à¦Ÿà¦¿ à¦¶à¦¬à§à¦¦ à¦²à¦¿à¦–à§‡ à¦¦à§‡à¦–à§à¦¨à¥¤',
-    group: 'à¦†à¦‡à¦•à¦¨',
+    auto: 'অটো',
+    autoHint: 'স্বয়ংক্রিয় — আপনার লেখা নাম থেকে',
+    search: 'আইকন খুঁজুন: কোড, ডেটা, ডাক্তার…',
+    clear: 'খোঁজা মুছুন',
+    none: 'এই নামে কোনো আইকন পাওয়া যায়নি। অন্য একটি শব্দ লিখে দেখুন।',
+    group: 'আইকন',
   },
   en: {
     auto: 'Auto',
-    autoHint: 'Automatic â€” from the name you typed',
-    search: 'Search icons: code, data, doctorâ€¦',
+    autoHint: 'Automatic — from the name you typed',
+    search: 'Search icons: code, data, doctor…',
     clear: 'Clear search',
     none: 'No icon matches that. Try another word.',
     group: 'Icon',
@@ -63,7 +63,7 @@ export const IconPicker = ({ value, label, onChange }: IconPickerProps) => {
 
   const needle = query.trim().toLowerCase();
   const results = useMemo(
-    () => (needle ? ICON_CATALOG.filter((entry) => entry.search.includes(needle)) : []),
+    () => (needle ? ICON_CATALOG.filter((entry) => ` ${entry.search}`.includes(` ${needle}`)) : []),
     [needle],
   );
 

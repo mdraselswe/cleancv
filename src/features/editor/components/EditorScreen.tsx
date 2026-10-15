@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { FileText, Gauge, PencilLine } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -35,9 +35,9 @@ import { ShortcutsDialog } from './ShortcutsDialog';
 import { Toolbar } from './Toolbar';
 
 const TABS = [
-  { value: 'edit' as const, label: 'à¦à¦¡à¦¿à¦Ÿ', icon: <PencilLine size={17} /> },
-  { value: 'preview' as const, label: 'à¦ªà§à¦°à¦¿à¦­à¦¿à¦‰', icon: <FileText size={17} /> },
-  { value: 'score' as const, label: 'à¦¸à§à¦•à§‹à¦°', icon: <Gauge size={17} /> },
+  { value: 'edit' as const, label: 'এডিট', icon: <PencilLine size={17} /> },
+  { value: 'preview' as const, label: 'প্রিভিউ', icon: <FileText size={17} /> },
+  { value: 'score' as const, label: 'স্কোর', icon: <Gauge size={17} /> },
 ];
 
 /**
@@ -116,7 +116,7 @@ export const EditorScreen = () => {
   ]);
 
   /*
-   * A failed export is reported where every other outcome is â€” the export that
+   * A failed export is reported where every other outcome is — the export that
    * worked says so in a toast, and one that did not should not have to be
    * looked for somewhere else. The retry is offered on the toast itself
    * because a failure here is usually transient.
@@ -128,7 +128,7 @@ export const EditorScreen = () => {
     toast.error(pdfError, {
       action: failedMode
         ? {
-            label: 'à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨',
+            label: 'আবার চেষ্টা করুন',
             onClick: () =>
               void pdf.exportPdf(resume, failedMode, failedMode === 'ats' ? [] : pageBreaks),
           }
@@ -236,7 +236,7 @@ export const EditorScreen = () => {
             value={layout.tab}
             onChange={(value: EditorTab) => layout.setTab(value)}
             variant="bar"
-            ariaLabel="à¦à¦¡à¦¿à¦Ÿà¦° à¦­à¦¿à¦‰"
+            ariaLabel="এডিটর ভিউ"
           />
         ) : undefined
       }
@@ -266,10 +266,10 @@ export const EditorScreen = () => {
 
       {/* Beside the work it would crowd it, so the breakdown arrives over it and leaves again. */}
       {layout.mode !== 'compact' && layout.scoreOpen ? (
-        <Drawer label="ATS à¦¸à§à¦•à§‹à¦°" onClose={layout.closeScore} className="max-w-sm">
+        <Drawer label="ATS স্কোর" onClose={layout.closeScore} className="max-w-sm">
           <ModalHeader
-            title="ATS à¦¸à§à¦•à§‹à¦°"
-            subtitle={`${bn(score.total)} / à§§à§¦à§¦`}
+            title="ATS স্কোর"
+            subtitle={`${bn(score.total)} / ১০০`}
             onClose={layout.closeScore}
           />
           <div className="scroll-slim min-h-0 flex-1 overflow-y-auto">{atsPanel}</div>
@@ -311,7 +311,7 @@ export const EditorScreen = () => {
 /**
  * The shape of the editor while storage is read.
  *
- * A centred "Loadingâ€¦" tells the reader the app is busy and nothing else; the
+ * A centred "Loading…" tells the reader the app is busy and nothing else; the
  * layout then appears all at once and everything moves. This draws the real
  * frame - the section rail, the form column capped at its real width, the
  * heading card, the sheet at its real proportion - so what changes at the end

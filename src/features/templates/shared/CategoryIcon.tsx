@@ -109,6 +109,10 @@ const RULES: Array<{ match: RegExp; icon: PickableIcon }> = [
   { match: /nurs|clinic|surgeon|patient/i, icon: 'stethoscope' },
   { match: /civil|construct|architect/i, icon: 'hard-hat' },
   { match: /research|laborator|science/i, icon: 'flask' },
+  { match: /monitor|observab|logging|incident/i, icon: 'monitoring' },
+  { match: /cache|redis|caching/i, icon: 'cache' },
+  { match: /git|version control|github|gitlab/i, icon: 'git-branch' },
+  { match: /document|technical writing|docs/i, icon: 'documentation' },
 ];
 
 /**
