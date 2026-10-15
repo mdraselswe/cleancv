@@ -53,98 +53,6 @@ export const DesignSection = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div
-        role="group"
-        aria-label="ডিজাইন খুঁজুন"
-        className="scroll-none -mx-1 flex gap-1.5 overflow-x-auto px-1 py-0.5"
-      >
-        {(['all', ...TEMPLATE_CATEGORIES] as const).map((value) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={filter === value}
-            onClick={() => setFilter(value)}
-            className={cn(
-              'tap-target text-ui flex-none rounded-full border px-3 py-1 font-medium whitespace-nowrap transition',
-              filter === value
-                ? 'app-gradient-bg border-transparent text-white shadow-sm'
-                : 'border-border-base bg-surface text-fg-muted hover:border-primary/40 hover:text-fg',
-            )}
-          >
-            {value === 'all' ? 'সব ডিজাইন' : TEMPLATE_CATEGORY_LABEL[value]}
-          </button>
-        ))}
-      </div>
-
-      {TEMPLATE_CATEGORIES.map((category) => {
-        if (filter !== 'all' && filter !== category) return null;
-
-        const templates = getTemplatesByCategory(category);
-        if (templates.length === 0) return null;
-
-        return (
-          <div key={category}>
-            <div className="mb-1 flex items-center gap-2">
-              <SectionLabel>{TEMPLATE_CATEGORY_LABEL[category]}</SectionLabel>
-            </div>
-            <p className="text-ui-xs text-fg-subtle mb-2.5">{TEMPLATE_CATEGORY_HINT[category]}</p>
-
-            <div className="grid grid-cols-2 gap-2.5">
-              {templates.map(({ meta }) => {
-                const selected = meta.id === templateId;
-
-                return (
-                  <button
-                    key={meta.id}
-                    type="button"
-                    onClick={() => actions.setTemplate(meta.id, meta.defaultTheme)}
-                    aria-pressed={selected}
-                    title={meta.description}
-                    className={cn(
-                      'group card-lift rounded-card flex flex-col overflow-hidden border text-left',
-                      selected
-                        ? 'border-primary ring-primary/30 ring-2'
-                        : 'border-border-base hover:border-primary/40',
-                    )}
-                  >
-                    <span className="bg-canvas relative flex justify-center overflow-hidden p-2">
-                      <span className="shadow-sheet block overflow-hidden rounded-[2px]">
-                        <TemplatePreview
-                          templateId={meta.id}
-                          resume={resume}
-                          width={THUMBNAIL_WIDTH}
-                        />
-                      </span>
-
-                      {selected ? (
-                        <span className="bg-primary text-primary-fg absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full">
-                          <Check size={13} strokeWidth={3} />
-                        </span>
-                      ) : null}
-                    </span>
-
-                    <span
-                      className={cn(
-                        'flex flex-1 flex-col gap-1 border-t px-2.5 py-2 transition',
-                        selected ? 'border-primary/40 bg-primary-soft' : 'border-border-base',
-                      )}
-                    >
-                      <span className="text-fg text-ui font-medium">{meta.name}</span>
-                      <Badge
-                        tone={meta.atsBaseline >= 90 ? 'success' : 'warning'}
-                        className="self-start"
-                      >
-                        ATS-এর সর্বোচ্চ স্কোর {bn(meta.atsBaseline)}
-                      </Badge>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-
       <div className="border-border-base bg-surface-2/40 rounded-panel flex flex-col gap-4 border p-4">
         <div className="hue-violet flex items-center gap-2.5">
           <HueIcon hue="violet" size="sm">
@@ -264,6 +172,99 @@ export const DesignSection = () => {
           </p>
         )}
       </div>
+
+      <div
+        role="group"
+        aria-label="ডিজাইন খুঁজুন"
+        className="scroll-none -mx-1 flex gap-1.5 overflow-x-auto px-1 py-0.5"
+      >
+        {(['all', ...TEMPLATE_CATEGORIES] as const).map((value) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={filter === value}
+            onClick={() => setFilter(value)}
+            className={cn(
+              'tap-target text-ui flex-none rounded-full border px-3 py-1 font-medium whitespace-nowrap transition',
+              filter === value
+                ? 'app-gradient-bg border-transparent text-white shadow-sm'
+                : 'border-border-base bg-surface text-fg-muted hover:border-primary/40 hover:text-fg',
+            )}
+          >
+            {value === 'all' ? 'সব ডিজাইন' : TEMPLATE_CATEGORY_LABEL[value]}
+          </button>
+        ))}
+      </div>
+
+      {TEMPLATE_CATEGORIES.map((category) => {
+        if (filter !== 'all' && filter !== category) return null;
+
+        const templates = getTemplatesByCategory(category);
+        if (templates.length === 0) return null;
+
+        return (
+          <div key={category}>
+            <div className="mb-1 flex items-center gap-2">
+              <SectionLabel>{TEMPLATE_CATEGORY_LABEL[category]}</SectionLabel>
+            </div>
+            <p className="text-ui-xs text-fg-subtle mb-2.5">{TEMPLATE_CATEGORY_HINT[category]}</p>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {templates.map(({ meta }) => {
+                const selected = meta.id === templateId;
+
+                return (
+                  <button
+                    key={meta.id}
+                    type="button"
+                    onClick={() => actions.setTemplate(meta.id, meta.defaultTheme)}
+                    aria-pressed={selected}
+                    title={meta.description}
+                    className={cn(
+                      'group card-lift rounded-card flex flex-col overflow-hidden border text-left',
+                      selected
+                        ? 'border-primary ring-primary/30 ring-2'
+                        : 'border-border-base hover:border-primary/40',
+                    )}
+                  >
+                    <span className="bg-canvas relative flex justify-center overflow-hidden p-2">
+                      <span className="shadow-sheet block overflow-hidden rounded-[2px]">
+                        <TemplatePreview
+                          templateId={meta.id}
+                          resume={resume}
+                          width={THUMBNAIL_WIDTH}
+                        />
+                      </span>
+
+                      {selected ? (
+                        <span className="bg-primary text-primary-fg absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full">
+                          <Check size={13} strokeWidth={3} />
+                        </span>
+                      ) : null}
+                    </span>
+
+                    <span
+                      className={cn(
+                        'flex flex-1 flex-col gap-1 border-t px-2.5 py-2 transition',
+                        selected ? 'border-primary/40 bg-primary-soft' : 'border-border-base',
+                      )}
+                    >
+                      <span className="text-fg text-ui font-medium">{meta.name}</span>
+                      <Badge
+                        tone={meta.atsBaseline >= 90 ? 'success' : 'warning'}
+                        className="self-start"
+                      >
+                        ATS-এর সর্বোচ্চ স্কোর {bn(meta.atsBaseline)}
+                      </Badge>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
     </div>
   );
 };
