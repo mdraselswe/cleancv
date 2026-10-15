@@ -15,7 +15,7 @@ import { AuthNotice, AuthShell } from '@/features/auth';
 export const AuthUnavailable = () => (
   <AuthShell
     title="এখানে সাইন-ইন চালু নেই"
-    subtitle="এই ইনস্টলে সাইন-ইনের কোনো ব্যবস্থা ঠিক করা নেই, তাই সাইন-ইন করার মতো কিছু নেই।"
+    subtitle="এখানে সাইন-ইনের ব্যবস্থা চালু করা নেই, তাই সাইন-ইন করার কিছু নেই।"
   >
     <div className="flex flex-col gap-4">
       <AuthNotice tone="info">

@@ -35,7 +35,7 @@ import { ShortcutsDialog } from './ShortcutsDialog';
 import { Toolbar } from './Toolbar';
 
 const TABS = [
-  { value: 'edit' as const, label: 'সম্পাদনা', icon: <PencilLine size={17} /> },
+  { value: 'edit' as const, label: 'এডিট', icon: <PencilLine size={17} /> },
   { value: 'preview' as const, label: 'প্রিভিউ', icon: <FileText size={17} /> },
   { value: 'score' as const, label: 'স্কোর', icon: <Gauge size={17} /> },
 ];

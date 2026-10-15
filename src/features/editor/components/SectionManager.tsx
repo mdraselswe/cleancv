@@ -37,7 +37,7 @@ import { bn } from '@/lib/bn';
 import { SectionMap } from './SectionMap';
 
 const PRESET_HINT =
-  'একটি প্রিসেট শুধু তৈরি করা সেকশনগুলোর ক্রম বদলায় — আপনার নিজের সেকশন আর প্রতিটি চালু/বন্ধ অবস্থা যেমন আছে তেমনই থাকে।';
+  'একটি প্রিসেট শুধু অ্যাপের নিজের সেকশনগুলোর ক্রম বদলায় — আপনার বানানো সেকশন আর কোনটি চালু বা বন্ধ, তা যেমন আছে তেমনই থাকে।';
 
 const PRESET_OPTIONS = SECTION_ORDER_PRESETS.map((preset) => ({
   value: preset.id,
@@ -233,7 +233,7 @@ export const SectionManager = () => {
                     <div className="flex flex-none flex-col">
                       <button
                         type="button"
-                        aria-label={`${row.label} উপরে নিন`}
+                        aria-label={`${row.label} ওপরে সরান`}
                         disabled={index === 0}
                         onClick={() => actions.moveSection(index, index - 1)}
                         className="tap-target text-fg-subtle hover:text-fg hover:bg-surface-2 flex h-7 w-7 items-center justify-center rounded-lg transition disabled:opacity-25"
@@ -242,7 +242,7 @@ export const SectionManager = () => {
                       </button>
                       <button
                         type="button"
-                        aria-label={`${row.label} নিচে নিন`}
+                        aria-label={`${row.label} নিচে সরান`}
                         disabled={index === sectionOrder.length - 1}
                         onClick={() => actions.moveSection(index, index + 1)}
                         className="tap-target text-fg-subtle hover:text-fg hover:bg-surface-2 flex h-7 w-7 items-center justify-center rounded-lg transition disabled:opacity-25"
@@ -318,7 +318,7 @@ export const SectionManager = () => {
                   row.heading &&
                   row.heading !== row.defaultHeading ? (
                     <p className="text-warning text-ui-2xs mt-1 pl-12">
-                      পার্সার “{row.canonicalHeading}” খোঁজে। নিজের দেওয়া নাম হলে পার্সার এই সেকশনটি
+                      ATS সফটওয়্যার “{row.canonicalHeading}” খোঁজে। নিজের দেওয়া নাম হলে ATS সফটওয়্যার এই সেকশনটি
                       চিনতে নাও পারে।
                     </p>
                   ) : null}

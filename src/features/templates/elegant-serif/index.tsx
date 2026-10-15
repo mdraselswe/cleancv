@@ -9,7 +9,7 @@ export const meta: TemplateMeta = {
   id: 'elegant-serif',
   name: 'মার্জিত সেরিফ',
   description:
-    'সেরিফ শিরোনাম, সূক্ষ্ম রেখা আর প্রচুর ফাঁকা জায়গা। আলাদা, অথচ পার্সিংয়ের মান কমে না।',
+    'সেরিফ ফন্টের শিরোনাম, চিকন রেখা আর অনেক ফাঁকা জায়গা। দেখতে আলাদা, তবু ATS সফটওয়্যারের পড়তে অসুবিধা হয় না।',
   category: 'balanced',
   atsBaseline: 92,
   supports: {

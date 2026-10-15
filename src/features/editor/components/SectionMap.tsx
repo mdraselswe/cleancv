@@ -177,7 +177,7 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
       <Modal label="সেকশন সাজান" onClose={onClose} className="max-w-[620px]">
         <ModalHeader
           title="বাক্সগুলো ধরে টেনে সেকশন সাজান"
-          subtitle="প্রতিটি বাক্স ঠিক সেই জায়গায় ও সেই মাপে আঁকা, যেখানে সেকশনটি আসলে পড়ে।"
+          subtitle="প্রতিটি বাক্স ঠিক সেই জায়গায় ও সেই মাপে আঁকা, যেখানে সেকশনটি পেজে আসলে বসে।"
           onClose={onClose}
         />
 
@@ -200,7 +200,7 @@ export const SectionMap = ({ onClose }: SectionMapProps) => {
                 {pages.map((page, index) => (
                   <div key={index} className="w-full max-w-[380px]">
                     <p className="text-fg-subtle text-ui-xs mb-1.5 text-center">
-                      পৃষ্ঠা {bn(index + 1)} / {bn(pages.length)}
+                      পেজ {bn(index + 1)} / {bn(pages.length)}
                     </p>
                     <div className="border-border-base bg-surface shadow-app rounded-control relative aspect-[210/297] w-full border">
                       <div

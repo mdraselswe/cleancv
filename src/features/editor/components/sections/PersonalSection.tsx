@@ -43,9 +43,7 @@ export const PersonalSection = () => {
   return (
     <div className="flex flex-col gap-3">
       <p className="rounded-control bg-warning/10 text-ui-xs text-warning px-3 py-2 leading-relaxed">
-        দক্ষিণ এশিয়া ও উপসাগরীয় দেশের CV-তে জন্মতারিখ, লিঙ্গ, ধর্ম ও বৈবাহিক অবস্থা আশা করা হয়।
-        যুক্তরাষ্ট্র, যুক্তরাজ্য, কানাডা ও বেশির ভাগ ইউরোপীয় আবেদনে এই সেকশন বন্ধ রাখুন — এতে বৈষম্যমূলক
-        বাছাইয়ের ঝুঁকি থাকে, আর কোনো লাভ নেই।
+        দক্ষিণ এশিয়া ও উপসাগরীয় দেশের CV-তে সাধারণত জন্মতারিখ, লিঙ্গ, ধর্ম ও বিয়ের তথ্য দেওয়া হয়। যুক্তরাষ্ট্র, যুক্তরাজ্য, কানাডা ও বেশির ভাগ ইউরোপীয় আবেদনে এই সেকশন বন্ধ রাখুন — এতে কোনো লাভ নেই, উল্টো পক্ষপাতের ঝুঁকি থাকে।
       </p>
 
       <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
@@ -59,7 +57,7 @@ export const PersonalSection = () => {
             <Select
               id={id}
               options={MARITAL_OPTIONS}
-              placeholder="উল্লেখ করা নেই"
+              placeholder="দেওয়া নেই"
               value={personal.maritalStatus}
               onChange={(event) =>
                 patch('personal', {

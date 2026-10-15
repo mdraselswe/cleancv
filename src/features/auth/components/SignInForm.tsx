@@ -111,7 +111,7 @@ export const SignInForm = ({ redirectTo, googleEnabled, emailEnabled }: SignInFo
         {/* The one failure the reader cannot fix by typing more carefully. */}
         {unverifiedEmail && !resent ? (
           <Button variant="ghost" size="sm" onClick={() => void resendVerification()}>
-            নিশ্চিতকরণ লিংক আবার পাঠান
+            নিশ্চিত করার লিংক আবার পাঠান
           </Button>
         ) : null}
         {resent ? <AuthNotice tone="success">পাঠানো হয়েছে। {unverifiedEmail} দেখুন।</AuthNotice> : null}

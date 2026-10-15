@@ -26,7 +26,7 @@ export const meta: TemplateMeta = {
   id: 'side-panel',
   name: 'ডান প্যানেল',
   description:
-    'বাঁয়ে মূল বর্ণনা, ডানে সরু প্যানেলে শিক্ষা, প্রজেক্ট ও অর্জন। প্রতিটি কলাম পুরোটা পড়া হয়, তাই লেখা মানুষ যে ক্রমে পড়ে সেভাবেই বের হয়।',
+    'বাঁয়ে মূল লেখা, ডানে সরু প্যানেলে শিক্ষা, প্রজেক্ট ও অর্জন। ATS সফটওয়্যার এক কলাম শেষ করে আরেক কলাম পড়ে, তাই লেখা ঠিক সেই ক্রমেই বের হয় যে ক্রমে মানুষ পড়ে।',
   category: 'balanced',
   /*
    * Two genuine columns, so a parser using positional heuristics can interleave

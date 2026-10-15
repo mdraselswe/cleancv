@@ -51,7 +51,7 @@ export const IdentitySection = () => {
         </Field>
 
         <Field
-          label="পেশাগত শিরোনাম"
+          label="পেশার শিরোনাম"
           className="col-span-full"
           hint="যে পদের জন্য আবেদন করছেন সেটি লিখুন, বর্তমান পদটি নয়।"
         >
@@ -72,7 +72,7 @@ export const IdentitySection = () => {
         label="ছবি"
         value={basics.photo}
         budget={IMAGE_BUDGET}
-        hint="ঐচ্ছিক, আর এতে পার্সারের ঝুঁকি আছে। যুক্তরাষ্ট্র, যুক্তরাজ্য ও কানাডার আবেদনে ছবি দেবেন না।"
+        hint="না দিলেও চলে, আর ছবি থাকলে ATS সফটওয়্যারের পড়তে সমস্যা হতে পারে। যুক্তরাষ্ট্র, যুক্তরাজ্য ও কানাডার আবেদনে ছবি দেবেন না।"
         onChange={(photo) => {
           // A new photo is a new subject: the old framing described someone
           // else's head, so it goes back to centre. See ADR-025.

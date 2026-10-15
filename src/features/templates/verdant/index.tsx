@@ -36,7 +36,7 @@ export const meta: TemplateMeta = {
   id: 'verdant',
   name: 'পোর্ট্রেট প্যানেল',
   description:
-    'বাঁ দিকের প্যানেলে ছবি ও সহায়ক তথ্য, ডানে মূল বর্ণনা, আর প্রতিটি শিরোনাম নরম সবুজ ব্যাজের ভেতরে। উষ্ণ ও আধুনিক, তবু পড়ার ক্রম সাদামাটা।',
+    'বাঁ দিকের প্যানেলে ছবি ও অন্য তথ্য, ডানে মূল লেখা, আর প্রতিটি শিরোনাম নরম সবুজ ব্যাজের ভেতরে। উষ্ণ ও আধুনিক, তবু পড়ার ক্রম সহজ।',
   category: 'balanced',
   /*
    * Two real columns, so a parser working from positions can interleave them.

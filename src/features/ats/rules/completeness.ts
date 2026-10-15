@@ -54,7 +54,7 @@ export const rules: AtsRule[] = [
         ? {
             status: 'warn',
             message: 'কোনো পেশাগত শিরোনাম নেই।',
-            fixHint: 'যে পদে আবেদন করছেন তার নাম এক লাইনে লিখুন। পার্সার প্রায়ই এটিকে পদের নাম হিসেবে মেলায়।',
+            fixHint: 'যে পদে আবেদন করছেন তার নাম এক লাইনে লিখুন। ATS সফটওয়্যার প্রায়ই এটিকে চাকরির পদের নামের সঙ্গে মেলায়।',
             targets: ['contact'],
           }
         : { status: 'pass', message: 'শিরোনামে আপনার লক্ষ্যের পদটি বলা আছে।' },
@@ -64,16 +64,16 @@ export const rules: AtsRule[] = [
     id: 'summary-present',
     category: 'completeness',
     weight: 2,
-    label: 'সারসংক্ষেপ',
+    label: 'সংক্ষিপ্ত পরিচিতি',
     evaluate: (resume) =>
       isBlank(resume.summary.text)
         ? {
             status: 'warn',
-            message: 'কোনো সারসংক্ষেপ বা উদ্দেশ্য লেখা নেই।',
-            fixHint: 'দুই থেকে চার লাইন লিখুন। এটিই একমাত্র জায়গা, যেখানে নিচের সবকিছুকে নিজের মতো করে সাজিয়ে বলতে পারেন।',
+            message: 'কোনো সংক্ষিপ্ত পরিচিতি বা উদ্দেশ্য লেখা নেই।',
+            fixHint: 'দুই থেকে চার লাইন লিখুন। নিচের সবকিছু নিজের ভাষায় গুছিয়ে বলার এটিই একমাত্র জায়গা।',
             targets: ['summary'],
           }
-        : { status: 'pass', message: 'সারসংক্ষেপ বাকি ডকুমেন্টের একটি ভূমিকা দিয়েছে।' },
+        : { status: 'pass', message: 'সংক্ষিপ্ত পরিচিতি আছে, যা পাঠককে পুরো CV-র একটি ধারণা দেয়।' },
   },
 
   {
@@ -103,7 +103,7 @@ export const rules: AtsRule[] = [
     evaluate: (resume) =>
       resume.education.length === 0
         ? { status: 'warn', message: 'কোনো শিক্ষাগত যোগ্যতা যোগ করা হয়নি।', targets: ['education'] }
-        : { status: 'pass', message: 'শিক্ষাগত যোগ্যতা যোগ করা আছে।' },
+        : { status: 'pass', message: 'শিক্ষা যোগ করা আছে।' },
   },
 
   {
@@ -157,7 +157,7 @@ export const rules: AtsRule[] = [
       return {
         status: 'warn',
         message: `${bn(undated.length)}টি এন্ট্রিতে শুরুর তারিখ নেই।`,
-        fixHint: 'পার্সার এই তারিখ থেকে অভিজ্ঞতার বছর হিসাব করে। তারিখ না থাকলে সেটি ফাঁক বলে ধরা হয়।',
+        fixHint: 'ATS সফটওয়্যার এই তারিখ থেকে অভিজ্ঞতার বছর হিসাব করে। তারিখ না থাকলে সেটি ফাঁক বলে ধরা হয়।',
         targets: ['experience', 'education'],
       };
     },

@@ -91,8 +91,7 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
         </p>
         <p className="text-fg text-ui-md leading-relaxed">{offer.suggestion}</p>
         <p className="text-fg-subtle text-ui-2xs leading-snug">
-          সত্যের সঙ্গে মিলিয়ে পড়ুন। এটিকে নতুন কোনো তথ্য বা সংখ্যা না যোগ করতে বলা হয়েছিল, কিন্তু
-          সত্য আপনিই জানেন।
+          আসল তথ্যের সঙ্গে মিলিয়ে পড়ুন। AI-কে নতুন কোনো তথ্য বা সংখ্যা যোগ করতে মানা করা হয়েছিল, তবে কোনটা সত্যি তা আপনিই জানেন।
           {stale ? ' এটি তৈরির পর লেখাটি বদলে গেছে।' : ''}
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -131,13 +130,13 @@ export const AiPolish = ({ kind, text, context, jobDescription, onApply }: AiPol
         size="sm"
         variant="outline"
         disabled={pending || tooShort}
-        title={tooShort ? 'আগে একটু লিখুন, তারপর পরিমার্জন করুন।' : 'AI দিয়ে এটি নতুন করে লিখুন'}
+        title={tooShort ? 'আগে একটু লিখুন, তারপর AI দিয়ে গুছিয়ে নিন।' : 'AI দিয়ে এটি নতুন করে লিখুন'}
         leading={
           pending ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />
         }
         onClick={() => void run()}
       >
-        {pending ? 'পরিমার্জন হচ্ছে…' : 'AI দিয়ে পরিমার্জন করুন'}
+        {pending ? 'গুছিয়ে লেখা হচ্ছে…' : 'AI দিয়ে গুছিয়ে লিখুন'}
       </Button>
       {error ? <span className="text-danger text-ui-xs">{error}</span> : null}
     </div>

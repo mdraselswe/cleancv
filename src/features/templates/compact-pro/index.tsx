@@ -16,7 +16,7 @@ export const meta: TemplateMeta = {
   id: 'compact-pro',
   name: 'কমপ্যাক্ট প্রফেশনাল',
   description:
-    'বাঁয়ে নাম, ডানে যোগাযোগ, আর প্রতিটি শিরোনামের পরে একটি রেখা। ঘন এক কলাম, লম্বা ইতিহাসেও আঁটে — তারিখ প্রতিটি পদের পাশে ডান দিকে বসে।',
+    'বাঁয়ে নাম, ডানে যোগাযোগ, আর প্রতিটি শিরোনামের নিচে একটি রেখা। এক কলামে ঠাসা সাজানো, তাই লম্বা অভিজ্ঞতাও আঁটে। তারিখ প্রতিটি পদের ডান পাশে থাকে।',
   category: 'balanced',
   /*
    * Below the plain design for one reason worth stating: project and credential

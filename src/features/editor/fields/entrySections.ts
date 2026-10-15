@@ -67,7 +67,7 @@ const proficiencyOptions = PROFICIENCY_LEVELS.map((value) => ({
   label: PROFICIENCY_UI_LABEL[value],
 }));
 
-const NOT_SPECIFIED = 'উল্লেখ করা নেই';
+const NOT_SPECIFIED = 'দেওয়া নেই';
 const OPTIONAL = 'ঐচ্ছিক';
 
 export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
@@ -77,7 +77,7 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
     noun: 'পদ',
     addLabel: 'পদ যোগ করুন',
     emptyTitle: 'এখনো কোনো পদ নেই',
-    emptyDescription: 'সবচেয়ে সাম্প্রতিক পদটি আগে যোগ করুন — রিক্রুটার ওপর থেকে নিচে পড়েন।',
+    emptyDescription: 'সবচেয়ে নতুন পদটি আগে যোগ করুন — রিক্রুটার ওপর থেকে নিচে পড়েন।',
     fields: [
       { kind: 'text', key: 'role', label: 'পদের নাম', placeholder: 'Senior Software Engineer' },
       { kind: 'text', key: 'company', label: 'প্রতিষ্ঠান', placeholder: 'Shikho Technologies' },
@@ -102,7 +102,7 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
         kind: 'bullets',
         key: 'bullets',
         label: 'অর্জন',
-        hint: 'আগে ক্রিয়া, তারপর ফলাফল, তারপর সংখ্যা।',
+        hint: 'আগে কাজের শব্দ, তারপর ফলাফল, তারপর সংখ্যা।',
       },
       { kind: 'tags', key: 'tech', label: 'ব্যবহৃত টেকনোলজি', placeholder: 'Next.js, GraphQL' },
     ],
@@ -112,7 +112,7 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
     titleKey: 'degree',
     subtitleKey: 'institute',
     noun: 'শিক্ষাগত যোগ্যতা',
-    addLabel: 'শিক্ষাগত যোগ্যতা যোগ করুন',
+    addLabel: 'শিক্ষা যোগ করুন',
     emptyTitle: 'এখনো কোনো শিক্ষা যোগ হয়নি',
     emptyDescription: 'সর্বোচ্চ ডিগ্রিটি আগে লিখুন।',
     fields: [
@@ -122,10 +122,10 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
       { kind: 'text', key: 'board', label: 'বোর্ড / বিশ্ববিদ্যালয়', placeholder: OPTIONAL },
       { kind: 'text', key: 'location', label: 'অবস্থান', placeholder: 'Dhaka, Bangladesh' },
       { kind: 'text', key: 'result', label: 'ফলাফল', placeholder: 'CGPA 3.20' },
-      { kind: 'text', key: 'resultScale', label: 'পূর্ণমান', placeholder: '4.00' },
+      { kind: 'text', key: 'resultScale', label: 'মোট', placeholder: '4.00' },
       { kind: 'dateRange', key: 'dates', label: 'তারিখ' },
       { kind: 'text', key: 'thesis', label: 'থিসিস', span: 2, placeholder: OPTIONAL },
-      { kind: 'tags', key: 'coursework', label: 'প্রাসঙ্গিক কোর্স' },
+      { kind: 'tags', key: 'coursework', label: 'কাজের সঙ্গে মেলে এমন কোর্স' },
       { kind: 'bullets', key: 'bullets', label: 'টীকা', max: 4 },
     ],
   },
@@ -150,14 +150,14 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
         label: 'দক্ষতার স্তর',
         options: proficiencyOptions,
         placeholderOption: 'দেখানো হবে না',
-        hint: 'ঐচ্ছিক। সৃজনশীল টেমপ্লেটে মিটার হিসেবে, অন্যগুলোতে লেবেল হিসেবে দেখায়।',
+        hint: 'ঐচ্ছিক। সৃজনশীল ডিজাইনে মিটার আকারে, অন্যগুলোতে সাধারণ লেখা হিসেবে দেখায়।',
       },
       {
         kind: 'icon',
         key: 'icon',
         fromKey: 'category',
         label: 'আইকন',
-        hint: 'আইকন গাটার আছে এমন টেমপ্লেটে আঁকা হয়। “স্বয়ংক্রিয়” গ্রুপের নাম দেখে বেছে নেয়।',
+        hint: 'যে ডিজাইনে আইকনের জন্য আলাদা জায়গা আছে সেখানে আঁকা হয়। “স্বয়ংক্রিয়” দিলে গ্রুপের নাম দেখে আইকন বেছে নেয়।',
       },
       {
         kind: 'tags',
@@ -194,10 +194,10 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
     noun: 'সার্টিফিকেশন',
     addLabel: 'সার্টিফিকেশন যোগ করুন',
     emptyTitle: 'এখনো কোনো সার্টিফিকেশন নেই',
-    emptyDescription: 'প্রদানকারী প্রতিষ্ঠান আর তারিখসহ সার্টিফিকেট যোগ করুন।',
+    emptyDescription: 'কোন প্রতিষ্ঠান কবে দিয়েছে, সেই তথ্যসহ সার্টিফিকেট যোগ করুন।',
     fields: [
       { kind: 'text', key: 'name', label: 'সার্টিফিকেশন', span: 2, placeholder: 'JavaScript Essential Training' },
-      { kind: 'text', key: 'issuer', label: 'প্রদানকারী প্রতিষ্ঠান', placeholder: 'LinkedIn Learning' },
+      { kind: 'text', key: 'issuer', label: 'যে প্রতিষ্ঠান দিয়েছে', placeholder: 'LinkedIn Learning' },
       { kind: 'text', key: 'credentialId', label: 'ক্রেডেনশিয়াল আইডি', placeholder: OPTIONAL },
       { kind: 'month', key: 'issued', label: 'প্রদানের তারিখ' },
       { kind: 'month', key: 'expires', label: 'মেয়াদ শেষ' },
@@ -218,7 +218,7 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
         key: 'icon',
         fromKey: 'title',
         label: 'আইকন',
-        hint: 'আইকন গাটার আছে এমন টেমপ্লেটে আঁকা হয়। “স্বয়ংক্রিয়” শিরোনাম দেখে বেছে নেয়।',
+        hint: 'যে ডিজাইনে আইকনের জন্য আলাদা জায়গা আছে সেখানে আঁকা হয়। “স্বয়ংক্রিয়” দিলে শিরোনাম দেখে আইকন বেছে নেয়।',
       },
       { kind: 'textarea', key: 'description', label: 'আপনি কী করেছেন', max: 400, rows: 3 },
     ],
@@ -233,7 +233,7 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
     emptyDescription: 'পুরস্কার, বৃত্তি ও আনুষ্ঠানিক স্বীকৃতি।',
     fields: [
       { kind: 'text', key: 'title', label: 'পুরস্কার', span: 2 },
-      { kind: 'text', key: 'issuer', label: 'প্রদানকারী' },
+      { kind: 'text', key: 'issuer', label: 'কে দিয়েছে' },
       { kind: 'month', key: 'date', label: 'তারিখ' },
       { kind: 'textarea', key: 'description', label: 'বিবরণ', max: 300, rows: 2 },
     ],
@@ -266,9 +266,9 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
       { kind: 'text', key: 'title', label: 'শিরোনাম', span: 2 },
       { kind: 'text', key: 'publisher', label: 'প্রকাশক বা জার্নাল' },
       { kind: 'month', key: 'date', label: 'প্রকাশের তারিখ' },
-      { kind: 'text', key: 'authors', label: 'লেখকগণ', span: 2, placeholder: 'In citation order' },
+      { kind: 'text', key: 'authors', label: 'লেখকরা', span: 2, placeholder: 'In citation order' },
       { kind: 'text', key: 'url', label: 'লিংক', span: 2, type: 'url' },
-      { kind: 'textarea', key: 'description', label: 'সারসংক্ষেপ', max: 300, rows: 2 },
+      { kind: 'textarea', key: 'description', label: 'সংক্ষিপ্ত পরিচিতি', max: 300, rows: 2 },
     ],
   },
 
@@ -296,7 +296,7 @@ export const ENTRY_SECTIONS: Record<EntryListKey, EntrySectionConfig> = {
     noun: 'পেটেন্ট',
     addLabel: 'পেটেন্ট যোগ করুন',
     emptyTitle: 'এখনো কোনো পেটেন্ট নেই',
-    emptyDescription: 'নম্বরসহ অনুমোদিত বা অপেক্ষমাণ পেটেন্ট।',
+    emptyDescription: 'নম্বরসহ পাওয়া বা আবেদন করা পেটেন্ট।',
     fields: [
       { kind: 'text', key: 'title', label: 'শিরোনাম', span: 2 },
       { kind: 'text', key: 'number', label: 'পেটেন্ট নম্বর' },

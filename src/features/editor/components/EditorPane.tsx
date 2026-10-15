@@ -117,8 +117,7 @@ export const EditorPane = ({
               <div>
                 <p className="text-fg text-ui-md font-bold">আগে একটি উদাহরণ দেখি</p>
                 <p className="text-fg-muted text-ui mt-0.5 leading-snug">
-                  একটি বানানো CV বসিয়ে দেবে, যাতে সম্পূর্ণ CV দেখতে কেমন হয় বুঝতে পারেন। পরে
-                  প্রতিটি লাইন বদলাতে বা মুছতে পারবেন।
+                  একটি নমুনা CV বসিয়ে দেবে, যাতে পুরো CV দেখতে কেমন হয় বুঝতে পারেন। পরে প্রতিটি লাইন বদলাতে বা মুছতে পারবেন।
                 </p>
               </div>
               <Button
@@ -164,7 +163,7 @@ export const EditorPane = ({
             <div className="text-hue-strong mb-1 flex items-center gap-1.5">
               <visual.Icon size={13} aria-hidden="true" />
               <span className="text-ui-2xs font-bold">
-                {active.kind === 'panel' ? 'কাস্টমাইজ করুন' : 'আপনার গল্প লিখুন'}
+                {active.kind === 'panel' ? 'নিজের মতো সাজান' : 'আপনার গল্প লিখুন'}
               </span>
             </div>
             <h2 className="text-fg text-xl font-extrabold tracking-tight">{title}</h2>
@@ -207,7 +206,7 @@ export const EditorPane = ({
                 onClick={() => setActive(next.target)}
                 trailing={<ArrowRight size={15} />}
               >
-                পরবর্তী: {next.label}
+                এরপর: {next.label}
               </Button>
             ) : null}
           </div>

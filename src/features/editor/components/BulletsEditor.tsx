@@ -98,7 +98,7 @@ export const BulletsEditor = ({
                 type="button"
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
-                aria-label="বুলেট উপরে নিন"
+                aria-label="বুলেট ওপরে সরান"
                 className="tap-target text-fg-subtle hover:text-fg flex h-6 w-6 items-center justify-center rounded-md transition disabled:opacity-30"
               >
                 <ArrowUp size={14} />
@@ -107,7 +107,7 @@ export const BulletsEditor = ({
                 type="button"
                 onClick={() => move(index, 1)}
                 disabled={index === value.length - 1}
-                aria-label="বুলেট নিচে নিন"
+                aria-label="বুলেট নিচে সরান"
                 className="tap-target text-fg-subtle hover:text-fg flex h-6 w-6 items-center justify-center rounded-md transition disabled:opacity-30"
               >
                 <ArrowDown size={14} />
@@ -120,7 +120,7 @@ export const BulletsEditor = ({
                 value={bullet}
                 rows={2}
                 maxLength={LIMITS.bulletChars}
-                placeholder="একটি ক্রিয়া দিয়ে শুরু করুন, একটি সংখ্যা দিয়ে শেষ করুন।"
+                placeholder="একটি কাজের শব্দ দিয়ে শুরু করুন, একটি সংখ্যা দিয়ে শেষ করুন।"
                 autoFocus={focusRequest?.index === index}
                 focusToken={focusRequest?.token}
                 onChange={(text) => update(index, text)}

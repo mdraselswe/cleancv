@@ -47,7 +47,7 @@ export const CustomSectionEditor = ({ slot }: CustomSectionEditorProps) => {
     <div className="flex flex-col gap-3">
       <Field
         label="শিরোনাম"
-        hint="রিক্রুটার আর পার্সার দুজনেই এটি পড়ে। সহজ ও সাদামাটা রাখুন।"
+        hint="রিক্রুটার আর ATS সফটওয়্যার দুজনেই এটি পড়ে। সহজ ও সাদামাটা রাখুন।"
       >
         {({ id: fieldId, describedBy }) => (
           <Input

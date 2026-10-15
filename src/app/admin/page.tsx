@@ -144,7 +144,7 @@ export default async function AdminPage() {
             rel="noreferrer"
             className="border-border-base bg-surface text-fg hover:border-primary/40 rounded-control text-ui inline-flex items-center gap-1.5 border px-3 py-2 font-medium shadow-sm transition"
           >
-            নামহীন ট্রাফিক <ExternalLink size={13} />
+            বেনামী ট্রাফিক <ExternalLink size={13} />
           </a>
         </div>
 
@@ -154,12 +154,12 @@ export default async function AdminPage() {
             CleanCV-র ব্যবহার
           </h1>
           <p className="text-fg-muted text-ui-md mt-1">
-            নিবন্ধিত অ্যাকাউন্ট ও ক্লাউডের কার্যকলাপ। অতিথি ভিজিটররা নামহীন থাকে।
+            যাদের অ্যাকাউন্ট আছে তারা, আর ক্লাউডে কী হচ্ছে। অতিথি ভিজিটরদের নাম-পরিচয় জানা যায় না।
           </p>
         </header>
 
         <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Stat icon={<UserRoundX size={17} />} label="নামহীন ব্যবহারকারী" value={guests.length} />
+          <Stat icon={<UserRoundX size={17} />} label="বেনামী ব্যবহারকারী" value={guests.length} />
           <Stat icon={<Activity size={17} />} label="আজকের অতিথি" value={guestActiveToday} />
           <Stat icon={<CalendarDays size={17} />} label="৩০ দিনের অতিথি" value={guestActiveMonth} />
           <Stat icon={<Activity size={17} />} label="অতিথির ভিজিট" value={anonymousVisits} />
@@ -209,7 +209,7 @@ export default async function AdminPage() {
                     <th className="px-4 py-2.5 font-semibold">শেষ সক্রিয়</th>
                     <th className="px-4 py-2.5 font-semibold">CV</th>
                     <th className="px-4 py-2.5 font-semibold">আকার</th>
-                    <th className="px-4 py-2.5 text-right font-semibold">অ্যাকশন</th>
+                    <th className="px-4 py-2.5 text-right font-semibold">কাজ</th>
                   </tr>
                 </thead>
                 <tbody className="divide-border-base divide-y">
@@ -259,7 +259,7 @@ export default async function AdminPage() {
         <section className="border-border-base bg-surface/90 rounded-panel overflow-hidden border shadow-app">
           <div className="border-border-base flex items-center justify-between border-b px-4 py-3.5 sm:px-5">
             <div>
-              <h2 className="text-fg text-ui-lg font-semibold">নামহীন ভিজিটর</h2>
+              <h2 className="text-fg text-ui-lg font-semibold">বেনামী ভিজিটর</h2>
               <p className="text-fg-subtle text-ui-xs">শুধু এলোমেলো ব্রাউজার আইডি — কোনো ব্যক্তিগত তথ্য নেই</p>
             </div>
             <span className="bg-accent-soft text-accent rounded-full px-2.5 py-1 text-xs font-bold">
@@ -267,13 +267,13 @@ export default async function AdminPage() {
             </span>
           </div>
           {guests.length === 0 ? (
-            <p className="text-fg-muted p-8 text-center text-sm">এখনো কোনো নামহীন ভিজিট রেকর্ড হয়নি।</p>
+            <p className="text-fg-muted p-8 text-center text-sm">এখনো কোনো বেনামী ভিজিট রেকর্ড হয়নি।</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] border-collapse text-left">
                 <thead className="bg-surface-2 text-fg-subtle text-ui-xs">
                   <tr>
-                    <th className="px-5 py-2.5 font-semibold">নামহীন ব্রাউজার</th>
+                    <th className="px-5 py-2.5 font-semibold">বেনামী ব্রাউজার</th>
                     <th className="px-4 py-2.5 font-semibold">প্রথম দেখা</th>
                     <th className="px-4 py-2.5 font-semibold">শেষ দেখা</th>
                     <th className="px-5 py-2.5 text-right font-semibold">ভিজিট</th>
@@ -305,8 +305,8 @@ export default async function AdminPage() {
         <section className="border-border-base bg-surface/90 rounded-panel overflow-hidden border shadow-app">
           <div className="border-border-base flex items-center justify-between border-b px-4 py-3.5 sm:px-5">
             <div>
-              <h2 className="text-fg text-ui-lg font-semibold">নিবন্ধিত ব্যবহারকারী</h2>
-              <p className="text-fg-subtle text-ui-xs">সবচেয়ে সম্প্রতি সক্রিয়রা আগে</p>
+              <h2 className="text-fg text-ui-lg font-semibold">অ্যাকাউন্টওয়ালা ব্যবহারকারী</h2>
+              <p className="text-fg-subtle text-ui-xs">সবচেয়ে নতুন সক্রিয় আগে</p>
             </div>
             <span className="bg-primary-soft text-primary rounded-full px-2.5 py-1 text-xs font-bold">
               {bn(rows.length)}

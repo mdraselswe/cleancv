@@ -68,14 +68,14 @@ export const RuleRow = ({ rule, onNavigate, onQuickFix }: RuleRowProps) => {
           {rule.gain ? (
             <span
               className="text-success text-ui-xs flex-none font-bold tabular-nums"
-              title="এটি ঠিক হলে সামগ্রিক স্কোর যতটা বাড়বে"
+              title="এটি ঠিক করলে মোট স্কোর যতটা বাড়বে"
             >
               +{bn(rule.gain)} পয়েন্ট
             </span>
           ) : rule.rawGain ? (
             <span
               className="text-fg-subtle text-ui-2xs flex-none tabular-nums"
-              title="লেখার জোর বাড়লে স্কোরে এর এতটা মূল্য থাকবে"
+              title="লেখার মান বাড়লে স্কোরে এর এতটা মূল্য থাকবে"
             >
               +{bn(rule.rawGain)} লেখা ভালো হলে
             </span>

@@ -10,7 +10,7 @@ import { cn } from '@/lib/cn';
 import { useTailor, type TailorMode } from '../hooks/useTailor';
 
 const MODE_TABS = [
-  { value: 'update' as const, label: 'এই CV হালনাগাদ করুন' },
+  { value: 'update' as const, label: 'এই CV আপডেট করুন' },
   { value: 'copy' as const, label: 'নতুন কপি হিসেবে রাখুন' },
 ];
 
@@ -103,7 +103,7 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
               <Switch
                 checked={options.reorderBullets}
                 onChange={(reorderBullets) => tailor.patch({ reorderBullets })}
-                label="প্রতিটি পদে সবচেয়ে প্রাসঙ্গিক বুলেট আগে রাখুন"
+                label="প্রতিটি পদে চাকরির সঙ্গে সবচেয়ে বেশি মেলে এমন বুলেট আগে রাখুন"
                 description={
                   stats.bulletsMoved > 0
                     ? `${bn(stats.bulletsMoved)}টি বুলেট ওপরে উঠবে। পদগুলো তারিখের ক্রমেই থাকবে।`
@@ -116,14 +116,14 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
                 label="বুলেটে বিজ্ঞপ্তির নিজস্ব শব্দগুলো বোল্ড করুন"
                 description={
                   stats.keywordsBolded > 0
-                    ? `${bn(stats.keywordsBolded)}টি শব্দ জোর পাবে, প্রতি বুলেটে সর্বোচ্চ দুটি।`
-                    : 'জোর দেওয়ার মতো মিলে যাওয়া শব্দ নেই।'
+                    ? `${bn(stats.keywordsBolded)}টি শব্দ বোল্ড হবে, প্রতি বুলেটে সর্বোচ্চ দুটি।`
+                    : 'বোল্ড করার মতো মিলে যাওয়া শব্দ নেই।'
                 }
               />
               <Switch
                 checked={options.addSummaryLine}
                 onChange={(addSummaryLine) => tailor.patch({ addSummaryLine })}
-                label="সারসংক্ষেপের শেষে একটি লাইন যোগ করুন"
+                label="সংক্ষিপ্ত পরিচিতিের শেষে একটি লাইন যোগ করুন"
                 description={
                   analysis.matchedSkills.length >= 2
                     ? `“Strong in ${analysis.matchedSkills.slice(0, 3).join(', ')}.” — শুধু আপনার তালিকায় আগে থেকে থাকা দক্ষতা।`
@@ -135,8 +135,7 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
             <section aria-label="আপনার আছে কিন্তু CV-তে নেই এমন দক্ষতা">
               <p className="text-fg text-ui-md font-semibold">যে দক্ষতা সত্যিই আপনার আছে, তা যোগ করুন</p>
               <p className="text-fg-subtle text-ui-xs mt-0.5 leading-snug">
-                বিজ্ঞপ্তিতে এগুলো আছে, আপনার CV-তে নেই। শুধু যেগুলো সত্যিই আপনার সম্পর্কে সত্যি, সেগুলোতে
-                টিক দিন — টিক না দিলে কিছুই যোগ হয় না।
+                বিজ্ঞপ্তিতে এগুলো আছে, কিন্তু আপনার CV-তে নেই। যেগুলো সত্যিই আপনার আছে, শুধু সেগুলোতে টিক দিন। টিক না দিলে কিছুই যোগ হয় না।
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {tailor.missingSuggestions.length === 0 ? (
@@ -183,8 +182,8 @@ const TailorBody = ({ onClose }: { onClose: () => void }) => {
                 <Switch
                   checked={tailor.polishWithAi}
                   onChange={tailor.setPolishWithAi}
-                  label="সবচেয়ে প্রাসঙ্গিক ৬টি বুলেটও AI দিয়ে পরিমার্জন করুন"
-                  description="আপনার AI কোটা খরচ হয়। এটি শুধু শব্দ বদলায়, সংখ্যা যোগ করতে পারে না। “ফিরিয়ে নিন” বাকিগুলোর সঙ্গে এটিও ফেরত দেয়।"
+                  label="সবচেয়ে কাজের ৬টি বুলেটও AI দিয়ে গুছিয়ে নিন"
+                  description="আপনার AI কোটা খরচ হয়। এটি শুধু শব্দ বদলায়, কোনো সংখ্যা যোগ করতে পারে না। “ফিরিয়ে নিন” চাপলে বাকিগুলোর সঙ্গে এটিও আগের অবস্থায় ফিরে যায়।"
                 />
               </section>
             ) : null}

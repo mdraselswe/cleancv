@@ -30,8 +30,7 @@ export const FreeBanner = () => (
       <Lang
         bn={
           <span>
-            <strong className="font-extrabold">১০০% ফ্রি</strong> — সম্পাদনায় অ্যাকাউন্ট লাগে না;
-            শুধু ডাউনলোডের জন্য একটি ফ্রি অ্যাকাউন্ট দরকার। সীমা: প্রতি ব্রাউজারে{' '}
+            <strong className="font-extrabold">১০০% ফ্রি</strong> — CV লিখতে অ্যাকাউন্ট লাগে না; শুধু ডাউনলোড করতে একটি ফ্রি অ্যাকাউন্ট দরকার। সীমা: প্রতি ব্রাউজারে{' '}
             {bn(MAX_DOCUMENTS)}টি CV (এর মধ্যে {bn(CLOUD_SYNC.maxDocuments)}টি পর্যন্ত অ্যাকাউন্টে সিঙ্ক
             করা যায়), প্রতি {bn(PDF_RATE_LIMIT.windowMs / 60000)} মিনিটে {bn(PDF_RATE_LIMIT.max)}টি PDF।
           </span>

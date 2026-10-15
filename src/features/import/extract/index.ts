@@ -40,7 +40,7 @@ export const extractDocument = async (
     case 'image':
       return extractImage(file, options.onProgress);
     default:
-      throw new Error('ইমপোর্টে PDF, DOCX ও ছবি পড়া যায়। .doc ফাইলকে আগে .docx হিসেবে সংরক্ষণ করতে হবে।');
+      throw new Error('ইমপোর্টে PDF, DOCX ও ছবি পড়া যায়। .doc ফাইলকে আগে .docx হিসেবে সেভ করতে হবে।');
   }
 };
 

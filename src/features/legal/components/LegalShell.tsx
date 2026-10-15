@@ -45,7 +45,7 @@ export const LegalShell = ({ title, summary, children }: LegalShellProps) => (
         </h1>
         <p className="text-fg-muted text-ui-lg leading-relaxed">{summary}</p>
         <p className="text-fg-subtle text-ui-xs">
-          সর্বশেষ হালনাগাদ{' '}
+          সর্বশেষ আপডেট{' '}
           <time dateTime={LEGAL_UPDATED}>
             {new Date(LEGAL_UPDATED).toLocaleDateString('bn-BD', {
               day: 'numeric',

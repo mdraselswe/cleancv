@@ -95,14 +95,14 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                         entries={[
                           {
                             id: 'up',
-                            label: 'উপরে নিন',
+                            label: 'ওপরে সরান',
                             icon: <ArrowUp size={15} />,
                             disabled: index === 0,
                             onSelect: () => section.move(index, index - 1),
                           },
                           {
                             id: 'down',
-                            label: 'নিচে নিন',
+                            label: 'নিচে সরান',
                             icon: <ArrowDown size={15} />,
                             disabled: index === section.entries.length - 1,
                             onSelect: () => section.move(index, index + 1),
@@ -129,7 +129,7 @@ export const EntryListSection = ({ sectionKey }: EntryListSectionProps) => {
                           },
                         ]}
                         trigger={(props) => (
-                          <Button size="icon" variant="ghost" aria-label="এন্ট্রির অ্যাকশন" {...props}>
+                          <Button size="icon" variant="ghost" aria-label="এন্ট্রির কাজ" {...props}>
                             <MoreVertical size={16} />
                           </Button>
                         )}

@@ -133,7 +133,7 @@ export const useTailor = (onDone: () => void) => {
     let done = 0;
 
     for (const [position, candidate] of candidates.entries()) {
-      setBusy(`বুলেট পরিমার্জন হচ্ছে: ${bn(position + 1)} / ${bn(candidates.length)}…`);
+      setBusy(`বুলেট গুছিয়ে লেখা হচ্ছে: ${bn(position + 1)} / ${bn(candidates.length)}…`);
 
       try {
         const response = await fetch('/api/ai/polish', {
@@ -175,7 +175,7 @@ export const useTailor = (onDone: () => void) => {
       return;
     }
 
-    setBusy(mode === 'copy' ? 'আপনার কপি তৈরি হচ্ছে…' : 'আপনার CV হালনাগাদ হচ্ছে…');
+    setBusy(mode === 'copy' ? 'আপনার কপি তৈরি হচ্ছে…' : 'আপনার CV আপডেট হচ্ছে…');
 
     try {
       const { resume: tailored, stats } = applyTailor(resume, jobDescription, options);
@@ -183,7 +183,7 @@ export const useTailor = (onDone: () => void) => {
 
       if (polishWithAi && aiAvailable) polished = await polishBullets(tailored);
 
-      setBusy('সংরক্ষণ হচ্ছে…');
+      setBusy('সেভ হচ্ছে…');
 
       if (mode === 'copy') {
         await libraryActions.createNew((name.trim() || defaultName).slice(0, 120));
@@ -197,14 +197,14 @@ export const useTailor = (onDone: () => void) => {
         stats.bulletsMoved > 0 ? `${bn(stats.bulletsMoved)}টি বুলেট সাজানো হয়েছে` : '',
         stats.keywordsBolded > 0 ? `${bn(stats.keywordsBolded)}টি শব্দ বোল্ড হয়েছে` : '',
         stats.skillsAdded > 0 ? `${bn(stats.skillsAdded)}টি দক্ষতা যোগ হয়েছে` : '',
-        polished > 0 ? `${bn(polished)}টি বুলেট AI দিয়ে পরিমার্জিত হয়েছে` : '',
+        polished > 0 ? `${bn(polished)}টি বুলেট AI দিয়ে গুছিয়ে লেখা হয়েছে` : '',
       ].filter(Boolean);
 
       toast.success(mode === 'copy' ? 'সাজানো কপি তৈরি হয়েছে' : 'এই চাকরির জন্য CV সাজানো হয়েছে', {
         description:
           mode === 'copy'
-            ? `${parts.join(' · ') || 'কোনো পরিবর্তন লাগেনি'}। আপনার মূল CV অপরিবর্তিত আছে।`
-            : parts.join(' · ') || 'কোনো পরিবর্তন লাগেনি।',
+            ? `${parts.join(' · ') || 'কিছু বদলানোর দরকার হয়নি'}। আপনার মূল CV আগের মতোই আছে।`
+            : parts.join(' · ') || 'কিছু বদলানোর দরকার হয়নি।',
         action:
           mode === 'update' ? { label: 'ফিরিয়ে নিন', onClick: () => resumeActions.undo() } : undefined,
       });

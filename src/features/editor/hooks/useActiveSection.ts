@@ -33,7 +33,7 @@ const PANEL_META: Record<EditorPanel, { label: string; description: string }> = 
   },
   design: {
     label: 'ডিজাইন',
-    description: 'একটি টেমপ্লেট বেছে নিন, তারপর লেখার ধরন, ফাঁকা জায়গা আর রং ঠিক করুন।',
+    description: 'একটি ডিজাইন বেছে নিন, তারপর লেখার ধরন, ফাঁকা জায়গা আর রং ঠিক করুন।',
   },
   sections: {
     label: 'সেকশন',

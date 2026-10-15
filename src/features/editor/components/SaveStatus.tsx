@@ -44,7 +44,7 @@ export const SaveStatus = ({ state, className }: SaveStatusProps) => {
       ) : (
         <Check size={13} className="text-success flex-none" aria-hidden="true" />
       )}
-      {failed ? 'সংরক্ষণ হয়নি' : busy ? 'সংরক্ষণ হচ্ছে…' : 'সংরক্ষিত'}
+      {failed ? 'সেভ হয়নি' : busy ? 'সেভ হচ্ছে…' : 'সেভ করা'}
     </span>
   );
 };

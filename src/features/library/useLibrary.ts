@@ -248,8 +248,8 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => {
         workspace: { ...IDLE_WORKSPACE, supported: workspaceSupported() },
         error:
           error instanceof Error
-            ? `স্টোরেজ পাওয়া যাচ্ছে না: ${error.message}। আপনার কাজ সংরক্ষিত হবে না — বন্ধ করার আগে একটি ব্যাকআপ এক্সপোর্ট করুন।`
-            : 'স্টোরেজ পাওয়া যাচ্ছে না। আপনার কাজ সংরক্ষিত হবে না।',
+            ? `স্টোরেজ পাওয়া যাচ্ছে না: ${error.message}। আপনার কাজ সেভ করা হবে না — বন্ধ করার আগে একটি ব্যাকআপ এক্সপোর্ট করুন।`
+            : 'স্টোরেজ পাওয়া যাচ্ছে না। আপনার কাজ সেভ করা হবে না।',
       });
     }
   };

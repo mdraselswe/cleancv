@@ -97,7 +97,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         className="justify-center"
         disabled={pending}
       >
-        {pending ? 'সংরক্ষণ হচ্ছে…' : 'নতুন পাসওয়ার্ড সেট করুন'}
+        {pending ? 'সেভ হচ্ছে…' : 'নতুন পাসওয়ার্ড সেট করুন'}
       </Button>
     </form>
   );

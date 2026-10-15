@@ -22,19 +22,19 @@ export const rules: AtsRule[] = [
     id: 'template-ceiling',
     category: 'parseability',
     weight: 4,
-    label: 'টেমপ্লেটের পার্সিং নির্ভরযোগ্যতা',
+    label: 'ডিজাইনটি ATS-এ কতটা ভালো পড়া যায়',
     evaluate: (_resume, { template }) => {
       if (template.atsBaseline >= 90) {
         return {
           status: 'pass',
-          message: `${template.name} একটিই পড়ার ক্রম বজায় রাখে, তাই পরিষ্কারভাবে পার্স হয়।`,
+          message: `${template.name} একটিই পড়ার ক্রম রাখে, তাই ATS সফটওয়্যার ঠিকমতো পড়তে পারে।`,
         };
       }
 
       if (template.atsBaseline >= 75) {
         return {
           status: 'warn',
-          message: `${template.name}-এর লেআউট কিছু পার্সার পুরোপুরি পড়তে পারে না।`,
+          message: `${template.name}-এর লেআউট কিছু ATS সফটওয়্যার পুরোপুরি পড়তে পারে না।`,
           fixHint: 'পোর্টালে আবেদনের সময় ATS PDF পাঠান, আর এই ডিজাইনটি ইমেইলে পাঠান।',
           targets: [panelTarget('design')],
         };
@@ -42,9 +42,9 @@ export const rules: AtsRule[] = [
 
       return {
         status: 'error',
-        message: `${template.name} একটি প্রদর্শনী-ধরনের ডিজাইন; স্বয়ংক্রিয় পার্সার এর কিছু অংশ হারাবে।`,
+        message: `${template.name} দেখানোর জন্য বানানো ডিজাইন; ATS সফটওয়্যার এর কিছু অংশ পড়তে পারবে না।`,
         fixHint:
-          'জব পোর্টালের মাধ্যমে যেকোনো আবেদনে ATS PDF এক্সপোর্ট ব্যবহার করুন, অথবা আরও বেশি সীমার একটি ডিজাইন বেছে নিন।',
+          'জব পোর্টালে যেকোনো আবেদনে ATS PDF ব্যবহার করুন, অথবা এমন একটি ডিজাইন বেছে নিন যাতে ATS স্কোরের সর্বোচ্চ সীমা বেশি।',
         targets: [panelTarget('design')],
       };
     },
@@ -59,14 +59,14 @@ export const rules: AtsRule[] = [
       const showing = template.supports.photo && resume.meta.theme.showPhoto && !isBlank(resume.basics.photo);
 
       if (!showing) {
-        return { status: 'pass', message: 'কোনো ছবি নেই — পার্সার আটকে যাওয়ার মতো কিছু নেই।' };
+        return { status: 'pass', message: 'কোনো ছবি নেই — ATS সফটওয়্যার আটকে যাওয়ার মতো কিছু নেই।' };
       }
 
       return {
         status: 'warn',
         message: 'ডকুমেন্টে একটি ছবি ছাপা হচ্ছে।',
         fixHint:
-          'ইউরোপ, এশিয়া ও উপসাগরের কিছু অংশে এটি প্রত্যাশিত। যুক্তরাষ্ট্র, যুক্তরাজ্য ও কানাডার আবেদনে ছবি সরিয়ে দিন, কারণ সেখানে ছবির জন্য CV না পড়েই বাতিল হতে পারে।',
+          'ইউরোপ, এশিয়া ও উপসাগরীয় কিছু দেশে CV-তে ছবি দেওয়ার চল আছে। যুক্তরাষ্ট্র, যুক্তরাজ্য ও কানাডার আবেদনে ছবি দেবেন না, কারণ ছবির জন্য সেখানে CV না পড়েই বাদ দিয়ে দিতে পারে।',
         targets: ['contact'],
       };
     },
@@ -91,7 +91,7 @@ export const rules: AtsRule[] = [
       });
 
       if (renamed.length === 0) {
-        return { status: 'pass', message: 'সব শিরোনামে এমন নাম আছে, যা পার্সার চেনে।' };
+        return { status: 'pass', message: 'সব শিরোনামে এমন নাম আছে, যা ATS সফটওয়্যার চেনে।' };
       }
 
       return {
@@ -100,7 +100,7 @@ export const rules: AtsRule[] = [
           .map((key) => resume.meta.sections[key]?.heading)
           .join(', ')}।`,
         fixHint:
-          'পার্সার শিরোনামের লেখা দেখে মেলায়। নাম বদলানো সেকশন ভুল লেবেল না পেয়ে প্রায়ই পুরোটাই বাদ পড়ে যায়। “সেকশন” প্যানেল থেকে নামটি ঠিক করুন।',
+          'ATS সফটওয়্যার শিরোনামের লেখা দেখে সেকশন চেনে। নাম বদলানো সেকশন চিনতে না পেরে অনেক সময় পুরোটাই বাদ দিয়ে দেয়। “সেকশন” প্যানেল থেকে নামটি ঠিক করুন।',
         targets: [panelTarget('sections'), ...renamed],
       };
     },
@@ -123,7 +123,7 @@ export const rules: AtsRule[] = [
         status: 'error',
         message: `নেই: ${missing.map((key) => `${SECTION_UI_LABEL[key]} (${SECTION_META[key].defaultHeading})`).join(', ')}।`,
         fixHint:
-          'বেশির ভাগ পার্সার এই তিনটির ওপর ভিত্তি করে সূচি বানায়। এগুলো না থাকলে যা-ই লিখুন, স্কোর কম আসে। “সেকশন” প্যানেল থেকে এগুলো চালু করুন।',
+          'বেশির ভাগ ATS সফটওয়্যার এই তিনটি দেখে CV সাজিয়ে নেয়। এগুলো না থাকলে বাকি যা-ই লিখুন, স্কোর কম আসে। “সেকশন” প্যানেল থেকে এগুলো চালু করুন।',
         targets: [panelTarget('sections'), ...missing],
       };
     },
@@ -133,10 +133,10 @@ export const rules: AtsRule[] = [
     id: 'text-layer',
     category: 'parseability',
     weight: 2,
-    label: 'নির্বাচনযোগ্য লেখা',
+    label: 'সিলেক্ট করা যায় এমন লেখা',
     evaluate: () => ({
       status: 'pass',
-      message: 'আসল লেখা হিসেবে এক্সপোর্ট হয়, আর আইকন ইনলাইন SVG — ছবি-সর্বস্ব PDF নয়, আইকন-ফন্টের অক্ষরও নয়।',
+      message: 'আসল লেখা হিসেবে এক্সপোর্ট হয়, আর আইকন SVG হিসেবে বসে — পুরো PDF ছবি হয়ে যায় না, আইকন-ফন্টের অক্ষরও থাকে না।',
     }),
   },
 ];

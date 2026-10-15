@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as ImportRequestBody;
   } catch {
-    return badRequest('অনুরোধের বডি অবশ্যই JSON হতে হবে।');
+    return badRequest('অনুরোধের ডেটা অবশ্যই JSON হতে হবে।');
   }
 
   const { endpoint = '', model = '', apiKey = '', text, imageDataUrl } = body;

@@ -82,7 +82,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
           </div>
 
           <p className="bg-surface-2 text-fg-muted rounded-control text-ui-xs px-3 py-2">
-            এটি খুললে এডিটরে এখন যা আছে তা বদলে যাবে। আপনার অন্য CV-গুলো অপরিবর্তিত থাকবে — এটি লাইব্রেরির একটি ডকুমেন্ট মাত্র।
+            এটি খুললে এডিটরে এখন যা আছে তা বদলে যাবে। আপনার অন্য CV-গুলোর কিছু হবে না — এটি লাইব্রেরির একটি ডকুমেন্ট মাত্র।
           </p>
 
           <div className="flex justify-end gap-2">
@@ -149,7 +149,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
             ) : (
               <>
                 <FileUp size={22} className="text-fg-subtle mx-auto" />
-                <p className="text-fg text-ui mt-2">এখানে একটি ফাইল ছেড়ে দিন</p>
+                <p className="text-fg text-ui mt-2">এখানে একটি ফাইল ফেলুন</p>
                 <label
                   htmlFor={FILE_INPUT_ID}
                   className="border-border-base hover:bg-surface-2 rounded-control text-ui mt-2 inline-flex h-8 cursor-pointer items-center border px-3 font-medium transition"
@@ -179,7 +179,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
 
           <div className="mt-4">
             <div className="flex items-center justify-between">
-              <span className="text-fg text-ui font-medium">কীভাবে পড়বে</span>
+              <span className="text-fg text-ui font-medium">কীভাবে পড়া হবে</span>
               <Button
                 size="sm"
                 variant="ghost"
@@ -211,8 +211,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
                     এই ডিভাইসে — ফ্রি, ব্যক্তিগত
                   </span>
                   <span className="text-fg-subtle text-ui-xs block">
-                    শিরোনাম, তারিখ ও বুলেট নিজেই পড়ে। কিছুই আপলোড হয় না। সাদামাটা এক-কলামের CV-তে
-                    ভালো, ভারী ডিজাইনের CV-তে দুর্বল।
+                    শিরোনাম, তারিখ ও বুলেট নিজেই পড়ে নেয়। কিছুই আপলোড হয় না। সাদামাটা এক কলামের CV-তে ভালো, অনেক ডিজাইনওয়ালা CV-তে দুর্বল।
                   </span>
                 </span>
               </label>
@@ -236,8 +235,7 @@ export const ImportDialog = ({ open, resume, onClose, onApply }: ImportDialogPro
                       <Sparkles size={13} /> স্মার্ট ইমপোর্ট
                     </span>
                     <span className="text-fg-subtle text-ui-xs block">
-                      ডকুমেন্টটি আপনার ঠিক করা মডেলে পাঠায়। স্ক্রিনশট আর দুই-কলামের লেআউট অনেক ভালো
-                      সামলায়।
+                      ডকুমেন্টটি আপনার ঠিক করা মডেলে পাঠায়। স্ক্রিনশট আর দুই কলামের CV অনেক ভালো বোঝে।
                     </span>
                   </span>
                 </label>

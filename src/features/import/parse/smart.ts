@@ -70,7 +70,7 @@ export const parseWithModel = async (
   const parsed = smartResponseSchema.safeParse(raw);
 
   if (!parsed.success) {
-    throw new Error('মডেল অপ্রত্যাশিত গঠনের JSON ফেরত দিয়েছে।');
+    throw new Error('মডেল ভুল ধরনের JSON ফেরত দিয়েছে।');
   }
 
   return toParsedResume(parsed.data);

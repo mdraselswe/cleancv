@@ -38,7 +38,7 @@ export const RenameDialog = ({ document, fallbackName, onConfirm, onClose }: Ren
             বাতিল
           </Button>
           <Button variant="primary" type="submit">
-            নাম সংরক্ষণ করুন
+            নাম সেভ করুন
           </Button>
         </div>
       </form>

@@ -38,7 +38,7 @@ export const MERGE_GROUPS: MergeGroup[] = [
 export const MERGE_GROUP_LABEL: Record<MergeGroup, string> = {
   basics: 'নাম ও শিরোনাম',
   contact: 'যোগাযোগের তথ্য',
-  summary: 'সারসংক্ষেপ',
+  summary: 'সংক্ষিপ্ত পরিচিতি',
   experience: 'কাজের অভিজ্ঞতা',
   education: 'শিক্ষা',
   skills: 'দক্ষতা',

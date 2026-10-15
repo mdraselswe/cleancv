@@ -13,7 +13,7 @@ import { useResumeEdit } from '../../hooks/useResumeEdit';
 
 /** What the tabs say. The CV itself still prints the English heading from SUMMARY_MODE_LABEL. */
 const MODE_UI_LABEL: Record<SummaryMode, string> = {
-  summary: 'পেশাগত সারসংক্ষেপ',
+  summary: 'পেশাগত সংক্ষিপ্ত পরিচিতি',
   objective: 'ক্যারিয়ারের লক্ষ্য',
 };
 
@@ -40,7 +40,7 @@ export const SummarySection = () => {
         items={MODE_TABS}
         value={summary.mode}
         onChange={(mode: SummaryMode) => patch('summary', { mode })}
-        ariaLabel="সারসংক্ষেপের ধরন"
+        ariaLabel="সংক্ষিপ্ত পরিচিতিের ধরন"
         className="self-start"
       />
 

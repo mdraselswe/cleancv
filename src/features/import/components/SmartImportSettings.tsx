@@ -78,7 +78,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
 
       <Field
         label="API কী"
-        hint="শুধু এই ব্রাউজারে রাখা হয়। যে লোকাল মডেলে লাগে না, সেখানে ফাঁকা রাখুন।"
+        hint="শুধু এই ব্রাউজারে রাখা হয়। যে মডেলে (যেমন নিজের কম্পিউটারের লোকাল মডেল) এটি লাগে না, সেখানে ফাঁকা রাখুন।"
       >
         {({ id, describedBy }) => (
           <Input
@@ -97,7 +97,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
         checked={draft.useVision}
         onChange={(useVision) => patch({ useVision })}
         label="স্ক্রিনশট ছবি হিসেবে পাঠান"
-        description="OCR লেখা পড়ার বদলে মডেল সরাসরি লেআউট দেখতে পায়। ছবি নিতে পারে এমন মডেল লাগবে।"
+        description="OCR দিয়ে লেখা পড়ার বদলে মডেল সরাসরি পেজের ছবি দেখতে পায়। ছবি বুঝতে পারে এমন মডেল লাগবে।"
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -108,7 +108,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
             onDone?.();
           }}
         >
-          সংরক্ষণ
+          সেভ
         </Button>
         {saved.endpoint ? (
           <Button
@@ -124,7 +124,7 @@ export const SmartImportSettings = ({ onDone }: { onDone?: () => void }) => {
       </div>
 
       <p className="text-fg-subtle text-ui-2xs">
-        ফ্রি প্ল্যান মানেই ব্যক্তিগত নয় — অনেকেই বলে ব্যবহারের তথ্য তাদের মডেল উন্নত করতে রাখা হতে পারে। অন্য কারও CV ইমপোর্ট করার আগে এটি জানা দরকার। আপনার নিজের কম্পিউটারে চলা মডেল কোথাও কিছু পাঠায় না।
+        ফ্রি প্ল্যান মানেই ব্যক্তিগত নয় — অনেক সার্ভিস বলে, তাদের মডেল ভালো করতে আপনার ব্যবহারের তথ্য রাখা হতে পারে। অন্য কারও CV ইমপোর্ট করার আগে এটি জানা দরকার। আপনার নিজের কম্পিউটারে চলা মডেল কোথাও কিছু পাঠায় না।
       </p>
     </div>
   );

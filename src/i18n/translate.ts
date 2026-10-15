@@ -7,6 +7,7 @@
  * the document is whatever its author typed, in whatever language.
  */
 
+import { CARRIED } from './carried';
 import { EXACT, TEMPLATES } from './dictionary';
 import { MANUAL_EXACT, MANUAL_TEMPLATES } from './manual';
 
@@ -19,7 +20,7 @@ export const toAsciiDigits = (text: string): string =>
 
 export const hasBanglaLetters = (text: string): boolean => BANGLA_LETTER.test(text);
 
-const exact: Map<string, string> = new Map([...Object.entries(EXACT), ...Object.entries(MANUAL_EXACT)]);
+const exact: Map<string, string> = new Map([...Object.entries(CARRIED), ...Object.entries(EXACT), ...Object.entries(MANUAL_EXACT)]);
 
 interface CompiledTemplate {
   pattern: RegExp;

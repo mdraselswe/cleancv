@@ -43,7 +43,7 @@ export const urlSchema = z
   .string()
   .trim()
   .max(300)
-  .refine((value) => !DANGEROUS_SCHEME.test(value), { message: 'এই ধরনের লিংক অনুমোদিত নয়' })
+  .refine((value) => !DANGEROUS_SCHEME.test(value), { message: 'এই ধরনের লিংক চলবে না' })
   .refine(
     (value) => value === '' || /^(https?:\/\/|mailto:|tel:)/i.test(value) || !/\s/.test(value),
     { message: 'সঠিক একটি লিংক লিখুন' },

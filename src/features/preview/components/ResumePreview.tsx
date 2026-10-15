@@ -184,7 +184,7 @@ export const ResumePreview = ({
                 aria-hidden="true"
                 className="text-fg-subtle text-ui-2xs absolute right-0 -bottom-5 tabular-nums"
               >
-                পৃষ্ঠা {bn(index + 1)} / {bn(pageCount)}
+                পেজ {bn(index + 1)} / {bn(pageCount)}
               </span>
             ) : null}
           </div>

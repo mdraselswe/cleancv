@@ -47,7 +47,7 @@ export const rules: AtsRule[] = [
       return {
         status: 'error',
         message: `${bn(empty.length)}টি পদে কোনো বুলেট নেই।`,
-        fixHint: 'শুধু পদের নাম পড়ে পাঠক যাচাই করার মতো কিছুই পান না।',
+        fixHint: 'শুধু পদের নাম পড়ে পাঠক কিছুই যাচাই করতে পারেন না।',
         targets: ['experience'],
       };
     },
@@ -57,7 +57,7 @@ export const rules: AtsRule[] = [
     id: 'bullets-have-metrics',
     category: 'impact',
     weight: 5,
-    label: 'মাপা যায় এমন ফলাফল',
+    label: 'সংখ্যায় মাপা যায় এমন ফলাফল',
     evaluate: (resume) => {
       const bullets = collectBullets(resume);
       if (bullets.length === 0) {
@@ -136,7 +136,7 @@ export const rules: AtsRule[] = [
     id: 'bullets-show-scale',
     category: 'impact',
     weight: 3,
-    label: 'কাজের পরিধি',
+    label: 'কাজের আকার',
     evaluate: (resume) => {
       const bullets = collectBullets(resume);
       if (bullets.length === 0) {
@@ -156,7 +156,7 @@ export const rules: AtsRule[] = [
             ? 'মাত্র একটি বুলেটে কাজ কত বড় ছিল তা বলা আছে।'
             : 'কাজ কত বড় ছিল তা কোথাও বলা নেই — টিমের আকার, ব্যবহারকারী, বাজেট বা পরিমাণ কিছুই নেই।',
         fixHint:
-          'আপনার বর্তমান ও সবচেয়ে সিনিয়র পদে যা চালিয়েছেন তার আকার লিখুন: টিমের সদস্য সংখ্যা, মাসিক ব্যবহারকারী বা অর্ডার, প্রোডাক্ট বা বাজারের সংখ্যা, বাজেট। রিক্রুটার পরিধিকে সিনিয়রিটি হিসেবে পড়েন।',
+          'বর্তমান বা সবচেয়ে বড় পদে কত বড় কাজ সামলেছেন তা লিখুন: টিমে কতজন, মাসে কত ব্যবহারকারী বা অর্ডার, কয়টি প্রোডাক্ট বা বাজার, বাজেট কত। রিক্রুটার কাজের আকার দেখেই বোঝেন আপনি কতটা সিনিয়র।',
         targets: ['experience'],
       };
     },
@@ -166,7 +166,7 @@ export const rules: AtsRule[] = [
     id: 'bullets-start-with-verb',
     category: 'impact',
     weight: 4,
-    label: 'অ্যাকশন ক্রিয়া',
+    label: 'কাজের শব্দ',
     evaluate: (resume) => {
       const bullets = collectBullets(resume);
       if (bullets.length === 0) {
@@ -181,11 +181,11 @@ export const rules: AtsRule[] = [
 
       return {
         status,
-        message: `${bn(bullets.length)}টি বুলেটের মধ্যে ${bn(strong.length)}টি শক্তিশালী ক্রিয়া দিয়ে শুরু হয়েছে।`,
+        message: `${bn(bullets.length)}টি বুলেটের মধ্যে ${bn(strong.length)}টি জোরালো কাজের শব্দ দিয়ে শুরু হয়েছে।`,
         fixHint:
           status === 'pass'
             ? undefined
-            : 'নিচের প্রতিটি লাইন আপনি কী করেছেন তা দিয়ে, অতীত কালে শুরু করুন: Built, Led, Cut, Migrated, Shipped — “Worked on” বা “Responsible for” নয়।',
+            : 'নিচের প্রতিটি লাইন শুরু করুন আপনি কী করেছেন তা দিয়ে, অতীত কালের শব্দে: Built, Led, Cut, Migrated, Shipped। “Worked on” বা “Responsible for” দিয়ে নয়।',
         details:
           status === 'pass'
             ? undefined
@@ -199,19 +199,19 @@ export const rules: AtsRule[] = [
     id: 'no-weak-phrases',
     category: 'impact',
     weight: 4,
-    label: 'ফাঁকা বুলিমুক্ত',
+    label: 'ফাঁকা বুলি নেই',
     evaluate: (resume) => {
       const text = [resume.summary.text, ...collectBullets(resume).map((bullet) => bullet.text)].join(' ');
       const found = findPhrases(text, WEAK_PHRASES);
 
       if (found.length === 0) {
-        return { status: 'pass', message: 'দায়িত্বের তালিকা বা CV-র ক্লিশে বুলি পাওয়া যায়নি।' };
+        return { status: 'pass', message: 'শুধু দায়িত্বের তালিকা বা গতবাঁধা কথা পাওয়া যায়নি।' };
       }
 
       return {
         status: found.length > 2 ? 'error' : 'warn',
         message: `পাওয়া গেছে: ${found.slice(0, 4).join(', ')}।`,
-        fixHint: 'এগুলো চাকরির বিবরণ বলে, আপনার অবদান নয়। কী বদলেছে সেটি লিখে এগুলো বদলে দিন।',
+        fixHint: 'এগুলো শুধু চাকরির দায়িত্বের কথা, আপনি কী করেছেন তা নয়। কী বদলেছে তা লিখে এগুলো বদলে দিন।',
         targets: ['summary', 'experience'],
       };
     },
@@ -221,7 +221,7 @@ export const rules: AtsRule[] = [
     id: 'no-first-person',
     category: 'impact',
     weight: 2,
-    label: 'উত্তম পুরুষ নয়',
+    label: '“আমি” নেই',
     evaluate: (resume) => {
       const text = collectBullets(resume)
         .map((bullet) => bullet.text)
@@ -230,12 +230,12 @@ export const rules: AtsRule[] = [
       const found = words(text).filter((word) => pronouns.has(word.toLowerCase()));
 
       if (found.length === 0) {
-        return { status: 'pass', message: 'CV যেমন হওয়া উচিত, তেমনই উত্তম পুরুষ উহ্য রেখে লেখা।' };
+        return { status: 'pass', message: 'CV-তে যেমন লেখা উচিত, তেমনই “আমি” শব্দ বাদ দিয়ে লেখা।' };
       }
 
       return {
         status: 'warn',
-        message: `বুলেটে ${bn(found.length)}টি উত্তম পুরুষের সর্বনাম আছে।`,
+        message: `বুলেটে ${bn(found.length)}টি জায়গায় “I”, “my”, “we”-এর মতো শব্দ আছে।`,
         fixHint: '“I” আর “we” বাদ দিন — পাঠক এমনিই জানেন এটি কার CV।',
         targets: ['experience'],
       };
@@ -246,7 +246,7 @@ export const rules: AtsRule[] = [
     id: 'bullet-length',
     category: 'impact',
     weight: 3,
-    label: 'বুলেটের দৈর্ঘ্য',
+    label: 'বুলেট কত লম্বা',
     evaluate: (resume) => {
       const bullets = collectBullets(resume);
       if (bullets.length === 0) {
@@ -267,7 +267,7 @@ export const rules: AtsRule[] = [
       return {
         status: offending > bullets.length / 3 ? 'error' : 'warn',
         message: `${bn(long.length)}টি বেশি লম্বা, ${bn(short.length)}টি বেশি ছোট।`,
-        fixHint: 'প্রতিটি ছাপা অবস্থায় এক বা দুই লাইন হওয়া ভালো। এর চেয়ে লম্বা হলে পাঠক এড়িয়ে যান, আর ছোট হলে কিছুই বলে না।',
+        fixHint: 'প্রতিটি বুলেট ছাপা অবস্থায় এক বা দুই লাইন হলে ভালো। এর চেয়ে লম্বা হলে পাঠক এড়িয়ে যান, আর খুব ছোট হলে কিছুই বোঝায় না।',
         details: [
           ...long.map(
             (bullet) =>
@@ -287,11 +287,11 @@ export const rules: AtsRule[] = [
     id: 'verb-variety',
     category: 'impact',
     weight: 2,
-    label: 'বৈচিত্র্যময় শুরু',
+    label: 'আলাদা আলাদা শুরু',
     evaluate: (resume) => {
       const bullets = collectBullets(resume);
       if (bullets.length < 3) {
-        return { status: 'pass', message: 'পুনরাবৃত্তি নিয়ে ভাবার মতো বুলেট এখনো নেই।' };
+        return { status: 'pass', message: 'একই শব্দ বারবার এসেছে কি না দেখার মতো যথেষ্ট বুলেট এখনো নেই।' };
       }
 
       const counts = new Map<string, number>();
@@ -303,7 +303,7 @@ export const rules: AtsRule[] = [
       const repeated = [...counts.entries()].filter(([, count]) => count > 2);
 
       if (repeated.length === 0) {
-        return { status: 'pass', message: 'বুলেটের শুরুগুলো বৈচিত্র্যময়।' };
+        return { status: 'pass', message: 'বুলেটের শুরুর শব্দগুলো আলাদা আলাদা।' };
       }
 
       const repeatedVerbs = new Set(repeated.map(([verb]) => verb));
@@ -312,7 +312,7 @@ export const rules: AtsRule[] = [
         status: 'warn',
         message: `“${repeated[0][0]}” দিয়ে ${bn(repeated[0][1])}টি বুলেট শুরু হয়েছে।`,
         fixHint:
-          'প্রতিটি থেকে একটি রাখুন, বাকিগুলোতে এমন ক্রিয়া দিন যা আলাদাভাবে বলে কী ঘটেছিল: Designed, Reduced, Mentored, Automated, Shipped।',
+          'প্রতিটি থেকে একটি রাখুন, বাকিগুলোতে আলাদা কাজের শব্দ দিন, যা বলে কী ঘটেছিল: Designed, Reduced, Mentored, Automated, Shipped।',
         details: bullets
           .filter((bullet) => repeatedVerbs.has(firstWord(bullet.text)))
           .map((bullet) => `${describeBullet(resume, bullet)} — ${quoteBullet(bullet.text)}`),

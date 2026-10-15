@@ -49,7 +49,7 @@ export const TemplateStrip = ({ onPick, disabled }: TemplateStripProps) => {
               />
             </span>
             <Badge tone={meta.atsBaseline >= 90 ? 'success' : 'warning'} className="self-start">
-              ATS সীমা {bn(meta.atsBaseline)}
+              ATS-এর সর্বোচ্চ স্কোর {bn(meta.atsBaseline)}
             </Badge>
           </span>
         </button>

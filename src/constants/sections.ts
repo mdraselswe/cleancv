@@ -91,7 +91,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'সাম্প্রতিক থেকে পুরনো ক্রমে পদগুলো, সঙ্গে মাপা যায় এমন বুলেট।',
+    description: 'সবচেয়ে নতুন থেকে পুরনো ক্রমে পদগুলো, সঙ্গে সংখ্যায় মাপা যায় এমন বুলেট।',
   },
   education: {
     key: 'education',
@@ -131,7 +131,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: true,
     headless: false,
-    description: 'প্রদানকারী প্রতিষ্ঠান ও তারিখসহ সার্টিফিকেট।',
+    description: 'কোন প্রতিষ্ঠান কবে দিয়েছে, সেই তথ্যসহ সার্টিফিকেট।',
   },
   achievements: {
     key: 'achievements',
@@ -141,7 +141,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'আলাদা করে তুলে ধরার মতো উল্লেখযোগ্য অর্জন।',
+    description: 'আলাদা করে দেখানোর মতো বড় অর্জন।',
   },
   awards: {
     key: 'awards',
@@ -231,7 +231,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'নম্বরসহ অনুমোদিত বা অপেক্ষমাণ পেটেন্ট।',
+    description: 'নম্বরসহ পাওয়া বা আবেদন করা পেটেন্ট।',
   },
   interests: {
     key: 'interests',
@@ -261,7 +261,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: false,
-    description: 'তথ্য সঠিক হওয়ার আনুষ্ঠানিক ঘোষণা। দক্ষিণ এশিয়ার CV-তে প্রচলিত।',
+    description: '“আমার দেওয়া সব তথ্য সত্য” — এই ধরনের আনুষ্ঠানিক ঘোষণা। দক্ষিণ এশিয়ার CV-তে চালু আছে।',
   },
   signature: {
     key: 'signature',
@@ -271,7 +271,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
     locked: false,
     defaultEnabled: false,
     headless: true,
-    description: 'ডকুমেন্টের শেষে বসানো টাইপ করা বা আপলোড করা স্বাক্ষর।',
+    description: 'ডকুমেন্টের শেষে বসানো টাইপ করা বা আপলোড করা সই।',
   },
 };
 
@@ -285,7 +285,7 @@ export const SECTION_META: Record<SectionKey, SectionMeta> = {
 export const SECTION_UI_LABEL: Record<SectionKey, string> = {
   personal: 'ব্যক্তিগত তথ্য',
   contact: 'প্রোফাইল',
-  summary: 'সারসংক্ষেপ',
+  summary: 'সংক্ষিপ্ত পরিচিতি',
   experience: 'কাজের অভিজ্ঞতা',
   education: 'শিক্ষা',
   skills: 'দক্ষতা',
@@ -304,7 +304,7 @@ export const SECTION_UI_LABEL: Record<SectionKey, string> = {
   interests: 'আগ্রহ ও শখ',
   references: 'রেফারেন্স',
   declaration: 'ঘোষণা',
-  signature: 'স্বাক্ষর',
+  signature: 'সই',
 };
 
 /**

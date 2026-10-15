@@ -122,7 +122,7 @@ export const DocumentCard = ({
         <div className="min-w-0 flex-1">
           <h3 className="text-fg text-ui-md truncate font-semibold">{title}</h3>
           <p className="text-fg-subtle text-ui-xs mt-0.5 truncate">
-            সম্পাদনা: {formatRelativeTime(meta.updatedAt)}
+            শেষ এডিট: {formatRelativeTime(meta.updatedAt)}
             {resume ? ` · ${getTemplate(resume.meta.templateId).meta.name}` : ''}
           </p>
           <button

@@ -212,7 +212,7 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as PdfRequestBody;
   } catch {
-    return badRequest('অনুরোধের বডি অবশ্যই JSON হতে হবে।');
+    return badRequest('অনুরোধের ডেটা অবশ্যই JSON হতে হবে।');
   }
 
   if (!body.resume || typeof body.resume !== 'object') {

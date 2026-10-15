@@ -195,7 +195,7 @@ export const DeclarationSection = () => {
 
   return (
     <div className="grid grid-cols-1 gap-3 @sm:grid-cols-2">
-      <Field label="ঘোষণার বিবৃতি" className="col-span-full">
+      <Field label="ঘোষণার লেখা" className="col-span-full">
         {({ id }) => (
           <Textarea
             id={id}
@@ -260,13 +260,13 @@ export const SignatureSection = () => {
         items={SIGNATURE_TABS}
         value={signature.mode}
         onChange={(mode: (typeof SIGNATURE_MODES)[number]) => patch('signature', { mode })}
-        ariaLabel="স্বাক্ষরের ধরন"
+        ariaLabel="সইয়ের ধরন"
         className="self-start"
       />
 
       {signature.mode === 'typed' ? (
         <Field
-          label="স্বাক্ষরের নাম"
+          label="সইয়ের নাম"
           hint={`Blank uses your full name (${basics.fullName || '—'}).`}
         >
           {({ id, describedBy }) => (
@@ -281,11 +281,11 @@ export const SignatureSection = () => {
         </Field>
       ) : (
         <ImageUpload
-          label="স্বাক্ষরের ছবি"
+          label="সইয়ের ছবি"
           shape="wide"
           value={signature.image}
           budget={IMAGE_BUDGET}
-          hint="স্বচ্ছ PNG সবচেয়ে ভালো দেখায়।"
+          hint="ব্যাকগ্রাউন্ডহীন (স্বচ্ছ) PNG সবচেয়ে ভালো দেখায়।"
           onChange={(image) => patch('signature', { image })}
         />
       )}

@@ -73,8 +73,8 @@ export const PreviewPane = ({
             size="icon"
             variant="ghost"
             onClick={onResetZoom}
-            aria-label="প্রস্থ অনুযায়ী ফিট করুন"
-            title="প্রস্থ অনুযায়ী ফিট করুন"
+            aria-label="চওড়া অনুযায়ী ফিট করুন"
+            title="চওড়া অনুযায়ী ফিট করুন"
           >
             <Maximize2 size={14} />
           </Button>

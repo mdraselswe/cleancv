@@ -20,17 +20,17 @@ export const ATS_CATEGORY_WEIGHT: Record<AtsCategory, number> = {
 
 export const ATS_CATEGORY_LABEL: Record<AtsCategory, string> = {
   parseability: 'পড়ার যোগ্যতা',
-  completeness: 'সম্পূর্ণতা',
+  completeness: 'কতটা পূর্ণ',
   impact: 'লেখার প্রভাব',
   formatting: 'ফরম্যাটিং',
   keywords: 'কীওয়ার্ড মিল',
 };
 
 export const ATS_CATEGORY_DESCRIPTION: Record<AtsCategory, string> = {
-  parseability: 'স্বয়ংক্রিয় পার্সার আপনার ডকুমেন্টটি পড়তে পারে কি না।',
+  parseability: 'ATS সফটওয়্যার আপনার ডকুমেন্টটি পড়তে পারে কি না।',
   completeness: 'রিক্রুটার যেসব সেকশন আর তথ্য আশা করেন, সেগুলো আছে কি না।',
   impact: 'বুলেটগুলোতে শুধু দায়িত্ব নয়, মাপা যায় এমন ফলাফল আছে কি না।',
-  formatting: 'তারিখ, দৈর্ঘ্য আর কাঠামোর সামঞ্জস্য।',
+  formatting: 'তারিখ, লেখার দৈর্ঘ্য আর সাজানো ঠিক আছে কি না।',
   keywords: 'যে চাকরির বিজ্ঞপ্তির জন্য লিখছেন, তার সঙ্গে কতটা মিল।',
 };
 

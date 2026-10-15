@@ -65,7 +65,7 @@ export const HomeScreen = () => {
               <p className="text-fg-subtle text-ui-md mt-0.5">
                 {loading
                   ? 'আপনার লাইব্রেরি খোলা হচ্ছে…'
-                  : `এই ব্রাউজারে ${bn(home.documents.length)}টি সংরক্ষিত আছে। সম্পাদনা চালিয়ে যেতে একটি বেছে নিন।`}
+                  : `এই ব্রাউজারে ${bn(home.documents.length)}টি সেভ করা আছে। এডিট চালিয়ে যেতে একটি বেছে নিন।`}
               </p>
             </div>
 

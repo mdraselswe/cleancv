@@ -26,7 +26,7 @@ export const dynamic = 'force-dynamic';
  */
 const FAILURE_MESSAGE: Record<string, string> = {
   TOKEN_EXPIRED: 'ওই লিংকের মেয়াদ শেষ। লিংক এক ঘণ্টা কাজ করে।',
-  INVALID_TOKEN: 'ওই লিংকটি আর বৈধ নয়। নিশ্চিতকরণ লিংক একবারই কাজ করে।',
+  INVALID_TOKEN: 'ওই লিংকটি আর কাজ করে না। নিশ্চিত করার লিংক একবারই কাজ করে।',
   USER_NOT_FOUND: 'ওই লিংকটি এমন একটি অ্যাকাউন্টের, যা আর নেই।',
   INVALID_USER: 'ওই লিংকটি এখানে সাইন-ইন করা অ্যাকাউন্টের নয়, অন্য একটির।',
 };
@@ -46,10 +46,10 @@ export default async function VerifyEmailPage({
       <AuthShell title="লিংকটি কাজ করেনি">
         <div className="flex flex-col gap-4">
           <AuthNotice tone="error">
-            {FAILURE_MESSAGE[error] ?? 'নিশ্চিতকরণ লিংকটি ব্যবহার করা যায়নি।'}
+            {FAILURE_MESSAGE[error] ?? 'নিশ্চিত করার লিংকটি ব্যবহার করা যায়নি।'}
           </AuthNotice>
           <p className="text-fg-subtle text-ui-md leading-relaxed">
-            ইমেইল ও পাসওয়ার্ড দিয়ে সাইন-ইন করুন, পেজটি নতুন একটি লিংক পাঠানোর সুযোগ দেবে।
+            ইমেইল ও পাসওয়ার্ড দিয়ে সাইন-ইন করুন, তাহলে পেজটি নতুন লিংক পাঠানোর সুযোগ দেবে।
           </p>
           <Link
             href={AUTH_ROUTES.signIn}
@@ -64,7 +64,7 @@ export default async function VerifyEmailPage({
 
   if (!user) {
     return (
-      <AuthShell title="আপনার ইনবক্স দেখুন" subtitle="নিশ্চিতকরণ লিংক এক ঘণ্টা কাজ করে।">
+      <AuthShell title="আপনার ইনবক্স দেখুন" subtitle="নিশ্চিত করার লিংক এক ঘণ্টা কাজ করে।">
         <Link
           href={AUTH_ROUTES.signIn}
           className="tap-target text-fg text-ui-md text-center font-medium underline"

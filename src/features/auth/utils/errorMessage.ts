@@ -28,7 +28,7 @@ const MESSAGES: Record<string, string> = {
   USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: 'এই ইমেইলে আগে থেকেই একটি অ্যাকাউন্ট আছে।',
   PASSWORD_TOO_SHORT: 'পাসওয়ার্ডটি খুব ছোট।',
   PASSWORD_TOO_LONG: 'পাসওয়ার্ডটি খুব লম্বা।',
-  INVALID_TOKEN: `ওই লিংকটি আর বৈধ নেই। ${AUTH_ROUTES.forgotPassword} থেকে নতুন একটি চান।`,
+  INVALID_TOKEN: `ওই লিংকটি আর কাজ করে না। ${AUTH_ROUTES.forgotPassword} থেকে নতুন একটি চান।`,
   TOKEN_EXPIRED: 'ওই লিংকের মেয়াদ শেষ হয়েছে। নতুন একটি চান।',
   EMAIL_ALREADY_VERIFIED: 'ওই ইমেইল আগেই নিশ্চিত করা হয়েছে। আপনি সাইন-ইন করতে পারেন।',
   SESSION_EXPIRED: 'আপনি সাইন-আউট হয়ে গেছেন। চালিয়ে যেতে আবার সাইন-ইন করুন।',

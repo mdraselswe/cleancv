@@ -17,7 +17,7 @@ export const rules: AtsRule[] = [
     id: 'date-order',
     category: 'formatting',
     weight: 4,
-    label: 'তারিখের পরিসর',
+    label: 'তারিখের সীমা',
     evaluate: (resume) => {
       const reversed = [
         ...resume.experience.filter((entry) => isRangeReversed(entry.dates)),
@@ -26,13 +26,13 @@ export const rules: AtsRule[] = [
       ];
 
       if (reversed.length === 0) {
-        return { status: 'pass', message: 'প্রতিটি তারিখের পরিসর সামনের দিকে চলেছে, আর সব একই MM/YYYY ফরম্যাটে।' };
+        return { status: 'pass', message: 'প্রতিটি তারিখের শুরু আগে, শেষ পরে — কোনোটি উল্টো নয়, আর সবই একই MM/YYYY ফরম্যাটে।' };
       }
 
       return {
         status: 'error',
         message: `${bn(reversed.length)}টি এন্ট্রি শুরু হওয়ার আগেই শেষ হয়েছে।`,
-        fixHint: 'পার্সার এগুলো পড়লে অভিজ্ঞতার সময় ঋণাত্মক হিসাব করবে।',
+        fixHint: 'ATS সফটওয়্যার এগুলো পড়লে অভিজ্ঞতার সময় মাইনাস ধরবে।',
         targets: ['experience', 'education'],
       };
     },
@@ -47,15 +47,15 @@ export const rules: AtsRule[] = [
       if (estimatedPages <= MAX_RESUME_PAGES) {
         return {
           status: 'pass',
-          message: `প্রায় ${bn(estimatedPages)} পৃষ্ঠা — স্বাভাবিক সীমার ভেতরে।`,
+          message: `প্রায় ${bn(estimatedPages)} পেজ — স্বাভাবিক সীমার ভেতরে।`,
         };
       }
 
       return {
         status: estimatedPages > MAX_RESUME_PAGES + 1 ? 'error' : 'warn',
-        message: `প্রায় ${bn(estimatedPages)} পৃষ্ঠা।`,
+        message: `প্রায় ${bn(estimatedPages)} পেজ।`,
         fixHint:
-          'পুরনো পদগুলো দুটি বুলেটে নামিয়ে আনুন, অথবা “ডিজাইন” থেকে ফাঁকা জায়গা কমান। একাডেমিক CV ছাড়া দুই পৃষ্ঠাই সীমা।',
+          'পুরনো পদগুলোতে দুটি করে বুলেট রাখুন, অথবা “ডিজাইন” থেকে ফাঁকা জায়গা কমান। একাডেমিক CV ছাড়া অন্য CV দুই পেজের বেশি হওয়া ঠিক নয়।',
         targets: [panelTarget('design')],
       };
     },
@@ -65,10 +65,10 @@ export const rules: AtsRule[] = [
     id: 'summary-length',
     category: 'formatting',
     weight: 3,
-    label: 'সারসংক্ষেপের দৈর্ঘ্য',
+    label: 'সংক্ষিপ্ত পরিচিতিের দৈর্ঘ্য',
     evaluate: (resume) => {
       if (isBlank(resume.summary.text)) {
-        return { status: 'warn', message: 'মাপার মতো কোনো সারসংক্ষেপ নেই।', targets: ['summary'] };
+        return { status: 'warn', message: 'মাপার মতো কোনো সংক্ষিপ্ত পরিচিতি নেই।', targets: ['summary'] };
       }
 
       const count = wordCount(resume.summary.text);
@@ -111,8 +111,8 @@ export const rules: AtsRule[] = [
       return outOfOrder
         ? {
             status: 'warn',
-            message: 'পদগুলো সাম্প্রতিক থেকে পুরনো ক্রমে নেই।',
-            fixHint: 'সবচেয়ে সাম্প্রতিকটি আগে রাখুন। রিক্রুটার ও পার্সার দুজনেই এটাই ধরে নেয়।',
+            message: 'পদগুলো নতুন থেকে পুরনো ক্রমে নেই।',
+            fixHint: 'সবচেয়ে নতুনটি আগে রাখুন। রিক্রুটার ও ATS সফটওয়্যার দুজনেই এটাই ধরে নেয়।',
             targets: ['experience'],
           }
         : { status: 'pass', message: 'পদগুলো নতুন থেকে পুরনো ক্রমে সাজানো।' };
@@ -150,8 +150,8 @@ export const rules: AtsRule[] = [
 
       return {
         status: pt < BODY_TEXT_PT.error ? 'error' : 'warn',
-        message: `মূল লেখার আকার প্রায় ${bn(pt)}pt — পাঠকের চোখ ক্লান্ত হওয়ার মতো ছোট।`,
-        fixHint: `লেখার আকার ${bn(Math.round(current * 100))}% থেকে ${bn(Math.round(rounded * 100))}% করলে এটি ${bn(BODY_TEXT_PT.warn)}pt-তে পৌঁছায়। এতে একটি পৃষ্ঠা বাড়তে পারে; বাড়লে আবার ছোট না করে দু-একটি বুলেট ছেঁটে ফেলুন।`,
+        message: `মূল লেখার আকার প্রায় ${bn(pt)}pt — পড়তে চোখে কষ্ট হওয়ার মতো ছোট।`,
+        fixHint: `লেখার আকার ${bn(Math.round(current * 100))}% থেকে ${bn(Math.round(rounded * 100))}% করলে এটি ${bn(BODY_TEXT_PT.warn)}pt-তে পৌঁছায়। এতে একটি পেজ বেড়ে যেতে পারে; বাড়লে লেখার আকার আবার ছোট না করে দু-একটি বুলেট কমিয়ে দিন।`,
         fix: {
           kind: 'font-scale',
           value: rounded,

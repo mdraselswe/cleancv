@@ -518,7 +518,7 @@ export const RichTextEditor = ({
           <button
             type="button"
             aria-label="লিংক"
-            title={active.link ? 'লিংক সম্পাদনা' : 'লিংক যোগ করুন'}
+            title={active.link ? 'লিংক এডিট' : 'লিংক যোগ করুন'}
             aria-pressed={active.link}
             onMouseDown={(event) => event.preventDefault()}
             onClick={openLink}
@@ -598,7 +598,7 @@ export const RichTextEditor = ({
           </div>
           {draft.error ? <p className="text-danger text-ui-xs">{draft.error}</p> : null}
           <p className="text-fg-subtle text-ui-2xs leading-snug">
-            আগে যে শব্দগুলোতে লিংক দেবেন সেগুলো নির্বাচন করুন। ATS-সেফ PDF-এ লিংকের পরে ঠিকানাটিও ছাপা হয়।
+            যে শব্দে লিংক দিতে চান, আগে সেটি সিলেক্ট করুন। ATS-সেফ PDF-এ লিংকের পরে ঠিকানাটিও ছাপা হয়।
           </p>
         </div>
       ) : null}

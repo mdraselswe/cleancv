@@ -143,14 +143,14 @@ export async function POST(request: Request) {
   const user = await getSessionUser(request.headers, { fresh: true });
 
   if (!user || !isAiAllowed(user.email)) {
-    return fail(403, 'এই অ্যাকাউন্টে AI পরিমার্জন পাওয়া যায় না।', 'ai_not_allowed');
+    return fail(403, 'এই অ্যাকাউন্টে AI দিয়ে লেখা ঠিক করার সুবিধা নেই।', 'ai_not_allowed');
   }
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return fail(400, 'এই লেখাটি পরিমার্জন করা যায়নি।');
+  if (!parsed.success) return fail(400, 'এই লেখাটি গুছিয়ে দেওয়া যায়নি।');
 
   if (!(await spendAllowance(user.id))) {
-    return fail(429, 'এই ঘণ্টার AI পরিমার্জনের সীমা শেষ। পরে আবার চেষ্টা করুন।', 'ai_rate_limited');
+    return fail(429, 'এই ঘণ্টায় AI দিয়ে লেখা ঠিক করার সীমা শেষ। পরে আবার চেষ্টা করুন।', 'ai_rate_limited');
   }
 
   const env = serverEnv();
@@ -240,7 +240,7 @@ export async function POST(request: Request) {
   if (introducesNewNumbers(input.text, suggestion)) {
     return fail(
       422,
-      'নতুন লেখায় এমন একটি সংখ্যা যোগ হয়েছিল যা আপনার লেখায় নেই, তাই এটি বাদ দেওয়া হয়েছে। আবার চেষ্টা করুন।',
+      'AI-র নতুন লেখায় এমন একটি সংখ্যা এসেছিল যা আপনার লেখায় ছিল না, তাই এটি বাদ দেওয়া হয়েছে। আবার চেষ্টা করুন।',
       'ai_invented',
     );
   }

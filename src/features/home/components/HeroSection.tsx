@@ -16,7 +16,7 @@ export interface HeroSectionProps {
 const PERKS = [
   { icon: Gauge, label: 'লাইভ ATS স্কোর', hue: 'emerald' },
   { icon: Layers, label: 'ডিজাইন করা + ATS-সেফ PDF', hue: 'violet' },
-  { icon: Lock, label: 'ব্রাউজারেই সংরক্ষিত', hue: 'amber' },
+  { icon: Lock, label: 'ব্রাউজারেই সেভ করা', hue: 'amber' },
 ] as const;
 
 /** The first screen: what this is, the three ways in, and a picture of the result. */

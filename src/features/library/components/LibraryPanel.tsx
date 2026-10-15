@@ -100,7 +100,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
     const landed = await actions.importDocuments(result.documents);
     const message =
       landed === 0
-        ? 'ফিরিয়ে আনার মতো কিছু নেই — ফাইলের সবকিছু আগে থেকেই এখানে আছে, অথবা পুরনো।'
+        ? 'ফাইলের সবকিছু এখানে আগে থেকেই আছে, অথবা এখানকারটি বেশি নতুন — ফিরিয়ে আনার মতো কিছু নেই।'
         : `${bn(landed)}টি ডকুমেন্ট ফিরিয়ে আনা হয়েছে।`;
 
     setNotice(message);
@@ -117,7 +117,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
     <Drawer label="আমার CV" onClose={onClose}>
       <ModalHeader
         title="আমার CV"
-        subtitle={`${bn(documents.length)}টি সংরক্ষিত${atLimit ? ` — সীমা ${bn(MAX_DOCUMENTS)}টি` : ''}`}
+        subtitle={`${bn(documents.length)}টি সেভ করা${atLimit ? ` — সীমা ${bn(MAX_DOCUMENTS)}টি` : ''}`}
         onClose={onClose}
       />
 
@@ -166,7 +166,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                       }}
                     />
                     <Button size="sm" onClick={() => void commitRename(document.id)}>
-                      সংরক্ষণ
+                      সেভ
                     </Button>
                   </div>
                 ) : (
@@ -182,7 +182,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                       <span className="text-fg text-ui block truncate font-medium">{title}</span>
                       <span className="text-fg-subtle text-ui-2xs block truncate">
                         {document.personName && document.name ? `${document.personName} · ` : ''}
-                        সংরক্ষিত: {formatRelativeTime(document.updatedAt)}
+                        সেভ করা: {formatRelativeTime(document.updatedAt)}
                       </span>
                     </button>
 
@@ -219,7 +219,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                         size="icon"
                         variant="ghost"
                         aria-label={`${title} কপি করুন`}
-                        title="কপি করুন — একটি চাকরির জন্য কপি সাজান"
+                        title="কপি করুন — একটি চাকরির জন্য কপিটি আলাদা করে সাজান"
                         disabled={atLimit}
                         onClick={() => void actions.duplicate(document.id)}
                       >
@@ -245,7 +245,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
         <div className="border-border-base mt-5 border-t pt-4">
           <SectionLabel>আপনার CV নিরাপদ রাখা</SectionLabel>
           <p className="text-fg-subtle text-ui-xs mt-1">
-            প্রতিটি পরিবর্তন আগে এই ব্রাউজারে সংরক্ষিত হয়, তাই CleanCV অফলাইনেও কাজ করে।
+            প্রতিটি পরিবর্তন আগে এই ব্রাউজারে সেভ করা হয়, তাই CleanCV অফলাইনেও কাজ করে।
           </p>
 
           {!sessionPending && signedIn ? (
@@ -327,13 +327,13 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
               </div>
               <p className="text-fg-subtle text-ui-xs mt-0.5">
                 {workspace.folderName
-                  ? `প্রতিটি CV “${workspace.folderName}”-এ সংরক্ষিত হচ্ছে। শেষ লেখা: ${formatRelativeTime(workspace.lastSyncedAt)}।`
-                  : 'একটি ফোল্ডার বেছে নিন, তাহলে আপনি লেখার সঙ্গে সঙ্গে প্রতিটি CV সেখানে লেখা হবে। Drive বা OneDrive যে ফোল্ডার আগে থেকেই সিঙ্ক করে, সেটি বেছে নিলে বিনা খরচে এই কম্পিউটারের বাইরে একটি ব্যাকআপ পাবেন।'}
+                  ? `প্রতিটি CV “${workspace.folderName}”-এ সেভ করা হচ্ছে। শেষ লেখা: ${formatRelativeTime(workspace.lastSyncedAt)}।`
+                  : 'একটি ফোল্ডার বেছে নিন, তাহলে আপনি যা লিখবেন তা সঙ্গে সঙ্গে প্রতিটি CV হিসেবে সেখানে সেভ হবে। Drive বা OneDrive যে ফোল্ডার আগে থেকেই সিঙ্ক করে সেটি বেছে নিলে বিনা খরচে কম্পিউটারের বাইরেও একটি ব্যাকআপ পাবেন।'}
               </p>
 
               {workspace.needsPermission ? (
                 <p className="text-warning text-ui-2xs mt-1.5">
-                  ব্রাউজার ওই ফোল্ডারের অ্যাক্সেস হারিয়েছে। সংরক্ষণ চালু রাখতে আবার সংযুক্ত করুন।
+                  ব্রাউজার ওই ফোল্ডারে আর ঢুকতে পারছে না। সেভ চালু রাখতে আবার ফোল্ডারটি যুক্ত করুন।
                 </p>
               ) : null}
 
@@ -377,7 +377,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
                       variant="ghost"
                       onClick={() => void actions.disconnectWorkspace()}
                     >
-                      সংযোগ বিচ্ছিন্ন করুন
+                      সংযোগ বন্ধ করুন
                     </Button>
                   </>
                 ) : null}
@@ -385,8 +385,7 @@ export const LibraryPanel = ({ open, onClose }: LibraryPanelProps) => {
             </div>
           ) : (
             <p className="border-border-base text-fg-subtle rounded-card text-ui-xs mt-3 border p-3">
-              এই ব্রাউজার সরাসরি কোনো ফোল্ডারে লিখতে পারে না। তার বদলে একটি ব্যাকআপ ফাইল এক্সপোর্ট
-              করুন, আর সেটি এমন জায়গায় রাখুন যেখানে পরে খুঁজে পাবেন।
+              এই ব্রাউজার সরাসরি কোনো ফোল্ডারে ফাইল সেভ করতে পারে না। তার বদলে একটি ব্যাকআপ ফাইল এক্সপোর্ট করুন, আর সেটি এমন জায়গায় রাখুন যেখানে পরে খুঁজে পাবেন।
             </p>
           )}
 

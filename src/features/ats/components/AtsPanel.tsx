@@ -61,11 +61,11 @@ export const AtsPanel = ({
           <ScoreRing score={score.total} tone={score.tone} label={score.band} />
 
           <div className="min-w-0">
-            <p className="text-ui-md text-fg font-semibold">সামগ্রিক স্কোর</p>
+            <p className="text-ui-md text-fg font-semibold">মোট স্কোর</p>
             <p className="text-ui-xs text-fg-subtle mt-0.5 leading-snug">
               {score.issues.length === 0
                 ? 'সব যাচাই পাস করেছে। এবার পাঠিয়ে দিন।'
-                : `${bn(score.issues.length)}টি যাচাই দেখতে হবে, সবচেয়ে গুরুতরগুলো আগে।`}
+                : `${bn(score.issues.length)}টি বিষয় ঠিক করা দরকার, সবচেয়ে জরুরিগুলো আগে।`}
             </p>
           </div>
         </div>
@@ -77,7 +77,7 @@ export const AtsPanel = ({
             value={score.readability}
           />
           <Meter
-            label="লেখার জোর"
+            label="লেখার মান"
             hint="লেখাগুলো কি কিছু প্রমাণ করে?"
             value={score.content}
           />
@@ -87,13 +87,12 @@ export const AtsPanel = ({
           <p className="bg-warning/10 text-warning rounded-control text-ui-xs px-3 py-2 leading-snug">
             ফাইলটি মেশিনের কাছে {bn(score.uncapped)} স্কোরের মতো পড়া যায়, কিন্তু লেখায় প্রমাণ কম
             থাকায় স্কোর {bn(score.total)}-এ আটকে আছে। শুধু লেখার যাচাইগুলো ঠিক করলেই এটি{' '}
-            {bn(score.withContentFixed)}-এ উঠবে। নিচে <strong>+ পয়েন্ট</strong> চিহ্নিত
-            বিষয়গুলো দিয়ে শুরু করুন: ওগুলো শেষ না হলে ফরম্যাটিং ঠিক করে মোট স্কোর নড়বে না।
+            {bn(score.withContentFixed)}-এ উঠবে। নিচে <strong>+ পয়েন্ট</strong> চিহ্ন দেওয়া সমস্যাগুলো আগে ঠিক করুন: ওগুলো ঠিক না হলে ফরম্যাটিং ঠিক করলেও মোট স্কোর বাড়বে না।
           </p>
         ) : null}
         {score.cappedBy === 'completeness' ? (
           <p className="bg-warning/10 text-warning rounded-control text-ui-xs px-3 py-2 leading-snug">
-            মৌলিক তথ্যগুলো পূরণ না হওয়া পর্যন্ত স্কোর {bn(score.total)}-এ আটকে থাকবে।
+            জরুরি তথ্যগুলো না দেওয়া পর্যন্ত স্কোর {bn(score.total)}-এ আটকে থাকবে।
           </p>
         ) : null}
       </div>
@@ -182,9 +181,7 @@ export const AtsPanel = ({
             <div className="border-primary/20 bg-primary-soft/40 rounded-control flex flex-col gap-2 border p-3">
               <p className="text-fg text-ui font-semibold">এই চাকরির জন্য CV সাজান</p>
               <p className="text-fg-muted text-ui-xs leading-snug">
-                মিলে যাওয়া দক্ষতা ও বুলেট আগে বসায়, আর বিজ্ঞপ্তির নিজস্ব শব্দগুলো বোল্ড করে। এই CV-ই
-                বদলাবে নাকি একটি কপি সংরক্ষণ হবে, সেটি আপনি ঠিক করেন; আর আপনি টিক না দিলে কিছুই
-                যোগ হয় না।
+                যে দক্ষতা ও বুলেট মেলে সেগুলো ওপরে আনে, আর বিজ্ঞপ্তির শব্দগুলো বোল্ড করে। এই CV-ই বদলাবে, নাকি আলাদা একটি কপি সেভ হবে — সেটি আপনি ঠিক করেন। আপনি টিক না দিলে কিছুই যোগ হয় না।
               </p>
               <button
                 type="button"
@@ -213,9 +210,7 @@ export const AtsPanel = ({
                   )}
                 </div>
                 <p className="text-ui-xs text-fg-subtle mt-2 leading-snug">
-                  শুধু সেটাই যোগ করুন, যা সত্যিই আপনার সম্পর্কে সত্যি, আর বিজ্ঞপ্তির নিজস্ব বানানে।
-                  যে শব্দের পক্ষে দাঁড়াতে পারবেন না তা দিয়ে CV ভরালে ফিল্টার নয়, ইন্টারভিউতেই ধরা
-                  পড়বেন।
+                  শুধু সেটাই যোগ করুন, যা সত্যিই আপনার আছে, আর বিজ্ঞপ্তিতে যেভাবে লেখা সেভাবেই লিখুন। যে শব্দের ব্যাপারে আপনি কিছুই জানেন না তা দিয়ে CV ভরালে ফিল্টারে না হলেও ইন্টারভিউতে ধরা পড়বেন।
                 </p>
               </div>
 

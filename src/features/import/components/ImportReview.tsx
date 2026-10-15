@@ -101,8 +101,7 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
           ফাইলে চেনার মতো কিছু পাওয়া যায়নি।
         </p>
         <p className="text-fg-subtle text-ui-xs">
-          ভারী ডিজাইনের CV থেকে প্রায়ই এলোমেলো লেখা বের হয়। DOCX সংস্করণ, অথবা মডেলসহ স্মার্ট ইমপোর্ট
-          সাধারণত ভালো ফল দেয়।
+          অনেক ডিজাইনওয়ালা CV থেকে প্রায়ই এলোমেলো লেখা বের হয়। DOCX ফাইল, অথবা মডেলসহ স্মার্ট ইমপোর্ট সাধারণত ভালো কাজ করে।
         </p>
         <Button variant="outline" className="self-start" onClick={onCancel}>
           পেছনে যান
@@ -125,7 +124,7 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
         ))}
 
         <p className="text-fg-subtle text-ui-xs mb-3">
-          আপনি প্রয়োগ না করা পর্যন্ত কিছুই লেখা হয় না। যা ভুল এসেছে তা বন্ধ করে দিন — যা বন্ধ রাখবেন, সেখানে আপনার CV-তে এখন যা আছে তা-ই থাকবে।
+          আপনি নিশ্চিত না করা পর্যন্ত কিছুই বদলায় না। যেটি ভুল এসেছে সেটি বন্ধ করে দিন — যেটি বন্ধ রাখবেন, সেখানে আপনার CV-তে এখন যা আছে তা-ই থাকবে।
         </p>
 
         <div className="mb-3">
@@ -189,7 +188,7 @@ export const ImportReview = ({ result, resume, onApply, onCancel }: ImportReview
           onClick={() => onApply(applyImport(resume, result.parsed, { accepted, strategy }))}
         >
           <Lang
-            bn={`${bn(groups.length)}টির মধ্যে ${bn(accepted.size)}টি প্রয়োগ করুন`}
+            bn={`${bn(groups.length)}টির মধ্যে ${bn(accepted.size)}টি যোগ করুন`}
             en={`Apply ${accepted.size} of ${groups.length}`}
           />
         </Button>

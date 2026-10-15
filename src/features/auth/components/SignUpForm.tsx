@@ -59,7 +59,7 @@ export const SignUpForm = ({ redirectTo, googleEnabled, emailEnabled }: SignUpFo
     return (
       <div className="flex flex-col gap-4">
         <AuthNotice tone="success">
-          নিশ্চিতকরণ লিংকের জন্য <strong className="font-semibold">{sentTo}</strong> দেখুন। লিংকটি
+          নিশ্চিত করার লিংকের জন্য <strong className="font-semibold">{sentTo}</strong> দেখুন। লিংকটি
           এক ঘণ্টা কাজ করবে।
         </AuthNotice>
         <p className="text-fg-subtle text-ui-md leading-relaxed">

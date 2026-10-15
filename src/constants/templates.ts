@@ -25,13 +25,13 @@ export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 
 export const TEMPLATE_CATEGORY_LABEL: Record<TemplateCategory, string> = {
   ats: 'ATS-সেফ',
-  balanced: 'ভারসাম্যপূর্ণ',
+  balanced: 'মাঝামাঝি',
   creative: 'সৃজনশীল',
 };
 
 export const TEMPLATE_CATEGORY_HINT: Record<TemplateCategory, string> = {
-  ats: 'পার্সারের পড়ার নির্ভরযোগ্যতা সবচেয়ে বেশি। জব পোর্টালে আবেদন করার সময় এগুলো ব্যবহার করুন।',
-  balanced: 'আলাদা লেআউট, তবুও পার্সার সহজেই পড়তে পারে।',
+  ats: 'ATS সফটওয়্যার এগুলো সবচেয়ে ভালো পড়তে পারে। জব পোর্টালে আবেদন করার সময় এগুলো ব্যবহার করুন।',
+  balanced: 'আলাদা লেআউট, তবুও ATS সফটওয়্যার সহজেই পড়তে পারে।',
   creative: 'চোখে পড়ার মতো ডিজাইন। অনলাইনে আবেদনের সময় ATS এক্সপোর্টের সঙ্গে ব্যবহার করুন।',
 };
 

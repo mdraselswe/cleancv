@@ -55,7 +55,7 @@ export const DesignSection = () => {
     <div className="flex flex-col gap-6">
       <div
         role="group"
-        aria-label="ডিজাইন ছাঁকুন"
+        aria-label="ডিজাইন খুঁজুন"
         className="scroll-none -mx-1 flex gap-1.5 overflow-x-auto px-1 py-0.5"
       >
         {(['all', ...TEMPLATE_CATEGORIES] as const).map((value) => (
@@ -134,7 +134,7 @@ export const DesignSection = () => {
                         tone={meta.atsBaseline >= 90 ? 'success' : 'warning'}
                         className="self-start"
                       >
-                        ATS সীমা {bn(meta.atsBaseline)}
+                        ATS-এর সর্বোচ্চ স্কোর {bn(meta.atsBaseline)}
                       </Badge>
                     </span>
                   </button>
@@ -202,8 +202,7 @@ export const DesignSection = () => {
           />
         ) : (
           <p className="text-ui-xs text-fg-subtle">
-            {active.meta.name} সর্বোচ্চ পার্সিং নির্ভরযোগ্যতার জন্য কালো রঙে ছাপা হয়, তাই প্রধান রং
-            এখানে কাজ করে না।
+            {active.meta.name} ATS সফটওয়্যার যাতে সবচেয়ে ভালো পড়তে পারে, তাই কালো রঙে ছাপা হয়। এখানে প্রধান রং কাজ করে না।
           </p>
         )}
 
@@ -248,7 +247,7 @@ export const DesignSection = () => {
                 </div>
 
                 <Slider
-                  label="কোণের গোলাকার ভাব"
+                  label="কোণ কতটা গোল"
                   min={PHOTO_RADIUS.min}
                   max={PHOTO_RADIUS.max}
                   step={PHOTO_RADIUS.step}
@@ -261,7 +260,7 @@ export const DesignSection = () => {
           </>
         ) : (
           <p className="text-ui-xs text-fg-subtle">
-            {active.meta.name} ছবি ছাপে না — পার্সারের জন্য ছবিই সবচেয়ে বড় ঝুঁকি।
+            {active.meta.name} ছবি ছাপে না — ATS সফটওয়্যারের জন্য ছবিই সবচেয়ে বড় ঝুঁকি।
           </p>
         )}
       </div>
