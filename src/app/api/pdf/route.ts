@@ -240,14 +240,21 @@ export async function POST(request: Request) {
    * handler producing a string for a browser to swallow, which is the one case
    * the rule is not about.
    */
-  const { renderToStaticMarkup } = await import('react-dom/server');
-  const markup = renderToStaticMarkup(createElement(Template, { resume: withoutHiddenEntries(resume), print: true }));
-
   // Puppeteer talks to this same app, so the request's own origin is the right
   // base — no env var to keep in sync across environments.
   const origin = new URL(request.url).origin;
 
   try {
+    /*
+     * Inside the try: a template that throws on somebody's data used to escape
+     * as a bare 500 with no body, which the client can only report as "the
+     * server could not render the PDF". Answering in JSON gives it a message.
+     */
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const markup = renderToStaticMarkup(
+      createElement(Template, { resume: withoutHiddenEntries(resume), print: true }),
+    );
+
     const rendered = await renderPdf({
       origin,
       markup,
