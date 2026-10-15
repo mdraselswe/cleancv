@@ -7,7 +7,7 @@ import { ROUTES, SIGN_IN_REQUIRED } from '@/constants';
 import type { Resume } from '@/features/resume';
 import { toFileStem } from '@/lib/text';
 
-import { downloadBlob, filenameFromResponse } from '../utils/download';
+import { downloadBlob } from '../utils/download';
 
 export type ExportMode = 'design' | 'ats';
 
@@ -77,7 +77,8 @@ export const useExportPdf = () => {
         const stem = toFileStem(resume.meta.documentName || resume.basics.fullName || 'resume');
         const fallback = mode === 'ats' ? `${stem}-ATS.pdf` : `${stem}.pdf`;
 
-        const filename = filenameFromResponse(response, fallback);
+        // The reader chose this name in the app; the server's header is only a safety net.
+        const filename = fallback;
 
         downloadBlob(await response.blob(), filename);
         setState({ pending: null, error: '', failedMode: null, signInRequired: false });

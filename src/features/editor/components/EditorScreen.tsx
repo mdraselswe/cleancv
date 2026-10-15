@@ -24,11 +24,13 @@ import {
 } from '@/features/library';
 import { useResume, useResumeActions, useResumeStore } from '@/features/resume';
 import { bn } from '@/lib/bn';
+import { toFileStem } from '@/lib/text';
 
 import { useActiveSection } from '../hooks/useActiveSection';
 import { useEditorLayout, type EditorTab } from '../hooks/useEditorLayout';
 import { useSectionProgress } from '../hooks/useSectionProgress';
 import { EditorPane } from './EditorPane';
+import { FileNameDialog } from './FileNameDialog';
 import { PreviewPane } from './PreviewPane';
 import { SectionRail } from './SectionNav';
 import { ShortcutsDialog } from './ShortcutsDialog';
@@ -59,6 +61,7 @@ export const EditorScreen = () => {
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [tailorOpen, setTailorOpen] = useState(false);
+  const [fileNameOpen, setFileNameOpen] = useState(false);
   const actions = useResumeActions();
   const canUndo = useResumeStore((state) => state.past.length > 0);
   const canRedo = useResumeStore((state) => state.future.length > 0);
@@ -162,6 +165,8 @@ export const EditorScreen = () => {
       onExportDesign={exportDesign}
       onExportAts={() => void pdf.exportPdf(resume, 'ats')}
       onExportJson={() => json.exportJson(resume)}
+      fileStem={toFileStem(resume.meta.documentName || resume.basics.fullName || 'resume')}
+      onEditFileName={() => setFileNameOpen(true)}
       themePreference={theme.preference}
       onCycleTheme={theme.cycle}
       cloudSynced={Boolean(activeDocument?.cloud)}
@@ -284,6 +289,8 @@ export const EditorScreen = () => {
         className="sr-only"
         tabIndex={-1}
       />
+
+      {fileNameOpen ? <FileNameDialog onClose={() => setFileNameOpen(false)} /> : null}
 
       <LibraryPanel open={libraryOpen} onClose={() => setLibraryOpen(false)} />
 

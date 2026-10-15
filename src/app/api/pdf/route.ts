@@ -276,7 +276,8 @@ export async function POST(request: Request) {
     return new Response(pdf as BodyInit, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        // The plain form is for old clients and must be ASCII; the starred one carries the real name.
+        'Content-Disposition': `attachment; filename="${filename.replace(/[^ -~]/g, '_')}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
         'Cache-Control': 'no-store',
       },
     });

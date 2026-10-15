@@ -38,11 +38,16 @@ export const titleCase = (value: string): string =>
 export const joinNonEmpty = (parts: Array<string | undefined | null>, separator = ' • '): string =>
   parts.filter((part): part is string => !isBlank(part)).join(separator);
 
-/** Filesystem-safe stem for a downloaded file. */
+/**
+ * Filesystem-safe stem for a downloaded file.
+ *
+ * Letters and digits of any script are kept - a name written in Bangla is still
+ * a name - and everything a filesystem objects to is dropped.
+ */
 export const toFileStem = (value: string, fallback = 'resume'): string => {
   const stem = value
-    .normalize('NFKD')
-    .replace(/[^\w\s-]/g, '')
+    .normalize('NFC')
+    .replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
     .trim()
     .replace(/\s+/g, '-')
     .slice(0, 60);

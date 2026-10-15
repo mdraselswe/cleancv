@@ -19,6 +19,7 @@ import {
   Sun,
   Undo2,
   Upload,
+  Pencil,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -74,6 +75,9 @@ export interface ToolbarProps {
   onExportDesign: () => void;
   onExportAts: () => void;
   onExportJson: () => void;
+  /** The name the PDF will be saved under, and a way to change it. */
+  fileStem: string;
+  onEditFileName: () => void;
 
   themePreference: ThemePreference;
   onCycleTheme: () => void;
@@ -119,6 +123,8 @@ export const Toolbar = ({
   onExportDesign,
   onExportAts,
   onExportJson,
+  fileStem,
+  onEditFileName,
   themePreference,
   onCycleTheme,
   cloudSynced,
@@ -221,6 +227,13 @@ export const Toolbar = ({
       onSelect: onExportAts,
     },
     { id: 'sep-dl', separator: true },
+    {
+      id: 'file-name',
+      label: `ফাইলের নাম: ${fileStem}.pdf`,
+      hint: 'বদলান',
+      icon: <Pencil size={15} />,
+      onSelect: onEditFileName,
+    },
     {
       id: 'json',
       label: 'JSON ব্যাকআপ',
