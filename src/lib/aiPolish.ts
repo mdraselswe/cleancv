@@ -11,6 +11,12 @@ export const AI_POLISH = {
   maxTextChars: 1200,
   maxJobDescriptionChars: 6000,
   maxContextChars: 200,
+  /** What the reader asks for: "write for a full stack role", "stress Node.js". */
+  maxInstructionChars: 400,
+  /** The digest of the CV the summary is written from. */
+  maxFactsChars: 6000,
+  /** Bullets rewritten in one request - an entry holds at most this many. */
+  maxBullets: 12,
   /** Requests one account may make per window. A free quota is shared by everyone. */
   rateLimit: { windowMs: 60 * 60 * 1000, max: 40 },
 } as const;
@@ -23,6 +29,8 @@ export interface PolishRequest {
   /** The role and employer the bullet belongs to — wording context only. */
   context?: string;
   jobDescription?: string;
+  /** The reader’s own words about what the rewrite should do. */
+  instruction?: string;
 }
 
 const KIND_GUIDE: Record<PolishKind, string> = {
@@ -49,9 +57,16 @@ export const buildSystemPrompt = (kind: PolishKind, hasJobDescription: boolean):
     .filter(Boolean)
     .join('\n');
 
-export const buildUserPrompt = ({ text, context, jobDescription }: PolishRequest): string =>
+export const buildUserPrompt = ({
+  text,
+  context,
+  jobDescription,
+  instruction,
+}: PolishRequest): string =>
   [
     context ? `Context (do not repeat it): ${context}` : '',
+    instruction ? `Reader’s instruction (style and emphasis only):
+${instruction}` : '',
     jobDescription ? `Job description (vocabulary only):\n${jobDescription}` : '',
     `Text to rewrite:\n${text}`,
   ]
@@ -83,3 +98,131 @@ export const cleanSuggestion = (raw: string): string =>
     .replace(/^[-•*]\s+(?!\*)/, '')
     .replace(/\s*\n+\s*/g, ' ')
     .trim();
+
+/* --- Writing from the CV and an instruction ------------------------------- */
+
+/** The rules every generated text keeps, whatever the reader asked for. */
+const GROUNDING_RULES = [
+  'Hard rules:',
+  '- Every fact must come from the CV facts you are given. Never add a number, percentage, skill, tool, employer, title, date, degree or claim that is not in them.',
+  '- The reader’s instruction chooses the angle, the role to aim at and what to put first. It never permits adding a fact. If the instruction asks for something the CV does not support, leave it out rather than invent it.',
+  '- Write the CV text in English, even if the instruction is in another language.',
+  '- Plain, specific, ATS-friendly language. No buzzwords ("passionate", "results-driven"), no emojis, no first-person pronouns.',
+];
+
+export const buildGenerateSummaryPrompt = (hasJobDescription: boolean): string =>
+  [
+    'You write the professional summary of a resume, for the role the reader names.',
+    'Two to four sentences, under 80 words. Open with the role and the years of experience if "Years of experience" is given, then the strongest evidence for THAT role, chosen from the CV facts.',
+    'Different target roles must produce different summaries: pick and order the facts a recruiter for the named role cares about, and say less about the rest.',
+    ...GROUNDING_RULES,
+    hasJobDescription
+      ? '- A job description is given. Use its wording where the CV already supports it. Never claim something only because the job asks for it.'
+      : '',
+    '- Reply with the summary only: no quotes, no preface, no explanation, no list.',
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+export interface GenerateSummaryRequest {
+  role: string;
+  facts: string;
+  instruction?: string;
+  jobDescription?: string;
+}
+
+export const buildGenerateSummaryUser = ({
+  role,
+  facts,
+  instruction,
+  jobDescription,
+}: GenerateSummaryRequest): string =>
+  [
+    `Target role: ${role}`,
+    instruction ? `Reader’s instruction:\n${instruction}` : '',
+    jobDescription ? `Job description:\n${jobDescription}` : '',
+    `CV facts:\n${facts}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
+export const buildRewriteBulletsPrompt = (hasJobDescription: boolean): string =>
+  [
+    'You rewrite the bullet points of one resume entry (a job or a project), following the reader’s instruction.',
+    'Return exactly as many bullets as you were given, in the same order, each one rewriting the bullet at that position.',
+    'Each bullet: starts with a strong past-tense verb, one or two lines, under 28 words, keeps every number exactly as written.',
+    'You may re-word, tighten, lead with the outcome and use the vocabulary of the role named in the instruction. You may not merge bullets, add bullets or drop one.',
+    ...GROUNDING_RULES,
+    '- Keep **double-asterisk** bold markers on the same words if present; do not invent new ones.',
+    hasJobDescription
+      ? '- A job description is given for vocabulary only. Never add something because the job asks for it.'
+      : '',
+    'Reply with a JSON array of strings and nothing else.',
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+export interface RewriteBulletsRequest {
+  bullets: string[];
+  context?: string;
+  instruction?: string;
+  jobDescription?: string;
+}
+
+export const buildRewriteBulletsUser = ({
+  bullets,
+  context,
+  instruction,
+  jobDescription,
+}: RewriteBulletsRequest): string =>
+  [
+    context ? `Entry: ${context}` : '',
+    instruction ? `Reader’s instruction:\n${instruction}` : '',
+    jobDescription ? `Job description (vocabulary only):\n${jobDescription}` : '',
+    `Bullets (JSON array):\n${JSON.stringify(bullets)}`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
+/** The model's JSON array, or null when it is not an array of the right length. */
+export const parseBulletList = (raw: string, expected: number): string[] | null => {
+  const body = raw
+    .trim()
+    .replace(/^```[a-z]*\n?|```$/gi, '')
+    .trim();
+  const start = body.indexOf('[');
+  const end = body.lastIndexOf(']');
+
+  if (start === -1 || end <= start) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(body.slice(start, end + 1));
+
+    if (!Array.isArray(parsed) || parsed.length !== expected) return null;
+    if (!parsed.every((item) => typeof item === 'string')) return null;
+
+    return parsed.map((item) => cleanSuggestion(item as string));
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Whole years between a month ("YYYY-MM", as the document stores it, or the
+ * "MM/YYYY" it prints) and now, or null when it is neither. The model is told
+ * this number rather than left to subtract dates itself.
+ */
+export const yearsSince = (month: string, now: Date = new Date()): number | null => {
+  const value = month.trim();
+  const stored = /^(\d{4})-(\d{1,2})$/.exec(value);
+  const printed = /^(\d{1,2})\/(\d{4})$/.exec(value);
+  const year = stored ? Number(stored[1]) : printed ? Number(printed[2]) : null;
+  const monthIndex = stored ? Number(stored[2]) : printed ? Number(printed[1]) : null;
+
+  if (year === null || monthIndex === null || monthIndex < 1 || monthIndex > 12) return null;
+
+  const start = new Date(year, monthIndex - 1, 1);
+  const years = (now.getTime() - start.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+
+  return years >= 0 ? Math.floor(years) : null;
+};

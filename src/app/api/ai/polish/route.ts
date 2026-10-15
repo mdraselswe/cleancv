@@ -3,10 +3,15 @@ import { z } from 'zod';
 
 import {
   AI_POLISH,
+  buildGenerateSummaryPrompt,
+  buildGenerateSummaryUser,
+  buildRewriteBulletsPrompt,
+  buildRewriteBulletsUser,
   buildSystemPrompt,
   buildUserPrompt,
   cleanSuggestion,
   introducesNewNumbers,
+  parseBulletList,
 } from '@/lib/aiPolish';
 import { getSessionUser } from '@/server/auth/session';
 import { db } from '@/server/db';
@@ -88,12 +93,46 @@ const listCandidates = async (key: string): Promise<string[]> => {
   return candidates;
 };
 
-const bodySchema = z.object({
-  kind: z.enum(['bullet', 'summary']),
-  text: z.string().trim().min(3).max(AI_POLISH.maxTextChars),
-  context: z.string().trim().max(AI_POLISH.maxContextChars).optional(),
-  jobDescription: z.string().trim().max(AI_POLISH.maxJobDescriptionChars).optional(),
-});
+const instruction = z.string().trim().max(AI_POLISH.maxInstructionChars).optional();
+const jobDescription = z.string().trim().max(AI_POLISH.maxJobDescriptionChars).optional();
+const context = z.string().trim().max(AI_POLISH.maxContextChars).optional();
+
+/**
+ * Three things can be asked of the model:
+ *
+ * - `bullet` / `summary` - tidy the one text the reader wrote (the original
+ *   "Polish with AI"), optionally steered by an instruction.
+ * - `summary-generate` - write a summary for a named role from a digest of the
+ *   CV, so the same CV gives a different summary for "Frontend" and "Full Stack".
+ * - `bullets` - rewrite every bullet of one job or project at once, following
+ *   the reader's instruction.
+ */
+const bodySchema = z.discriminatedUnion('kind', [
+  z.object({
+    kind: z.enum(['bullet', 'summary']),
+    text: z.string().trim().min(3).max(AI_POLISH.maxTextChars),
+    context,
+    jobDescription,
+    instruction,
+  }),
+  z.object({
+    kind: z.literal('summary-generate'),
+    role: z.string().trim().min(2).max(120),
+    facts: z.string().trim().min(20).max(AI_POLISH.maxFactsChars),
+    jobDescription,
+    instruction,
+  }),
+  z.object({
+    kind: z.literal('bullets'),
+    bullets: z
+      .array(z.string().trim().min(3).max(AI_POLISH.maxTextChars))
+      .min(1)
+      .max(AI_POLISH.maxBullets),
+    context,
+    jobDescription,
+    instruction,
+  }),
+]);
 
 const fail = (status: number, error: string, code?: string) =>
   Response.json({ error, ...(code ? { code } : {}) }, { status });
@@ -156,12 +195,26 @@ export async function POST(request: Request) {
   const env = serverEnv();
   const input = parsed.data;
   const key = env.GEMINI_API_KEY as string;
+  const hasJob = Boolean(input.jobDescription);
+  const system =
+    input.kind === 'summary-generate'
+      ? buildGenerateSummaryPrompt(hasJob)
+      : input.kind === 'bullets'
+        ? buildRewriteBulletsPrompt(hasJob)
+        : buildSystemPrompt(input.kind, hasJob);
+  const prompt =
+    input.kind === 'summary-generate'
+      ? buildGenerateSummaryUser(input)
+      : input.kind === 'bullets'
+        ? buildRewriteBulletsUser(input)
+        : buildUserPrompt(input);
   const requestBody = JSON.stringify({
-    systemInstruction: {
-      parts: [{ text: buildSystemPrompt(input.kind, Boolean(input.jobDescription)) }],
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: {
+      temperature: input.kind === 'summary-generate' ? 0.5 : 0.3,
+      maxOutputTokens: input.kind === 'bullets' ? 2048 : 1024,
     },
-    contents: [{ role: 'user', parts: [{ text: buildUserPrompt(input) }] }],
-    generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
   });
 
   const generate = (model: string) =>
@@ -233,11 +286,41 @@ export async function POST(request: Request) {
 
   const raw =
     payload?.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
+
+  /*
+   * A whole entry. Each bullet is checked against its own original: a number
+   * that was not in that bullet sends that one bullet back unchanged, rather
+   * than throwing away four good rewrites for the sake of one bad one.
+   */
+  if (input.kind === 'bullets') {
+    const rewritten = parseBulletList(raw, input.bullets.length);
+
+    if (!rewritten) return fail(502, 'AI সার্ভিস ব্যবহারযোগ্য কিছু ফেরত দেয়নি।');
+
+    let kept = 0;
+    const suggestions = rewritten.map((suggestion, index) => {
+      const original = input.bullets[index];
+
+      if (!suggestion || introducesNewNumbers(original, suggestion)) {
+        kept += 1;
+
+        return original;
+      }
+
+      return suggestion;
+    });
+
+    return Response.json({ suggestions, kept });
+  }
+
   const suggestion = cleanSuggestion(raw);
 
   if (!suggestion) return fail(502, 'AI সার্ভিস ব্যবহারযোগ্য কিছু ফেরত দেয়নি।');
 
-  if (introducesNewNumbers(input.text, suggestion)) {
+  // A summary written from the CV may use the CV's numbers, and only those.
+  const source = input.kind === 'summary-generate' ? input.facts : input.text;
+
+  if (introducesNewNumbers(source, suggestion)) {
     return fail(
       422,
       'AI-র নতুন লেখায় এমন একটি সংখ্যা এসেছিল যা আপনার লেখায় ছিল না, তাই এটি বাদ দেওয়া হয়েছে। আবার চেষ্টা করুন।',

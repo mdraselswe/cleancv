@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, RichTextEditor } from '@/components/ui';
-import { AiPolish } from '@/features/ai';
+import { AiPolish, AiWriter } from '@/features/ai';
 import { useResume } from '@/features/resume';
 import { BULLET_WORD_RANGE, LIMITS } from '@/constants';
 import { bn } from '@/lib/bn';
@@ -173,6 +173,8 @@ export const BulletsEditor = ({
           বুলেট যোগ করুন
         </Button>
       ) : null}
+
+      <AiWriter mode="bullets" bullets={value} context={polishContext} onApply={onChange} />
 
       {hint ? <p className="text-ui-xs text-fg-subtle">{hint}</p> : null}
     </div>

@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildSystemPrompt, cleanSuggestion, introducesNewNumbers } from '@/lib/aiPolish';
+import {
+  buildSystemPrompt,
+  cleanSuggestion,
+  introducesNewNumbers,
+  buildGenerateSummaryPrompt,
+  buildGenerateSummaryUser,
+  parseBulletList,
+  yearsSince,
+} from '@/lib/aiPolish';
 
 describe('introducesNewNumbers', () => {
   it('accepts a rewrite that keeps the same numbers', () => {
@@ -49,5 +57,43 @@ describe('buildSystemPrompt', () => {
     expect(buildSystemPrompt('bullet', false)).toContain('Never add a number');
     expect(buildSystemPrompt('bullet', false)).not.toContain('job description');
     expect(buildSystemPrompt('summary', true)).toContain('vocabulary only');
+  });
+});
+
+describe('writing from an instruction', () => {
+  it('reads a JSON array of the right length, even inside a code fence', () => {
+    expect(parseBulletList('```json\n["Built A.", "Cut B by 40%."]\n```', 2)).toEqual([
+      'Built A.',
+      'Cut B by 40%.',
+    ]);
+  });
+
+  it('refuses an array of the wrong length or kind', () => {
+    expect(parseBulletList('["one"]', 2)).toBeNull();
+    expect(parseBulletList('[1, 2]', 2)).toBeNull();
+    expect(parseBulletList('not json', 1)).toBeNull();
+  });
+
+  it('counts whole years from an MM/YYYY month', () => {
+    const now = new Date(2026, 9, 15);
+
+    expect(yearsSince('04/2018', now)).toBe(8);
+    expect(yearsSince('2018-04', now)).toBe(8);
+    expect(yearsSince('12/2025', now)).toBe(0);
+    expect(yearsSince('', now)).toBeNull();
+    expect(yearsSince('2018', now)).toBeNull();
+  });
+
+  it('names the role and forbids new facts in the summary prompt', () => {
+    const system = buildGenerateSummaryPrompt(false);
+    const user = buildGenerateSummaryUser({
+      role: 'Full Stack Developer',
+      facts: 'Years of experience: 8',
+      instruction: 'stress Node.js',
+    });
+
+    expect(system).toMatch(/Never add a number/);
+    expect(user).toContain('Target role: Full Stack Developer');
+    expect(user).toContain('stress Node.js');
   });
 });

@@ -1,7 +1,7 @@
 'use client';
 
 import { Field, RichTextEditor, Tabs } from '@/components/ui';
-import { AiPolish } from '@/features/ai';
+import { AiPolish, AiWriter } from '@/features/ai';
 import { LIMITS, SUMMARY_MODES, SUMMARY_WORD_RANGE } from '@/constants';
 import type { SummaryMode } from '@/constants';
 import { useResume } from '@/features/resume';
@@ -69,6 +69,8 @@ export const SummarySection = () => {
         jobDescription={targetJobDescription}
         onApply={(text) => patch('summary', { text })}
       />
+
+      <AiWriter mode="summary" onApply={(text) => patch('summary', { text })} />
     </div>
   );
 };
