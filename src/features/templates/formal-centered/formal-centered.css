@@ -108,7 +108,7 @@
   text-align: center;
   letter-spacing: 0.01em;
   line-height: 1.3;
-  color: var(--rz-ink);
+  color: var(--rz-accent);
   /* Collapses with the first entry's own top margin, so the gap under the rule
      is this one value whether the section opens with a paragraph or an entry. */
   margin-bottom: calc(11px * var(--rz-density) * var(--rz-scale));
@@ -118,7 +118,7 @@
   content: '';
   display: block;
   margin-top: calc(5px * var(--rz-density));
-  border-top: 1px solid var(--fmc-rule);
+  border-top: 1px solid var(--rz-accent);
 }
 
 /* --- Entries -------------------------------------------------------------- */

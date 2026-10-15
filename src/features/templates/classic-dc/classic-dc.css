@@ -97,7 +97,8 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--rz-ink);
+  /* The accent, so the colour picker visibly changes the page. */
+  color: var(--rz-accent);
   margin-bottom: calc(5px * var(--rz-density));
   border-bottom: 0;
   padding-bottom: 0;
