@@ -28,6 +28,7 @@ import {
   TrophyIcon,
   WrenchIcon,
 } from './Icons';
+import { EXTRA_ICON_COMPONENTS } from './CatalogIcons';
 
 /**
  * A glyph beside a skill group or an achievement.
@@ -47,6 +48,7 @@ type IconComponent = typeof MonitorIcon;
 
 /** Every glyph a user can pick, keyed by the stored value. */
 export const ICON_COMPONENTS: Record<PickableIcon, IconComponent> = {
+  ...EXTRA_ICON_COMPONENTS,
   monitor: MonitorIcon,
   database: DatabaseIcon,
   chart: PieIcon,
@@ -89,9 +91,24 @@ const RULES: Array<{ match: RegExp; icon: PickableIcon }> = [
   { match: /perform|speed|optimi/i, icon: 'bolt' },
   { match: /health|care|medic|well/i, icon: 'heart' },
   { match: /integrat|connect|plugin|partner/i, icon: 'plug' },
+  // "Programming Languages" is code, not a globe.
+  { match: /program|coding|code|software/i, icon: 'code' },
   { match: /language|communicat|writ|speak/i, icon: 'globe' },
   { match: /learn|study|cours|train|educat/i, icon: 'book' },
   { match: /launch|growth|scale|startup/i, icon: 'rocket' },
+  { match: /mobile|android|ios|flutter/i, icon: 'smartphone' },
+  { match: /agile|scrum|project manag|planning/i, icon: 'clipboard-check' },
+  { match: /market|seo|campaign|advertis/i, icon: 'megaphone' },
+  { match: /sales|business dev|commerce|revenue/i, icon: 'trending-up' },
+  { match: /financ|account|budget|payroll/i, icon: 'banknote' },
+  { match: /legal|law|compliance/i, icon: 'scale' },
+  { match: /photo|camera/i, icon: 'camera' },
+  { match: /video|film|animation/i, icon: 'video' },
+  { match: /support|customer|service desk/i, icon: 'headset' },
+  { match: /interpersonal|collaborat|teamwork/i, icon: 'users' },
+  { match: /nurs|clinic|surgeon|patient/i, icon: 'stethoscope' },
+  { match: /civil|construct|architect/i, icon: 'hard-hat' },
+  { match: /research|laborator|science/i, icon: 'flask' },
 ];
 
 /**
