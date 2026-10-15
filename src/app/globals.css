@@ -146,7 +146,7 @@
   --color-score-fair: var(--score-fair);
   --color-score-poor: var(--score-poor);
 
-  --font-sans: var(--font-app-sans), var(--font-bangla), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-ui);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /*
@@ -241,6 +241,20 @@ html:lang(bn) body :is(h1, h2, h3, h4):not(.resume-root *) {
 }
 
 /* English goes back to the sizes the interface was drawn at. */
+/*
+ * The interface face. Bangla reads in Noto Sans Bengali throughout - its Latin
+ * letters and digits too, so a line of Bangla with "CV" in it is one voice, not
+ * two. English keeps Inter, with Noto only as the fallback for a stray Bangla
+ * word in a CV.
+ */
+:root {
+  --font-ui: var(--font-bangla), var(--font-app-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html:lang(en) {
+  --font-ui: var(--font-app-sans), var(--font-bangla), ui-sans-serif, system-ui, sans-serif;
+}
+
 html:lang(en) {
   --text-ui-2xs: 0.6875rem;
   --text-ui-2xs--line-height: 1.3;

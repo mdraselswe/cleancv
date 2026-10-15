@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import {
-  Hind_Siliguri,
   Inter,
+  Noto_Sans_Bengali,
   PT_Sans,
   Rubik,
   Source_Serif_4,
@@ -32,9 +32,8 @@ import '@/styles/resume.css';
  * of empty boxes. next/font self-hosts it, so the PDF embeds the real face and
  * conjuncts shape the same on the screen, in the preview and on paper.
  */
-const bangla = Hind_Siliguri({
+const bangla = Noto_Sans_Bengali({
   subsets: ['bengali', 'latin'],
-  weight: ['400', '500', '600', '700'],
   variable: '--font-bangla',
   display: 'swap',
 });
