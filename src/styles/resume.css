@@ -251,6 +251,25 @@
 }
 
 /*
+ * A project's live and source links are what a reader opens first, so they are
+ * the one place a link is drawn as a link: the label in bold, the address in the
+ * accent and underlined. Weight and colour only - the words and their order are
+ * untouched, so the text layer reads exactly as it did.
+ */
+.resume-root .rz-entry__link-label {
+  font-weight: 700;
+  color: var(--rz-ink);
+}
+
+.resume-root .rz-entry__links a {
+  color: var(--rz-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+  text-decoration-thickness: 0.06em;
+}
+
+/*
  * The address behind a link is printed only by the ATS design. A parser reads
  * what is drawn, and the designed export has the label for people.
  */

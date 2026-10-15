@@ -224,7 +224,8 @@ const ProjectLinks = ({
             <a href={ensureProtocol(link.url)}>{link.label}</a>
           ) : (
             <>
-              {link.label}: <a href={ensureProtocol(link.url)}>{ensureProtocol(link.url)}</a>
+              <span className="rz-entry__link-label">{link.label}:</span>{' '}
+              <a href={ensureProtocol(link.url)}>{ensureProtocol(link.url)}</a>
             </>
           )}
         </p>
