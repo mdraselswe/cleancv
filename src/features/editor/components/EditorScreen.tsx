@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { FileText, Gauge, PencilLine } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -35,9 +35,9 @@ import { ShortcutsDialog } from './ShortcutsDialog';
 import { Toolbar } from './Toolbar';
 
 const TABS = [
-  { value: 'edit' as const, label: 'এডিট', icon: <PencilLine size={17} /> },
-  { value: 'preview' as const, label: 'প্রিভিউ', icon: <FileText size={17} /> },
-  { value: 'score' as const, label: 'স্কোর', icon: <Gauge size={17} /> },
+  { value: 'edit' as const, label: 'à¦à¦¡à¦¿à¦Ÿ', icon: <PencilLine size={17} /> },
+  { value: 'preview' as const, label: 'à¦ªà§à¦°à¦¿à¦­à¦¿à¦‰', icon: <FileText size={17} /> },
+  { value: 'score' as const, label: 'à¦¸à§à¦•à§‹à¦°', icon: <Gauge size={17} /> },
 ];
 
 /**
@@ -116,7 +116,7 @@ export const EditorScreen = () => {
   ]);
 
   /*
-   * A failed export is reported where every other outcome is — the export that
+   * A failed export is reported where every other outcome is â€” the export that
    * worked says so in a toast, and one that did not should not have to be
    * looked for somewhere else. The retry is offered on the toast itself
    * because a failure here is usually transient.
@@ -128,7 +128,7 @@ export const EditorScreen = () => {
     toast.error(pdfError, {
       action: failedMode
         ? {
-            label: 'আবার চেষ্টা করুন',
+            label: 'à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨',
             onClick: () =>
               void pdf.exportPdf(resume, failedMode, failedMode === 'ats' ? [] : pageBreaks),
           }
@@ -236,14 +236,14 @@ export const EditorScreen = () => {
             value={layout.tab}
             onChange={(value: EditorTab) => layout.setTab(value)}
             variant="bar"
-            ariaLabel="এডিটর ভিউ"
+            ariaLabel="à¦à¦¡à¦¿à¦Ÿà¦° à¦­à¦¿à¦‰"
           />
         ) : undefined
       }
     >
       {/* Storage is read after mount; rendering before it lands would flash an empty resume. */}
       {!ready ? (
-        <EditorSkeleton />
+        <EditorSkeleton mode={layout.mode} tab={layout.tab} />
       ) : layout.mode === 'compact' ? (
         <div className="flex h-full min-h-0 flex-col">
           {layout.tab === 'preview' ? previewPane : null}
@@ -266,10 +266,10 @@ export const EditorScreen = () => {
 
       {/* Beside the work it would crowd it, so the breakdown arrives over it and leaves again. */}
       {layout.mode !== 'compact' && layout.scoreOpen ? (
-        <Drawer label="ATS স্কোর" onClose={layout.closeScore} className="max-w-sm">
+        <Drawer label="ATS à¦¸à§à¦•à§‹à¦°" onClose={layout.closeScore} className="max-w-sm">
           <ModalHeader
-            title="ATS স্কোর"
-            subtitle={`${bn(score.total)} / ১০০`}
+            title="ATS à¦¸à§à¦•à§‹à¦°"
+            subtitle={`${bn(score.total)} / à§§à§¦à§¦`}
             onClose={layout.closeScore}
           />
           <div className="scroll-slim min-h-0 flex-1 overflow-y-auto">{atsPanel}</div>
@@ -311,25 +311,92 @@ export const EditorScreen = () => {
 /**
  * The shape of the editor while storage is read.
  *
- * A centred "Loading…" tells the reader the app is busy and nothing else; the
- * layout then appears all at once and everything moves. Blocking out the panes
- * that are about to arrive means the only thing that changes at the end is
- * that the boxes fill with words.
+ * A centred "Loadingâ€¦" tells the reader the app is busy and nothing else; the
+ * layout then appears all at once and everything moves. This draws the real
+ * frame - the section rail, the form column capped at its real width, the
+ * heading card, the sheet at its real proportion - so what changes at the end
+ * is that the boxes fill with words. The measurements are the live ones: the
+ * rail is 64px and 252px from `xl`, the form column is capped at 680px, and the
+ * pane takes 46% between 320 and 720px, as `SplitPane` does.
  */
-const EditorSkeleton = () => (
-  <div className="flex h-full min-h-0 gap-px" aria-hidden="true">
-    <div className="bg-surface flex min-w-0 flex-1 flex-col gap-3 p-4 lg:max-w-[520px]">
-      <div className="skeleton rounded-panel h-24 w-full" />
-      <div className="skeleton mt-2 h-4 w-1/3 rounded-lg" />
-      <div className="skeleton rounded-control h-9 w-full" />
-      <div className="skeleton mt-2 h-4 w-1/4 rounded-lg" />
-      <div className="skeleton rounded-control h-9 w-full" />
-      <div className="skeleton mt-2 h-4 w-2/5 rounded-lg" />
-      <div className="skeleton rounded-control h-24 w-full" />
+const SkeletonRail = () => (
+  <div className="border-border-base bg-surface/70 flex w-[64px] flex-none flex-col gap-1 border-r px-2 py-3 xl:w-[252px] xl:px-3">
+    <div className="mb-2 hidden xl:block">
+      <div className="mb-1.5 flex items-baseline justify-between">
+        <div className="skeleton h-4 w-16 rounded" />
+        <div className="skeleton h-3 w-20 rounded" />
+      </div>
+      <div className="skeleton h-2 w-full rounded-full" />
     </div>
+    {Array.from({ length: 9 }, (_, index) => (
+      <div key={index} className="flex items-center gap-2.5 px-1.5 py-1.5 xl:px-2">
+        <div className="skeleton rounded-control h-9 w-9 flex-none" />
+        <div className="skeleton hidden h-4 flex-1 rounded xl:block" />
+      </div>
+    ))}
+  </div>
+);
 
-    <div className="bg-canvas hidden min-w-0 flex-1 items-start justify-center p-8 md:flex">
-      <div className="skeleton shadow-sheet aspect-[210/297] w-full max-w-[420px] rounded-sm" />
+const SkeletonForm = ({ strip }: { strip: boolean }) => (
+  <div className="flex min-h-full flex-col">
+    {strip ? (
+      <div className="border-border-base flex gap-2 overflow-hidden border-b px-3 py-2">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div key={index} className="skeleton h-9 w-24 flex-none rounded-full" />
+        ))}
+      </div>
+    ) : null}
+    <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col gap-4 px-4 py-5 sm:px-5">
+      <div className="skeleton rounded-panel h-[88px] w-full" />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {Array.from({ length: 2 }, (_, index) => (
+          <div key={index} className="flex flex-col gap-1.5">
+            <div className="skeleton h-4 w-1/3 rounded" />
+            <div className="skeleton rounded-control h-10 w-full" />
+          </div>
+        ))}
+      </div>
+      {Array.from({ length: 3 }, (_, index) => (
+        <div key={index} className="flex flex-col gap-1.5">
+          <div className="skeleton h-4 w-1/4 rounded" />
+          <div className="skeleton rounded-control h-10 w-full" />
+        </div>
+      ))}
+      <div className="flex flex-col gap-1.5">
+        <div className="skeleton h-4 w-1/3 rounded" />
+        <div className="skeleton rounded-control h-28 w-full" />
+      </div>
     </div>
   </div>
 );
+
+const SkeletonSheet = () => (
+  <div className="app-preview-canvas relative min-h-full px-4 py-6 sm:px-8">
+    <div className="skeleton shadow-sheet aspect-[210/297] w-full rounded-sm" />
+  </div>
+);
+
+const EditorSkeleton = ({ mode, tab }: { mode: 'compact' | 'split' | 'full'; tab: EditorTab }) => {
+  if (mode === 'compact') {
+    return (
+      <div className="bg-surface h-full min-h-0 overflow-hidden" aria-hidden="true">
+        {tab === 'preview' ? <SkeletonSheet /> : <SkeletonForm strip />}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full min-h-0" aria-hidden="true">
+      <SkeletonRail />
+      <div className="flex min-w-0 flex-1">
+        <div className="bg-surface flex-none basis-[46%] overflow-hidden min-w-[320px] max-w-[720px]">
+          <SkeletonForm strip={false} />
+        </div>
+        <div className="bg-border-base w-px flex-none" />
+        <div className="bg-canvas min-w-0 flex-1 overflow-hidden">
+          <SkeletonSheet />
+        </div>
+      </div>
+    </div>
+  );
+};
