@@ -15,8 +15,18 @@ import { Lang } from '@/i18n';
  */
 export const FreeBanner = () => (
   <div className="app-gradient-bg animate-gradient text-white">
-    <p className="text-ui mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-2 gap-y-0.5 px-4 py-2 text-center font-medium sm:px-6">
-      <Heart size={13} className="flex-none" aria-hidden="true" fill="currentColor" />
+    {/*
+      One run of inline text, so the heart and the link sit in the sentence
+      instead of each taking a row of their own - as flex items they did, which
+      made a two-line banner three lines tall.
+    */}
+    <p className="text-ui mx-auto w-full max-w-6xl px-4 py-1.5 text-center font-medium sm:px-6">
+      <Heart
+        size={13}
+        className="mr-1.5 inline-block align-[-0.1em]"
+        aria-hidden="true"
+        fill="currentColor"
+      />
       <Lang
         bn={
           <span>
@@ -35,7 +45,8 @@ export const FreeBanner = () => (
           </span>
         }
       />
-      <Link href={ROUTES.features} className="font-bold underline underline-offset-2">
+      {' '}
+      <Link href={ROUTES.features} className="font-bold whitespace-nowrap underline underline-offset-2">
         কী কী আছে সব দেখুন
       </Link>
     </p>
