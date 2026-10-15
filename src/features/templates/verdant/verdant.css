@@ -305,7 +305,7 @@
 
 .vrd .rz-entry__links a {
   color: var(--rz-accent);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* --- The narrative column's margin ---------------------------------------- */

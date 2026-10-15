@@ -243,17 +243,20 @@
   text-underline-offset: 0.12em;
 }
 
-/* A link in body text reads as text, not as chrome: same colour, underlined. */
+/* A link in body text reads as text, not as chrome: same colour, no underline. */
 .resume-root .rz-link {
   color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.12em;
+  text-decoration: none;
+}
+
+.resume-root a {
+  text-decoration: none;
 }
 
 /*
  * A project's live and source links are what a reader opens first, so they are
  * the one place a link is drawn as a link: the label in bold, the address in the
- * accent and underlined. Weight and colour only - the words and their order are
+ * accent, never underlined. Weight and colour only - the words and their order are
  * untouched, so the text layer reads exactly as it did.
  */
 .resume-root .rz-entry__link-label {
@@ -264,9 +267,7 @@
 .resume-root .rz-entry__links a {
   color: var(--rz-accent);
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 0.14em;
-  text-decoration-thickness: 0.06em;
+  text-decoration: none;
 }
 
 /*

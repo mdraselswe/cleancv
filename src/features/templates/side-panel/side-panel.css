@@ -223,7 +223,7 @@
 
 .spl .rz-entry__links a {
   color: var(--rz-accent);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* --- Bullets -------------------------------------------------------------- */
