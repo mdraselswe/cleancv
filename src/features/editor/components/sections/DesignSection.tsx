@@ -109,9 +109,21 @@ export const DesignSection = () => {
             onChange={(accent) => actions.setTheme({ accent })}
           />
         ) : (
-          <p className="text-ui-xs text-fg-subtle">
+          <div className="flex flex-col gap-2">
+            <p className="text-ui-xs text-fg-subtle">
             {active.meta.name} ATS সফটওয়্যার যাতে সবচেয়ে ভালো পড়তে পারে, তাই কালো রঙে ছাপা হয়। এখানে প্রধান রং কাজ করে না।
           </p>
+            <button
+              type="button"
+              onClick={() => {
+                setFilter('balanced');
+                document.getElementById('design-filter')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-ui text-primary self-start font-semibold underline underline-offset-2"
+            >
+              রং বদলানো যায় এমন ডিজাইন দেখুন
+            </button>
+          </div>
         )}
 
         {active.meta.supports.photo ? (
@@ -174,6 +186,7 @@ export const DesignSection = () => {
       </div>
 
       <div
+        id="design-filter"
         role="group"
         aria-label="ডিজাইন খুঁজুন"
         className="scroll-none -mx-1 flex gap-1.5 overflow-x-auto px-1 py-0.5"

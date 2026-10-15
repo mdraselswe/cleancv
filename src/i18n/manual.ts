@@ -94,6 +94,7 @@ const NOUN_ADD: Record<string, string> = Object.fromEntries(
 );
 
 export const MANUAL_EXACT: Record<string, string> = {
+  'রং বদলানো যায় এমন ডিজাইন দেখুন': 'Show designs where the colour can change',
   ...SECTION_LABELS,
   ...OPTION_LABELS,
   ...NOUN_EXACT,
