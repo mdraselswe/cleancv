@@ -347,7 +347,7 @@ const SkeletonForm = ({ strip }: { strip: boolean }) => (
       </div>
     ) : null}
     <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col gap-4 px-4 py-5 sm:px-5">
-      <div className="skeleton rounded-panel h-[88px] w-full" />
+      <div className="skeleton rounded-panel h-[132px] w-full lg:h-[96px]" />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {Array.from({ length: 2 }, (_, index) => (
           <div key={index} className="flex flex-col gap-1.5">
