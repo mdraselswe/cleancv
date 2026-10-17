@@ -59,6 +59,10 @@ export interface SectionBodyProps {
   placeBeforeDates?: boolean;
   /** Marks an entry's dates and place with a glyph. */
   metaIcons?: boolean;
+  /** Between a skill group's items, as a real text node. Defaults to a comma. */
+  skillSeparator?: string;
+  /** Leads each education entry with the institution, and nothing else. */
+  educationOrganizationFirst?: boolean;
 }
 
 /**
@@ -78,6 +82,8 @@ export const SectionBody = ({
   organizationFirst,
   placeBeforeDates,
   metaIcons,
+  skillSeparator,
+  educationOrganizationFirst,
 }: SectionBodyProps) => {
   /*
    * Two switches, both of which have to be on: the design has to draw glyphs at
@@ -124,7 +130,7 @@ export const SectionBody = ({
           resume={resume}
           entryIcon={entryIcon}
           inlineOrganization={inlineOrganization}
-          organizationFirst={organizationFirst}
+          organizationFirst={organizationFirst || educationOrganizationFirst}
           placeBeforeDates={placeBeforeDates}
           metaIcons={metaIcons}
         />
@@ -136,6 +142,7 @@ export const SectionBody = ({
           showBars={showSkillBars}
           showIcons={icons}
           inlineItems={inlineSkillItems}
+          itemSeparator={skillSeparator}
         />
       );
     case 'projects':

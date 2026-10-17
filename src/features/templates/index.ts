@@ -18,6 +18,8 @@ export {
   shouldShowPhoto,
 } from './utils/theme';
 
+export { resolveSectionHeading } from './utils/headings';
+
 export type {
   TemplateComponent,
   TemplateMeta,

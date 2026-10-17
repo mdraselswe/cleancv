@@ -3,6 +3,7 @@ import { DEFAULT_TEMPLATE_ID, type TemplateCategory, type TemplateId } from '@/c
 import * as academicCv from './academic-cv';
 import * as atsPlain from './ats-plain';
 import * as classicDc from './classic-dc';
+import * as cleanClassic from './clean-classic';
 import * as compactPro from './compact-pro';
 import * as elegantSerif from './elegant-serif';
 import * as formalCentered from './formal-centered';
@@ -29,6 +30,7 @@ export const TEMPLATE_REGISTRY: Partial<Record<TemplateId, TemplateModule>> = {
   'formal-centered': formalCentered,
   'side-panel': sidePanel,
   verdant,
+  'clean-classic': cleanClassic,
 };
 
 export const getTemplate = (id: TemplateId): TemplateModule => {

@@ -1,0 +1,295 @@
+/* ---------------------------------------------------------------------------
+   Clean Classic.
+
+   A rebuild of a reference CV, measured rather than eyeballed. The reference
+   was an A4 page (595pt) photographed at 738px, so one pixel is 0.806pt, and
+   every size below comes from fitting Open Sans to the width of real text on
+   the page rather than from guessing at a size:
+
+        body 8.1pt            entry title 8.5pt     company 8.25pt
+        headline 8.3pt        section heading 9.1pt name 20.3pt, tracked 0.05em
+        dates / place 7.7pt   margins 14.5mm all round
+        skills labels in a 92pt column; a hairline under every heading
+
+   The two-column look of an entry is a grid over the usual title,
+   organisation, meta, body markup, so the extracted text reads in order.
+   --------------------------------------------------------------------------- */
+
+.resume-root.cln {
+  --rz-base: calc(8.1pt * var(--rz-scale));
+  --rz-lh: calc(1.34 * var(--rz-density));
+
+  --cln-ink: #1c1d1f;
+  --cln-text: #454545;
+  --cln-soft: #5a5a5a;
+  --cln-muted: #8a8a8a;
+  --cln-rule: #dedede;
+
+  --rz-gap-bullet: calc(0.28em * var(--rz-density));
+}
+
+/* --- Identity ------------------------------------------------------------- */
+
+.cln .cln-identity {
+  text-align: center;
+  /* The name's cap height sits 0.9mm higher on the reference than its line box does. */
+  margin-top: -0.3em;
+}
+
+.cln .cln-name {
+  font-size: 2.5em;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  /* Under the 0.06em ceiling above which Chrome emits one run per glyph. */
+  letter-spacing: 0.05em;
+  color: var(--cln-ink);
+}
+
+.cln .cln-headline {
+  margin-top: 0.35em;
+  font-size: 1.025em;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--cln-soft);
+}
+
+.cln .cln-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.7em;
+  font-size: 0.95em;
+  line-height: 1.5;
+  color: var(--cln-soft);
+}
+
+.cln .rz-contact__item {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+/* The dot is real text, so the phone number and the email do not fuse. */
+.cln .rz-contact__sep {
+  margin: 0 0.85em;
+  color: #b9b9b9;
+}
+
+/* --- Summary and sections ------------------------------------------------- */
+
+.cln .rz-summary {
+  margin-top: 0;
+  text-align: justify;
+  line-height: 1.36;
+  color: var(--cln-soft);
+}
+
+.cln .rz-section {
+  margin-top: calc(1.8em * var(--rz-density));
+}
+
+.cln .rz-section[data-section='summary'] {
+  margin-top: 0.95em;
+}
+
+.cln .cln-heading {
+  font-size: 1.12em;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--cln-ink);
+  padding-bottom: 0.42em;
+  border-bottom: 1px solid var(--cln-rule);
+  margin-bottom: calc(0.6em * var(--rz-density));
+}
+
+/* --- Entries -------------------------------------------------------------- */
+
+/*
+ * Title and organisation on the left, dates and place right-aligned beside
+ * them. The meta paragraph spans both rows so its two lines sit level with the
+ * title and the organisation.
+ */
+.cln .rz-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.6em;
+  align-items: start;
+  margin-top: 0;
+  break-inside: auto;
+}
+
+.cln .rz-entry + .rz-entry {
+  margin-top: calc(0.86em * var(--rz-density));
+}
+
+.cln .rz-entry:first-of-type {
+  margin-top: 0;
+}
+
+.cln .rz-entry__head {
+  grid-column: 1;
+  grid-row: 1;
+  display: block;
+}
+
+.cln .rz-entry__title {
+  font-size: 1.05em;
+  font-weight: 700;
+  line-height: 1.42;
+  color: var(--cln-ink);
+}
+
+.cln .rz-entry__org {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 1.02em;
+  font-weight: 500;
+  line-height: 1.46;
+  color: var(--rz-accent);
+}
+
+.cln .rz-entry__meta {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: right;
+  font-size: 0.95em;
+  line-height: 1.57;
+  color: var(--cln-muted);
+}
+
+.cln .rz-entry__dates,
+.cln .rz-entry__place {
+  display: block;
+}
+
+.cln .rz-entry__note,
+.cln .rz-entry__body {
+  grid-column: 1 / -1;
+}
+
+.cln .rz-entry__note {
+  margin-top: 0.1em;
+  font-size: 0.95em;
+  color: var(--cln-muted);
+}
+
+.cln .rz-entry__body {
+  margin-top: 0.25em;
+}
+
+/* Education leads with the institution; the degree is the quieter line. */
+.cln .rz-entry--org-first .rz-entry__org {
+  grid-row: 1;
+  font-size: 1.07em;
+  font-weight: 700;
+  line-height: 1.42;
+  color: var(--cln-ink);
+}
+
+.cln .rz-entry--org-first .rz-entry__head {
+  grid-row: 2;
+}
+
+.cln .rz-entry--org-first .rz-entry__title {
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1.46;
+  color: var(--cln-text);
+}
+
+/* The result sits on its own line under the degree, in the small grey. */
+.cln .rz-entry__trailing {
+  display: block;
+  font-size: 0.96em;
+  line-height: 1.2;
+  color: var(--cln-muted);
+}
+
+/* --- Bullets and paragraphs ----------------------------------------------- */
+
+.cln .rz-bullet-list {
+  margin-top: 0.35em;
+  margin-bottom: 0.1em;
+}
+
+.cln .rz-bullet {
+  gap: 0;
+  line-height: 1.3;
+  color: var(--cln-text);
+}
+
+.cln .rz-bullet__dot {
+  width: 1.54em;
+  padding-left: 0.2em;
+  color: #2f2f2f;
+  /* The reference's dot is larger than the font's own at body size; scaling it
+     leaves the line box, and so the pagination, as it was. */
+  transform: scale(1.45);
+  transform-origin: 0.4em 55%;
+}
+
+/* --- Skills: label column, then the items ---------------------------------- */
+
+.cln .rz-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.34em;
+}
+
+.cln .rz-skills__group {
+  display: grid;
+  grid-template-columns: 11.35em minmax(0, 1fr);
+  align-items: start;
+}
+
+.cln .rz-skills__label {
+  font-weight: 700;
+  line-height: 1.44;
+  color: #2b2b2d;
+}
+
+.cln .rz-skills__items {
+  line-height: 1.44;
+  color: var(--cln-text);
+}
+
+/* --- Projects: title, a right-hand category, a justified description ------- */
+
+.cln [data-section='projects'] .rz-entry__title {
+  font-size: 1em;
+}
+
+.cln [data-section='projects'] .rz-entry__org {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-top: 0.4em;
+  text-align: justify;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--cln-soft);
+}
+
+.cln [data-section='projects'] .rz-entry__meta {
+  grid-row: 1;
+  font-size: 0.93em;
+}
+
+.cln [data-section='projects'] .rz-entry__dates {
+  color: var(--cln-muted);
+}
+
+.cln [data-section='projects'] .rz-entry__place {
+  color: var(--rz-accent);
+}
+
+.cln [data-section='projects'] .rz-entry__body {
+  margin-top: 0.05em;
+}
+
+/* --- Everything else under the same rules ---------------------------------- */
+
+.cln .rz-details,
+.cln .rz-list {
+  color: var(--cln-text);
+}

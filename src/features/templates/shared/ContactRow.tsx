@@ -25,9 +25,15 @@ const buildItems = (
   contact: Resume['contact'],
   fullUrls: boolean,
   locationLast: boolean,
+  locationFirst: boolean,
 ): ContactItem[] => {
   const label = (url: string) => (fullUrls ? ensureProtocol(url) : displayUrl(url));
   const items: ContactItem[] = [];
+  const placed: ContactItem | null = isBlank(contact.location)
+    ? null
+    : { key: 'location', icon: <PinIcon />, text: contact.location };
+
+  if (placed && locationFirst) items.push(placed);
 
   if (!isBlank(contact.phone)) {
     items.push({
@@ -45,9 +51,7 @@ const buildItems = (
       href: mailtoHref(contact.email),
     });
   }
-  const location: ContactItem | null = isBlank(contact.location)
-    ? null
-    : { key: 'location', icon: <PinIcon />, text: contact.location };
+  const location = locationFirst ? null : placed;
 
   if (location && !locationLast) items.push(location);
   if (!isBlank(contact.linkedin)) {
@@ -117,6 +121,8 @@ export interface ContactRowProps {
    * than on a repository address. See ADR-004.
    */
   locationLast?: boolean;
+  /** Leads the line with the location, as "City, Country · phone · email". Reading order, so markup. */
+  locationFirst?: boolean;
 }
 
 /**
@@ -133,8 +139,9 @@ export const ContactRow = ({
   fullUrls = false,
   separator,
   locationLast = false,
+  locationFirst = false,
 }: ContactRowProps) => {
-  const items = buildItems(contact, fullUrls, locationLast);
+  const items = buildItems(contact, fullUrls, locationLast, locationFirst);
   if (items.length === 0) return null;
 
   return (

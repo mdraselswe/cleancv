@@ -94,6 +94,9 @@ const NOUN_ADD: Record<string, string> = Object.fromEntries(
 );
 
 export const MANUAL_EXACT: Record<string, string> = {
+  'ক্লিন ক্লাসিক': 'Clean Classic',
+  'মাঝখানে নাম, নিচে পদ আর যোগাযোগ। প্রতিটি শিরোনামের নিচে হালকা রেখা, তারিখ ডানে, দক্ষতা দুই কলামে। সাদামাটা আর পরিষ্কার।':
+    'Centred name, then headline and contact. A hairline under every heading, dates on the right, skills in two columns. Plain and clean.',
   'রং বদলানো যায় এমন ডিজাইন দেখুন': 'Show designs where the colour can change',
   ...SECTION_LABELS,
   ...OPTION_LABELS,

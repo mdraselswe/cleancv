@@ -105,9 +105,17 @@ export interface SkillsBlockProps extends BlockProps {
   showIcons?: boolean;
   /** Sets the list on the group name's own line, as "Frontend: React, Next". */
   inlineItems?: boolean;
+  /** Between a group's items; a real text node. Defaults to a comma. */
+  itemSeparator?: string;
 }
 
-export const SkillsBlock = ({ resume, showBars, showIcons, inlineItems }: SkillsBlockProps) => (
+export const SkillsBlock = ({
+  resume,
+  showBars,
+  showIcons,
+  inlineItems,
+  itemSeparator = ', ',
+}: SkillsBlockProps) => (
   <div className="rz-skills">
     {resume.skills.map((group) => (
       <div key={group.id} className="rz-skills__group rz-avoid-break">
@@ -130,7 +138,7 @@ export const SkillsBlock = ({ resume, showBars, showIcons, inlineItems }: Skills
           Comma-separated in one text run: a parser reads this as a list, where a
           grid of chips would extract as an unpunctuated word salad.
         */}
-        <p className="rz-skills__items">{group.items.join(', ')}</p>
+        <p className="rz-skills__items">{group.items.join(itemSeparator)}</p>
 
         {showBars && group.level ? <SkillMeter level={group.level} /> : null}
       </div>

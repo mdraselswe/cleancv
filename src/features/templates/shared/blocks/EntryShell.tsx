@@ -80,7 +80,15 @@ export const EntryShell = ({
   icon,
   children,
 }: EntryShellProps) => (
-  <article className={icon ? 'rz-entry rz-entry--marked' : 'rz-entry'}>
+  <article
+    className={[
+      'rz-entry',
+      icon ? 'rz-entry--marked' : '',
+      organizationFirst ? 'rz-entry--org-first' : '',
+    ]
+      .filter(Boolean)
+      .join(' ')}
+  >
     {organizationFirst && !isBlank(organization) ? (
       <p className="rz-entry__org">
         {icon ? <CategoryIcon label="" icon={icon} fallback={icon} /> : null}

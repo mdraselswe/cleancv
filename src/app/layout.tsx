@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import {
   Inter,
   Noto_Sans_Bengali,
+  Open_Sans,
   PT_Sans,
   Rubik,
   Source_Serif_4,
@@ -84,6 +85,13 @@ const displaySans = Rubik({
   display: 'block',
 });
 
+/** Open Sans, the body face of Clean Classic; a variable font, so 500 and 600 are real weights. */
+const resumeOpenSans = Open_Sans({
+  subsets: ['latin'],
+  variable: '--font-resume-opensans',
+  display: 'block',
+});
+
 const resumeGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-resume-grotesk',
@@ -121,7 +129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="bn"
-      className={`${bangla.variable} ${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable}`}
+      className={`${bangla.variable} ${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable} ${resumeOpenSans.variable}`}
       suppressHydrationWarning
     >
       <head>

@@ -9,8 +9,8 @@ import {
 import { customSlot } from '@/constants';
 import { estimatePages } from '@/features/ats';
 import { parseHeuristically } from '@/features/import';
-import { createCustomSection, createSampleResume, getSectionHeading } from '@/features/resume';
-import { getAvailableTemplates } from '@/features/templates';
+import { createCustomSection, createSampleResume } from '@/features/resume';
+import { getAvailableTemplates, resolveSectionHeading } from '@/features/templates';
 
 import { documentFromPdf, extractPdfText, looseIncludes, looseIndexOf } from './helpers/pdfText';
 import { requestPdf, startTestServer, type TestServer } from './helpers/server';
@@ -103,7 +103,7 @@ describe.each(templates.map(({ meta }) => meta))('$name ($id)', (meta) => {
      * is not a defect, and the engine scores it as safe for the same reason.
      */
     for (const key of ['summary', 'experience', 'skills', 'education'] as const) {
-      const heading = getSectionHeading(resume, key);
+      const heading = resolveSectionHeading(resume, meta, key);
 
       expect(isRecognisedHeading(key, heading)).toBe(true);
       expect(looseIncludes(text, heading)).toBe(true);

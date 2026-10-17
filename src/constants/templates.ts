@@ -11,6 +11,7 @@ export const TEMPLATE_IDS = [
   'formal-centered',
   'side-panel',
   'verdant',
+  'clean-classic',
 ] as const;
 
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
@@ -36,7 +37,7 @@ export const TEMPLATE_CATEGORY_HINT: Record<TemplateCategory, string> = {
 };
 
 /** Font stacks are limited to faces that embed and subset cleanly in print. */
-export const FONT_FAMILIES = ['sans', 'humanist', 'serif', 'grotesk'] as const;
+export const FONT_FAMILIES = ['sans', 'humanist', 'serif', 'grotesk', 'opensans'] as const;
 export type FontFamilyKey = (typeof FONT_FAMILIES)[number];
 
 export const FONT_FAMILY_LABEL: Record<FontFamilyKey, string> = {
@@ -44,6 +45,7 @@ export const FONT_FAMILY_LABEL: Record<FontFamilyKey, string> = {
   humanist: 'PT Sans (humanist)',
   serif: 'Source Serif (serif)',
   grotesk: 'Space Grotesk (grotesk)',
+  opensans: 'Open Sans (humanist)',
 };
 
 /** CSS variable each font key resolves to; set on the document root by next/font. */
@@ -52,6 +54,7 @@ export const FONT_FAMILY_VAR: Record<FontFamilyKey, string> = {
   humanist: 'var(--font-resume-humanist), var(--font-bangla)',
   serif: 'var(--font-resume-serif), var(--font-bangla)',
   grotesk: 'var(--font-resume-grotesk), var(--font-bangla)',
+  opensans: 'var(--font-resume-opensans), var(--font-bangla)',
 };
 
 export const DENSITIES = ['compact', 'normal', 'relaxed'] as const;

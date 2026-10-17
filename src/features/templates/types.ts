@@ -69,6 +69,13 @@ export interface TemplateMeta {
    */
   mainSections?: readonly SectionKey[];
   /**
+   * Wording this design prefers for a section's default heading, e.g.
+   * `experience: 'Experience'`. Applies only while the reader has not named the
+   * section themselves, and must be a heading parsers recognise. Resolve it
+   * through `resolveSectionHeading`, never by reading this directly.
+   */
+  headingWording?: Partial<Record<SectionKey, string>>;
+  /**
    * A band of accent down the left of the paper, running the full height of
    * every page.
    *
