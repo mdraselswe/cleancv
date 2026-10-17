@@ -27,6 +27,20 @@
   --cln-rule: #dedede;
 
   --rz-gap-bullet: calc(0.28em * var(--rz-density));
+
+  /*
+   * The headings' own face, named by the design like the other display faces.
+   * The body face stays the picker's.
+   */
+  --cln-heading-font: var(--font-resume-arimo), var(--font-bangla), Arial, Helvetica, sans-serif;
+}
+
+.cln .cln-name,
+.cln .cln-heading,
+.cln .rz-entry__title,
+.cln .rz-entry--org-first .rz-entry__org,
+.cln .rz-skills__label {
+  font-family: var(--cln-heading-font);
 }
 
 /* --- Identity ------------------------------------------------------------- */
@@ -61,7 +75,7 @@
   justify-content: center;
   margin-top: 0.7em;
   /* A little under the body: six links and a phone number fit one line only at this size and gap. */
-  font-size: 0.78em;
+  font-size: 0.83em;
   line-height: 1.5;
   color: var(--cln-soft);
 }

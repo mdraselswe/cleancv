@@ -34,17 +34,18 @@ export const meta: TemplateMeta = {
   headingWording: { experience: 'Experience' },
   /*
    * The stylesheet is measured off a reference that sets its body at 8.1pt, which
-   * is small for a page someone has to read. 1.235 prints it at 10pt, the size a
-   * CV is normally set at and one an ATS never flags, and keeps every proportion
-   * of the reference. 100% on the slider means that 10pt.
+   * is small for a page someone has to read. 1.358 prints it at 11pt - the size a
+   * Calibri CV is set at, and one no ATS flags - and keeps every proportion of the
+   * reference. 100% on the slider means that 11pt.
    */
-  baseScale: 1.235,
-  // Measured off the reference: Open Sans, 14.5mm margins, and the soft teal it
-  // sets company names in.
+  baseScale: 1.358,
+  // Margins and the soft teal are measured off the reference. The faces are not:
+  // the body is Carlito (Calibri's metrics) and the headings Arimo (Arial's), the
+  // pair a recruiter's Word documents are made of.
   defaultTheme: {
     fontScale: 1,
     accent: '#4aa3b8',
-    font: 'opensans',
+    font: 'carlito',
     density: 'normal',
     marginMm: 14.5,
     photoRadius: 50,
