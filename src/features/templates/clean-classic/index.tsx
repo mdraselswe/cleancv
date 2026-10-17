@@ -33,11 +33,14 @@ export const meta: TemplateMeta = {
   // "Experience" where the app says "Work Experience"; both are on the recognised list.
   headingWording: { experience: 'Experience' },
   /*
-   * Measured off the reference, an A4 page of 595pt read at 738px: body 8.1pt in
-   * Open Sans, 14.5mm margins on every side, and the soft teal it sets company
-   * names in. The stylesheet states 8.1pt itself, so 100% on the slider is the
-   * size the reference prints at.
+   * The stylesheet is measured off a reference that sets its body at 8.1pt, which
+   * is small for a page someone has to read. 1.235 prints it at 10pt, the size a
+   * CV is normally set at and one an ATS never flags, and keeps every proportion
+   * of the reference. 100% on the slider means that 10pt.
    */
+  baseScale: 1.235,
+  // Measured off the reference: Open Sans, 14.5mm margins, and the soft teal it
+  // sets company names in.
   defaultTheme: {
     fontScale: 1,
     accent: '#4aa3b8',

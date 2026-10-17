@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import {
+  Arimo,
+  Carlito,
   Inter,
   Noto_Sans_Bengali,
   Open_Sans,
@@ -92,6 +94,26 @@ const resumeOpenSans = Open_Sans({
   display: 'block',
 });
 
+/*
+ * The two faces the recruiting world already knows by their metrics: Carlito is
+ * Calibri's, Arimo is Arial's. Not preloaded - most documents use neither, and a
+ * face that is chosen is fetched when the text asks for it.
+ */
+const resumeCarlito = Carlito({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-resume-carlito',
+  display: 'block',
+  preload: false,
+});
+
+const resumeArimo = Arimo({
+  subsets: ['latin'],
+  variable: '--font-resume-arimo',
+  display: 'block',
+  preload: false,
+});
+
 const resumeGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-resume-grotesk',
@@ -129,7 +151,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="bn"
-      className={`${bangla.variable} ${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable} ${resumeOpenSans.variable}`}
+      className={`${bangla.variable} ${appSans.variable} ${resumeSans.variable} ${resumeHumanist.variable} ${resumeSerif.variable} ${displaySerif.variable} ${displaySans.variable} ${resumeGrotesk.variable} ${resumeOpenSans.variable} ${resumeCarlito.variable} ${resumeArimo.variable}`}
       suppressHydrationWarning
     >
       <head>

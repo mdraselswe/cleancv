@@ -6,7 +6,8 @@
    every size below comes from fitting Open Sans to the width of real text on
    the page rather than from guessing at a size:
 
-        body 8.1pt            entry title 8.5pt     company 8.25pt
+        body 8.1pt (printed at 10pt: see baseScale)
+        entry title 8.5pt     company 8.25pt
         headline 8.3pt        section heading 9.1pt name 20.3pt, tracked 0.05em
         dates / place 7.7pt   margins 14.5mm all round
         skills labels in a 92pt column; a hairline under every heading
@@ -59,7 +60,8 @@
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 0.7em;
-  font-size: 0.95em;
+  /* A little under the body: six links and a phone number fit one line only at this size and gap. */
+  font-size: 0.78em;
   line-height: 1.5;
   color: var(--cln-soft);
 }
@@ -67,11 +69,12 @@
 .cln .rz-contact__item {
   display: inline-flex;
   align-items: baseline;
+  white-space: nowrap;
 }
 
 /* The dot is real text, so the phone number and the email do not fuse. */
 .cln .rz-contact__sep {
-  margin: 0 0.85em;
+  margin: 0 0.32em;
   color: #b9b9b9;
 }
 
