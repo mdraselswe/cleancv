@@ -183,9 +183,19 @@ export const ProjectsBlock = ({
         placeBeforeDates={placeBeforeDates}
         metaIcons={metaIcons}
       >
+        {/*
+          The stack leads, then the links, then the bullets: a reader decides
+          what a project is built with before reading what was done, and the
+          two lines that describe the project stay together instead of one
+          above the bullets and one below.
+        */}
+        <TagLine
+          label="Tech Stack"
+          items={entry.tech}
+          className="rz-entry__tags rz-entry__tags--lead"
+        />
         <ProjectLinks live={entry.liveUrl} source={entry.sourceUrl} compact={compactLinks} />
         <Bullets items={entry.bullets} />
-        <TagLine label="Tech" items={entry.tech} className="rz-entry__tags" />
       </EntryShell>
     ))}
   </>

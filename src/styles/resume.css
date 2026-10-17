@@ -271,6 +271,20 @@
 }
 
 /*
+ * A project's stack, leading its entry: the label in bold and the technologies
+ * in the body ink rather than the muted grey of a footnote. Colour and weight
+ * only; the words are the same.
+ */
+.resume-root .rz-entry__tags.rz-entry__tags--lead {
+  color: var(--rz-ink);
+}
+
+.resume-root .rz-entry__tags--lead .rz-muted {
+  color: var(--rz-ink);
+  font-weight: 700;
+}
+
+/*
  * The address behind a link is printed only by the ATS design. A parser reads
  * what is drawn, and the designed export has the label for people.
  */
