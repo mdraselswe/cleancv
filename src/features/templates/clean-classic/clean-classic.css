@@ -304,9 +304,52 @@
   margin-top: 0.05em;
 }
 
+/* --- Personal information: a two-column table of label and value ---------- */
+
+.cln .rz-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 2.4em;
+  row-gap: 0.32em;
+  color: var(--cln-text);
+}
+
+.cln .rz-details__row {
+  display: grid;
+  grid-template-columns: 8.4em minmax(0, 1fr);
+  column-gap: 0.6em;
+  line-height: 1.44;
+}
+
+.cln .rz-details__label {
+  color: var(--cln-muted);
+}
+
+.cln .rz-details__value {
+  color: var(--cln-ink);
+  font-weight: 500;
+}
+
+/* --- A list of short points (a custom section) runs in two columns ---------- */
+
+/*
+ * A grid rather than CSS columns: the items still read in the order they were
+ * written, left then right then down, and a list that straddles a page break
+ * is cut by the same rule as everything else instead of being balanced.
+ */
+.cln [data-section^='custom:'] > .rz-bullet-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 2.4em;
+  row-gap: var(--rz-gap-bullet);
+}
+
+.cln [data-section^='custom:'] > .rz-bullet-list > .rz-bullet {
+  break-inside: avoid;
+}
+
 /* --- Everything else under the same rules ---------------------------------- */
 
-.cln .rz-details,
 .cln .rz-list {
   color: var(--cln-text);
 }
