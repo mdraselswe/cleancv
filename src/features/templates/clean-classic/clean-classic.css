@@ -348,6 +348,28 @@
   break-inside: avoid;
 }
 
+/* --- References: one column, each as name, designation, then contact --------- */
+
+.cln [data-section='references'] .rz-grid-2 {
+  display: flex;
+  flex-direction: column;
+  gap: calc(0.75em * var(--rz-density));
+}
+
+.cln [data-section='references'] .rz-entry {
+  display: block;
+  margin-top: 0;
+}
+
+.cln [data-section='references'] .rz-entry__org {
+  line-height: 1.46;
+}
+
+.cln [data-section='references'] .rz-entry__meta {
+  text-align: left;
+  line-height: 1.46;
+}
+
 /* --- Everything else under the same rules ---------------------------------- */
 
 .cln .rz-list {
