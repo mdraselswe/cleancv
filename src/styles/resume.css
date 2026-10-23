@@ -254,6 +254,16 @@
 }
 
 /*
+ * The reader's signature size, a percentage of what the design draws. `zoom`
+ * scales the box and what is in it together, so a design's own height and width
+ * limits still hold relative to each other, and the lines below it move with it.
+ */
+.resume-root .rz-signature__image,
+.resume-root .rz-signature__typed {
+  zoom: var(--rz-sig-scale, 1);
+}
+
+/*
  * A project's live and source links are what a reader opens first, so they are
  * the one place a link is drawn as a link: the label in bold, the address in the
  * accent, never underlined. Weight and colour only - the words and their order are

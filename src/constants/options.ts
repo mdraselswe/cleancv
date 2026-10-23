@@ -68,6 +68,9 @@ export type MaritalStatus = (typeof MARITAL_STATUSES)[number];
 export const SIGNATURE_MODES = ['typed', 'image'] as const;
 export type SignatureMode = (typeof SIGNATURE_MODES)[number];
 
+/** How large the signature prints, as a percentage of the design's own size. */
+export const SIGNATURE_SCALE = { min: 40, max: 250, step: 5, default: 100 } as const;
+
 export const REFERENCE_MODES = ['listed', 'on-request'] as const;
 export type ReferenceMode = (typeof REFERENCE_MODES)[number];
 

@@ -370,6 +370,38 @@
   line-height: 1.46;
 }
 
+/* --- Signature: the reader's size on top of this one ------------------------- */
+
+.cln .rz-signature {
+  margin-top: calc(1.6em * var(--rz-density));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2em;
+}
+
+.cln .rz-signature__typed {
+  font-size: 1.6em;
+  font-style: italic;
+  color: var(--cln-ink);
+}
+
+.cln .rz-signature__image {
+  max-height: calc(34px * var(--rz-scale));
+  object-fit: contain;
+}
+
+.cln .rz-signature__rule {
+  display: block;
+  width: calc(112px * var(--rz-scale));
+  border-top: 1px solid #bdbdbd;
+  margin-top: 0.15em;
+}
+
+.cln .rz-signature__caption {
+  font-size: 0.95em;
+}
+
 /* --- Everything else under the same rules ---------------------------------- */
 
 .cln .rz-list {

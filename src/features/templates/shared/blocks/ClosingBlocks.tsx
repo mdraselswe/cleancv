@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { MARITAL_STATUSES, ON_REQUEST_TEXT } from '@/constants';
 import type { Resume } from '@/features/resume';
 import { formatToday } from '@/lib/date';
@@ -111,7 +112,10 @@ export const SignatureBlock = ({ resume }: SignatureBlockProps) => {
   const name = isBlank(signature.typedName) ? basics.fullName : signature.typedName;
 
   return (
-    <div className="rz-signature rz-avoid-break">
+    <div
+      className="rz-signature rz-avoid-break"
+      style={{ '--rz-sig-scale': signature.scale / 100 } as CSSProperties}
+    >
       {signature.mode === 'image' && signature.image ? (
         // A data URL of unknown dimensions; next/image would add nothing.
         // eslint-disable-next-line @next/next/no-img-element

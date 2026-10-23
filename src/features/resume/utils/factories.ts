@@ -9,6 +9,7 @@ import {
   PHOTO_FRAME,
   PHOTO_RADIUS,
   RESUME_SCHEMA_VERSION,
+  SIGNATURE_SCALE,
 } from '@/constants';
 import { createId } from '@/lib/id';
 
@@ -275,7 +276,7 @@ export const createEmptyResume = (): Resume => ({
   interests: { items: [] },
   references: { mode: 'on-request', entries: [] },
   declaration: { text: DEFAULT_DECLARATION_TEXT, place: '', date: '', showDate: true },
-  signature: { mode: 'typed', typedName: '', image: '', caption: '' },
+  signature: { mode: 'typed', typedName: '', image: '', caption: '', scale: SIGNATURE_SCALE.default },
 
   customSections: [],
 

@@ -7,6 +7,7 @@ import {
   Field,
   ImageUpload,
   Input,
+  Slider,
   Switch,
   TagInput,
   Tabs,
@@ -19,9 +20,11 @@ import {
   ON_REQUEST_TEXT,
   REFERENCE_MODES,
   SIGNATURE_MODES,
+  SIGNATURE_SCALE,
 } from '@/constants';
 import type { ReferenceMode } from '@/constants';
 import { createReferenceEntry, useResume, useResumeActions } from '@/features/resume';
+import { bn } from '@/lib/bn';
 import { formatToday } from '@/lib/date';
 
 import { useResumeEdit } from '../../hooks/useResumeEdit';
@@ -289,6 +292,17 @@ export const SignatureSection = () => {
           onChange={(image) => patch('signature', { image })}
         />
       )}
+
+      <Slider
+        id="signature-scale"
+        label="সইয়ের সাইজ"
+        min={SIGNATURE_SCALE.min}
+        max={SIGNATURE_SCALE.max}
+        step={SIGNATURE_SCALE.step}
+        value={signature.scale}
+        display={`${bn(signature.scale)}%`}
+        onChange={(scale) => patch('signature', { scale })}
+      />
 
       <Field label="ক্যাপশন" hint="রেখার নিচে ছাপা হবে।">
         {({ id, describedBy }) => (

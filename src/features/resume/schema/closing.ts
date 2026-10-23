@@ -5,6 +5,7 @@ import {
   LIMITS,
   REFERENCE_MODES,
   SIGNATURE_MODES,
+  SIGNATURE_SCALE,
   SUMMARY_MODES,
 } from '@/constants';
 
@@ -63,6 +64,13 @@ export const signatureSchema = z.object({
   typedName: optionalText(LIMITS.nameChars),
   image: imageSchema,
   caption: optionalText(80),
+  /** Percent of the design's own signature size; the reader's, so it survives a change of design. */
+  scale: z
+    .number()
+    .min(SIGNATURE_SCALE.min)
+    .max(SIGNATURE_SCALE.max)
+    .catch(SIGNATURE_SCALE.default)
+    .default(SIGNATURE_SCALE.default),
 });
 
 export type Summary = z.infer<typeof summarySchema>;
